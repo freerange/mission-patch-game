@@ -60,16 +60,23 @@
         var lap, lap2;
 
         function createLaptop(laptop, bounce, mode) {
+          // Mode 0 = Bounce mode
           if(mode == 0) {
             laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
+            laptop.setData({ laptopMode: mode });
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.x > (config.height/2)) ? 1 : -1;
             laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
             laptop.setBounce(bounce);
             laptop.setCollideWorldBounds(true);
           }
+          //Mode 1 = Chuck mode
           else if(mode == 1) {
-            laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
+            var posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width : 0;
+            var posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height : 0;
+
+            laptop = laptops.create(posX, posY, 'laptop');
+            laptop.setData({ laptopMode: mode });
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.x > (config.height/2)) ? 1 : -1;
             laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
@@ -81,8 +88,8 @@
           }
         }
 
-        createLaptop(lap, 0.99, 0);
-        createLaptop(lap2, 0.95, 1);
+        createLaptop(lap, 0.99, 1);
+        createLaptop(lap2, 0.99, 0);
 
         var laptopsLeft = laptops.children.entries.length;
         var scoreText;
