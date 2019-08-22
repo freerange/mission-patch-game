@@ -57,21 +57,19 @@
         this.physics.add.collider(laptops, laptops);
         this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
 
-        // lap = laptops.create(100, config.height - 50, 'laptop');
+        var lap, lap2;
 
-        lap = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
-        var velX = (lap.x > (config.width/2)) ? -1 : 1;
-        var velY = (lap.x > (config.height/2)) ? 1 : -1;
-        lap.setVelocity(Phaser.Math.Between(450, 900) * velX, Phaser.Math.Between(450, 900) * velY);
-        lap.setBounce(0.99);
+        function createLaptop(laptop, bounce) {
+          laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
+          var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+          var velY = (laptop.x > (config.height/2)) ? 1 : -1;
+          laptop.setVelocity(Phaser.Math.Between(450, 900) * velX, Phaser.Math.Between(450, 900) * velY);
+          laptop.setBounce(bounce);
+          laptop.setCollideWorldBounds(true);
+        }
 
-        lap2 = laptops.create(config.width - 100, config.height - 50, 'laptop');
-        lap2.setVelocity(Phaser.Math.Between(-450, -900), -900);
-        lap2.setBounce(0.95);
-        lap2.setScale(0.5);
-
-        lap.setCollideWorldBounds(true);
-        lap2.setCollideWorldBounds(true);
+        createLaptop(lap, 1.5);
+        createLaptop(lap2, 0.25);
 
         var laptopsLeft = laptops.children.entries.length;
         var scoreText;
@@ -86,8 +84,9 @@
         for(var i = 0; i < stickersAtOnce; i++) {
 
           sticker[i] = stickers.create(0, 0, 'patch');
-          sticker[i].setData({ currentScale: 0.8, patchSticking: false });
-          sticker[i].setScale(sticker[i].data.values.currentScale, sticker[i].data.values.currentScale);
+          sticker[i].setData({ patchSticking: false });
+          sticker[i].scale = 0.8;
+          sticker[i].setScale(sticker[i].scale, sticker[i].scale);
           sticker[i].disableBody(true, true);
 
 
@@ -95,7 +94,7 @@
 
         function hitLaptop (lapt, stick) {
           for(var i = 0; i < sticker.length; i++) {
-            if(stick.data.values.currentScale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds) {
+            if(stick.scale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds) {
                 laptopsLeft--;
                 if(laptopsLeft > 0)
                   scoreText.setText(laptopsLeft + ' to go');
@@ -127,11 +126,11 @@
 
             for(var i = 0; i < sticker.length; i++) {
               if(sticker[i].y > config.height || sticker[i].active == false) {
-                  sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].data.values.currentScale)/2), tar.y + ((sticker[i].height * sticker[i].data.values.currentScale)/2), true, true);
+                  // sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].data.values.currentScale)/2), tar.y + ((sticker[i].height * sticker[i].data.values.currentScale)/2), true, true);
+                  sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].scale)/2), tar.y + ((sticker[i].height * sticker[i].scale)/2), true, true);
                   sticker[i].data.values.patchSticking = true;
 
-                  sticker[i].data.values.currentScale = 0.8;
-                  sticker[i].setScale(sticker[i].data.values.currentScale, sticker[i].data.values.currentScale);
+                  sticker[i].scale = 0.8;
                   sticker[i].setVelocity(0, -175);
                   break;
               }
@@ -145,22 +144,14 @@
       // var master = this;
       for(var i = 0; i < sticker.length; i++) {
         {
-            if(sticker[i].data.values.currentScale > 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
-                sticker[i].data.values.currentScale -= 0.022;
-                sticker[i].setScale(sticker[i].data.values.currentScale, sticker[i].data.values.currentScale);
+            if(sticker[i].scale > 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
+                sticker[i].scale -= 0.022;
+                sticker[i].setScale(sticker[i].scale, sticker[i].scale);
             }
-            else if(sticker[i].data.values.currentScale <= 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
+            else if(sticker[i].scale <= 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
                 sticker[i].disableBody(true, false);
                 sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
                 sticker[i].data.values.patchSticking = false;
-
-                // master.time.addEvent({
-                //     delay: 50,
-                //     callback: ()=>{
-                //        sticker[i].data.values.patchSticking = false;
-                //     },
-                //     loop: false
-                // })
             }
         }
       }
