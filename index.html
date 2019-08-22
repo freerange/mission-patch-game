@@ -59,17 +59,30 @@
 
         var lap, lap2;
 
-        function createLaptop(laptop, bounce) {
-          laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
-          var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-          var velY = (laptop.x > (config.height/2)) ? 1 : -1;
-          laptop.setVelocity(Phaser.Math.Between(450, 900) * velX, Phaser.Math.Between(450, 900) * velY);
-          laptop.setBounce(bounce);
-          laptop.setCollideWorldBounds(true);
+        function createLaptop(laptop, bounce, mode) {
+          if(mode == 0) {
+            laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
+            var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+            var velY = (laptop.x > (config.height/2)) ? 1 : -1;
+            laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
+            laptop.setBounce(bounce);
+            laptop.setCollideWorldBounds(true);
+          }
+          else if(mode == 1) {
+            laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
+            var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+            var velY = (laptop.x > (config.height/2)) ? 1 : -1;
+            laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
+            laptop.setBounce(bounce);
+            laptop.setCollideWorldBounds(false);
+          }
+          else {
+            console.log('The selected mode doesn\'t exist')
+          }
         }
 
-        createLaptop(lap, 0.99);
-        createLaptop(lap2, 0.95);
+        createLaptop(lap, 0.99, 0);
+        createLaptop(lap2, 0.95, 1);
 
         var laptopsLeft = laptops.children.entries.length;
         var scoreText;
@@ -126,7 +139,6 @@
 
             for(var i = 0; i < sticker.length; i++) {
               if(sticker[i].y > config.height || sticker[i].active == false) {
-                  // sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].data.values.currentScale)/2), tar.y + ((sticker[i].height * sticker[i].data.values.currentScale)/2), true, true);
                   sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].scale)/2), tar.y + ((sticker[i].height * sticker[i].scale)/2), true, true);
                   sticker[i].data.values.patchSticking = true;
 
@@ -141,7 +153,6 @@
 
     function update ()
     {
-      // var master = this;
       for(var i = 0; i < sticker.length; i++) {
         {
             if(sticker[i].scale > 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
