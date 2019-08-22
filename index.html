@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mission Patch Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+</head>
+<body>
+
+    <script>
+    var config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        backgroundColor: '#0000ff',
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 800 },
+                debug: false
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    var game = new Phaser.Game(config);
+
+    var sticker = [];
+
+    var tar;
+    var stickersAtOnce = 3;
+
+    var master;
+
+
+    function preload ()
+    {
+        //Loads all assets
+        this.load.image('laptop', 'assets/laptop-prot.png');
+        this.load.image('target', 'assets/cursor.png');
+        this.load.image('sky', 'assets/sky.png');
+        this.load.image('patch', 'assets/patch.png')
+    }
+
+    function create ()
+    {
+        this.add.image(0, 0, 'sky').setOrigin(0, 0);
+
+        //Launch Laptop
+        laptops = this.physics.add.group();
+
+        stickers = this.physics.add.group();
+
+        this.physics.add.collider(laptops, laptops);
+        this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
+
+        // lap = laptops.create(100, config.height - 50, 'laptop');
+
+        lap = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
+        var velX = (lap.x > (config.width/2)) ? -1 : 1;
+        var velY = (lap.x > (config.height/2)) ? 1 : -1;
+        lap.setVelocity(Phaser.Math.Between(450, 900) * velX, Phaser.Math.Between(450, 900) * velY);
+        lap.setBounce(0.99);
+
+        lap2 = laptops.create(config.width - 100, config.height - 50, 'laptop');
+        lap2.setVelocity(Phaser.Math.Between(-450, -900), -900);
+        lap2.setBounce(0.95);
+        lap2.setScale(0.5);
+
+        lap.setCollideWorldBounds(true);
+        lap2.setCollideWorldBounds(true);
+
+        var laptopsLeft = laptops.children.entries.length;
+        var scoreText;
+
+        scoreText = this.add.text(16, 16, laptopsLeft + ' to go', {fontSize: '32px', fill: '#000' })
+
+        tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
+
+        master = this;
+
+        //Sticker is prepped
+        for(var i = 0; i < stickersAtOnce; i++) {
+
+          sticker[i] = stickers.create(0, 0, 'patch');
+          sticker[i].setData({ currentScale: 0.8, patchSticking: false });
+          sticker[i].setScale(sticker[i].data.values.currentScale, sticker[i].data.values.currentScale);
+          sticker[i].disableBody(true, true);
+
+
+        }
+
+        function hitLaptop (lapt, stick) {
+          for(var i = 0; i < sticker.length; i++) {
+            if(stick.data.values.currentScale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds) {
+                laptopsLeft--;
+                if(laptopsLeft > 0)
+                  scoreText.setText(laptopsLeft + ' to go');
+                else
+                  scoreText.setText('All laptops are Patched');
+                stick.disableBody(true, false);
+                lapt.disableBody(true, false);
+
+                stick.enableBody(true, stick.x, stick.y, true, true);
+                lapt.enableBody(true, lapt.x, lapt.y, true, true);
+
+                lapt.setCollideWorldBounds(false);
+            }
+          }
+        }
+
+        //Follow center of reticle
+        this.input.on('pointermove', function (pointer) {
+
+            tar.x = pointer.x - (tar.width/2);
+            tar.y = pointer.y - (tar.height/2);
+
+        });
+
+
+        var id;
+
+        this.input.on('pointerdown', function (pointer) {
+
+            for(var i = 0; i < sticker.length; i++) {
+              if(sticker[i].y > config.height || sticker[i].active == false) {
+                  sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].data.values.currentScale)/2), tar.y + ((sticker[i].height * sticker[i].data.values.currentScale)/2), true, true);
+                  sticker[i].data.values.patchSticking = true;
+
+                  sticker[i].data.values.currentScale = 0.8;
+                  sticker[i].setScale(sticker[i].data.values.currentScale, sticker[i].data.values.currentScale);
+                  sticker[i].setVelocity(0, -175);
+                  break;
+              }
+            }
+
+        });
+    }
+
+    function update ()
+    {
+      // var master = this;
+      for(var i = 0; i < sticker.length; i++) {
+        {
+            if(sticker[i].data.values.currentScale > 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
+                sticker[i].data.values.currentScale -= 0.022;
+                sticker[i].setScale(sticker[i].data.values.currentScale, sticker[i].data.values.currentScale);
+            }
+            else if(sticker[i].data.values.currentScale <= 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
+                sticker[i].disableBody(true, false);
+                sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
+                sticker[i].data.values.patchSticking = false;
+
+                // master.time.addEvent({
+                //     delay: 50,
+                //     callback: ()=>{
+                //        sticker[i].data.values.patchSticking = false;
+                //     },
+                //     loop: false
+                // })
+            }
+        }
+      }
+    }
+    </script>
+
+</body>
+</html>
