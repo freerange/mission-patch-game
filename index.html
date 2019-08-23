@@ -131,12 +131,14 @@
             if(stick.scale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds
             && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity) && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)) {
                 laptopsLeft--;
-                for(var i = 0; i < laptops.children.entries.length; i++) {
-                  if(laptops.children.entries[i] == lapt) {
-                    stick.data.values.currentLaptop = i;
-                    stick.data.values.lapDiffX = stick.x - lapt.x;
-                    stick.data.values.lapDiffY = stick.y - lapt.y;
-                    stick.body.setAllowGravity(false);
+                if(lapt.data.values.mode == 0) {
+                  for(var i = 0; i < laptops.children.entries.length; i++) {
+                    if(laptops.children.entries[i] == lapt) {
+                      stick.data.values.currentLaptop = i;
+                      stick.data.values.lapDiffX = stick.x - lapt.x;
+                      stick.data.values.lapDiffY = stick.y - lapt.y;
+                      stick.body.setAllowGravity(false);
+                    }
                   }
                 }
 
