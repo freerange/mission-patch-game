@@ -91,8 +91,8 @@
             laptop.setData({ laptopMode: mode });
 
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-            var velY = (laptop.y > (config.height/2)) ? -1 : 1;
-            laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
+            var velY = (laptop.y > (config.height/2)) ? -1.5 : 0.5;
+            laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(300, 600) * velY);
             laptop.setBounce(bounce);
           }
           else {
