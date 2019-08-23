@@ -59,17 +59,52 @@
 
         var lap, lap2;
 
-        function createLaptop(laptop, bounce) {
-          laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
-          var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-          var velY = (laptop.x > (config.height/2)) ? 1 : -1;
-          laptop.setVelocity(Phaser.Math.Between(450, 900) * velX, Phaser.Math.Between(450, 900) * velY);
-          laptop.setBounce(bounce);
-          laptop.setCollideWorldBounds(true);
+        function createLaptop(laptop, bounce, mode) {
+          // Mode 0 = Bounce mode
+          if(mode == 0) {
+            laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
+            laptop.setData({ laptopMode: mode });
+            var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+            var velY = (laptop.y > (config.height/2)) ? -1 : 1;
+            laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
+            laptop.setBounce(bounce);
+            laptop.setCollideWorldBounds(true);
+          }
+          //Mode 1 = Chuck mode
+          else if(mode == 1) {
+            var compX = Math.abs(Phaser.Math.Between(0, config.width) - (config.width/2));
+            var compY = Math.abs(Phaser.Math.Between(0, config.height) - (config.height/2));
+
+            var posX;
+            var posY;
+
+            if(compX < compY) {
+              posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width : 0;
+              posY = compY;
+            }
+            else if(compY < compX) {
+              posX = compX;
+              posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height : 0;
+            }
+
+            // var posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width : 0;
+            // var posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height : 0;
+
+            laptop = laptops.create(posX, posY, 'laptop');
+            laptop.setData({ laptopMode: mode });
+
+            var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+            var velY = (laptop.y > (config.height/2)) ? -1 : 1;
+            laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
+            laptop.setBounce(bounce);
+          }
+          else {
+            console.log('The selected mode doesn\'t exist')
+          }
         }
 
-        createLaptop(lap, 0.99);
-        createLaptop(lap2, 0.95);
+        createLaptop(lap, 0.99, 0);
+        createLaptop(lap2, 0.95, 0);
 
         var laptopsLeft = laptops.children.entries.length;
         var scoreText;
@@ -84,7 +119,7 @@
         for(var i = 0; i < stickersAtOnce; i++) {
 
           sticker[i] = stickers.create(0, 0, 'patch');
-          sticker[i].setData({ patchSticking: false });
+          sticker[i].setData({ patchSticking: false, currentLaptop: -1, lapDiffX: 0, lapDiffY: 0 });
           sticker[i].scale = 0.8;
           sticker[i].setScale(sticker[i].scale, sticker[i].scale);
           sticker[i].disableBody(true, true);
@@ -96,14 +131,21 @@
           for(var i = 0; i < sticker.length; i++) {
             if(stick.scale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds) {
                 laptopsLeft--;
+                for(var i = 0; i < laptops.children.entries.length; i++) {
+                  if(laptops.children.entries[i] == lapt) {
+                    stick.data.values.currentLaptop = i;
+                    stick.data.values.lapDiffX = stick.x - lapt.x;
+                    stick.data.values.lapDiffY = stick.y - lapt.y;
+                    stick.body.setAllowGravity(false);
+                  }
+                }
+
                 if(laptopsLeft > 0)
                   scoreText.setText(laptopsLeft + ' to go');
                 else
                   scoreText.setText('All laptops are Patched');
-                stick.disableBody(true, false);
-                lapt.disableBody(true, false);
 
-                stick.enableBody(true, stick.x, stick.y, true, true);
+                lapt.disableBody(true, false);
                 lapt.enableBody(true, lapt.x, lapt.y, true, true);
 
                 lapt.setCollideWorldBounds(false);
@@ -126,7 +168,6 @@
 
             for(var i = 0; i < sticker.length; i++) {
               if(sticker[i].y > config.height || sticker[i].active == false) {
-                  // sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].data.values.currentScale)/2), tar.y + ((sticker[i].height * sticker[i].data.values.currentScale)/2), true, true);
                   sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].scale)/2), tar.y + ((sticker[i].height * sticker[i].scale)/2), true, true);
                   sticker[i].data.values.patchSticking = true;
 
@@ -141,7 +182,6 @@
 
     function update ()
     {
-      // var master = this;
       for(var i = 0; i < sticker.length; i++) {
         {
             if(sticker[i].scale > 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
@@ -153,6 +193,17 @@
                 sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
                 sticker[i].data.values.patchSticking = false;
             }
+        }
+
+        //Keeps position relative to laptop it's sticking to until it leaves the screen
+        if(sticker[i].data.values.currentLaptop != -1) {
+          sticker[i].setPosition(laptops.children.entries[sticker[i].data.values.currentLaptop].x + sticker[i].data.values.lapDiffX, laptops.children.entries[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
+          if(sticker[i].y > config.height + sticker[i].height) {
+            sticker[i].data.values.currentLaptop = -1;
+            sticker[i].data.values.lapDiffX = 0;
+            sticker[i].data.values.lapDiffY = 0;
+            sticker[i].body.setAllowGravity(true);
+          }
         }
       }
     }
