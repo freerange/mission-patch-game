@@ -65,7 +65,7 @@
             laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
             laptop.setData({ laptopMode: mode });
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-            var velY = (laptop.x > (config.height/2)) ? 1 : -1;
+            var velY = (laptop.y > (config.height/2)) ? -1 : 1;
             laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
             laptop.setBounce(bounce);
             laptop.setCollideWorldBounds(true);
@@ -78,10 +78,9 @@
             laptop = laptops.create(posX, posY, 'laptop');
             laptop.setData({ laptopMode: mode });
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-            var velY = (laptop.x > (config.height/2)) ? 1 : -1;
+            var velY = (laptop.y > (config.height/2)) ? -1 : 1;
             laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
             laptop.setBounce(bounce);
-            laptop.setCollideWorldBounds(false);
           }
           else {
             console.log('The selected mode doesn\'t exist')
@@ -122,7 +121,6 @@
                     stick.data.values.lapDiffX = stick.x - lapt.x;
                     stick.data.values.lapDiffY = stick.y - lapt.y;
                     stick.body.setAllowGravity(false);
-                    console.log(stick.body.allowGravity);
                   }
                 }
 
@@ -130,12 +128,8 @@
                   scoreText.setText(laptopsLeft + ' to go');
                 else
                   scoreText.setText('All laptops are Patched');
-                // stick.disableBody(true, false);
 
                 lapt.disableBody(true, false);
-
-                // stick.enableBody(true, stick.x, stick.y, true, true);
-
                 lapt.enableBody(true, lapt.x, lapt.y, true, true);
 
                 lapt.setCollideWorldBounds(false);
