@@ -87,9 +87,6 @@
               posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height : 0;
             }
 
-            // var posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width : 0;
-            // var posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height : 0;
-
             laptop = laptops.create(posX, posY, 'laptop');
             laptop.setData({ laptopMode: mode });
 
@@ -129,7 +126,10 @@
 
         function hitLaptop (lapt, stick) {
           for(var i = 0; i < sticker.length; i++) {
-            if(stick.scale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds) {
+            var laptopSensetivity = 0.45;
+
+            if(stick.scale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds
+            && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity) && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)) {
                 laptopsLeft--;
                 for(var i = 0; i < laptops.children.entries.length; i++) {
                   if(laptops.children.entries[i] == lapt) {
