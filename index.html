@@ -87,16 +87,16 @@
               posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height : 0;
             }
 
-            var timer = this.time.addEvent({
-                delay: 500,                // ms
-                callback: ()=> {
-                  laptop = laptops.create(posX, posY, 'laptop');
-                },
-                callbackScope: this,
-                loop: false
-            });
+            // var timer = this.time.addEvent({
+            //     delay: 500,                // ms
+            //     callback: ()=> {
+            //       laptop = laptops.create(posX, posY, 'laptop');
+            //     },
+            //     callbackScope: this,
+            //     loop: false
+            // });
 
-            // laptop = laptops.create(posX, posY, 'laptop');
+            laptop = laptops.create(posX, posY, 'laptop');
             laptop.setData({ laptopMode: mode });
 
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
