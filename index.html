@@ -101,7 +101,7 @@
         }
 
         createLaptop(lap, 0.99, 0);
-        createLaptop(lap2, 0.95, 0);
+        createLaptop(lap2, 0.95, 1);
 
         var laptopsLeft = laptops.children.entries.length;
         var scoreText;
@@ -124,20 +124,40 @@
 
         }
 
+        function stickToLaptop (lapt, stick, index) {
+          stick.data.values.currentLaptop = index;
+          stick.data.values.lapDiffX = stick.x - lapt.x;
+          stick.data.values.lapDiffY = stick.y - lapt.y;
+          stick.body.setAllowGravity(false);
+        }
+
         function hitLaptop (lapt, stick) {
           for(var i = 0; i < sticker.length; i++) {
             var laptopSensetivity = 0.45;
 
-            if(stick.scale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds
+            if(stick.scale <= 0.1 && stick.data.values.patchSticking
             && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity) && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)) {
-                laptopsLeft--;
-                if(lapt.data.values.mode == 0) {
+                console.log(lapt.data.values.laptopMode);
+                if(lapt.data.values.laptopMode == 0 && lapt.body.collideWorldBounds) {
+                  laptopsLeft--;
+
                   for(var i = 0; i < laptops.children.entries.length; i++) {
                     if(laptops.children.entries[i] == lapt) {
-                      stick.data.values.currentLaptop = i;
-                      stick.data.values.lapDiffX = stick.x - lapt.x;
-                      stick.data.values.lapDiffY = stick.y - lapt.y;
-                      stick.body.setAllowGravity(false);
+                      stickToLaptop(lapt, stick, i);
+                    }
+                  }
+
+                  lapt.disableBody(true, false);
+                  lapt.enableBody(true, lapt.x, lapt.y, true, true);
+
+                  lapt.setCollideWorldBounds(false);
+                }
+                else if(lapt.data.values.laptopMode == 1) {
+                  laptopsLeft--;
+
+                  for(var i = 0; i < laptops.children.entries.length; i++) {
+                    if(laptops.children.entries[i] == lapt) {
+                      stickToLaptop(lapt, stick, i);
                     }
                   }
                 }
@@ -146,11 +166,6 @@
                   scoreText.setText(laptopsLeft + ' to go');
                 else
                   scoreText.setText('All laptops are Patched');
-
-                lapt.disableBody(true, false);
-                lapt.enableBody(true, lapt.x, lapt.y, true, true);
-
-                lapt.setCollideWorldBounds(false);
             }
           }
         }
