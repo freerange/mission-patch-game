@@ -9,8 +9,8 @@
     <script>
     var config = {
         type: Phaser.AUTO,
-        width: 800,
-        height: 600,
+        width: 1000,
+        height: 750,
         backgroundColor: '#0000ff',
         physics: {
             default: 'arcade',
@@ -88,8 +88,8 @@
           }
         }
 
-        createLaptop(lap, 0.99, 1);
-        createLaptop(lap2, 0.99, 0);
+        createLaptop(lap, 0.99, 0);
+        createLaptop(lap2, 0.95, 0);
 
         var laptopsLeft = laptops.children.entries.length;
         var scoreText;
@@ -104,7 +104,7 @@
         for(var i = 0; i < stickersAtOnce; i++) {
 
           sticker[i] = stickers.create(0, 0, 'patch');
-          sticker[i].setData({ patchSticking: false });
+          sticker[i].setData({ patchSticking: false, currentLaptop: -1, lapDiffX: 0, lapDiffY: 0 });
           sticker[i].scale = 0.8;
           sticker[i].setScale(sticker[i].scale, sticker[i].scale);
           sticker[i].disableBody(true, true);
@@ -116,6 +116,16 @@
           for(var i = 0; i < sticker.length; i++) {
             if(stick.scale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds) {
                 laptopsLeft--;
+                for(var i = 0; i < laptops.children.entries.length; i++) {
+                  if(laptops.children.entries[i] == lapt) {
+                    stick.data.values.currentLaptop = i;
+                    stick.data.values.lapDiffX = stick.x - lapt.x;
+                    stick.data.values.lapDiffY = stick.y - lapt.y;
+                    stick.body.setAllowGravity(false);
+                    console.log(stick.body.allowGravity);
+                  }
+                }
+
                 if(laptopsLeft > 0)
                   scoreText.setText(laptopsLeft + ' to go');
                 else
@@ -171,6 +181,17 @@
                 sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
                 sticker[i].data.values.patchSticking = false;
             }
+        }
+
+        if(sticker[i].data.values.currentLaptop != -1) {
+          sticker[i].setPosition(laptops.children.entries[sticker[i].data.values.currentLaptop].x - sticker[i].x, laptops.children.entries[sticker[i].data.values.currentLaptop].y - sticker[i].y);
+
+          if(sticker[i].y > config.height + sticker[i].height) {
+            sticker[i].data.values.currentLaptop = -1;
+            sticker[i].data.values.lapDiffX = 0;
+            sticker[i].data.values.lapDiffY = 0;
+            sticker[i].body.setAllowGravity(true);
+          }
         }
       }
     }
