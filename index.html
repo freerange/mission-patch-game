@@ -10,7 +10,7 @@
     var config = {
         type: Phaser.AUTO,
         width: 800,
-        height: 600,
+        height: 900,
         backgroundColor: '#0000ff',
         physics: {
             default: 'arcade',
@@ -29,9 +29,11 @@
     var game = new Phaser.Game(config);
 
     var sticker = [];
+    var laptop = [];
 
     var tar;
     var stickersAtOnce = 3;
+    var laptopsAtOnce = 3;
 
     var master;
 
@@ -49,11 +51,11 @@
     {
         this.add.image(0, 0, 'sky').setOrigin(0, 0);
 
-        //Launch Laptop
+        //Launch Groups
         laptops = this.physics.add.group();
-
         stickers = this.physics.add.group();
 
+        //Collisions
         this.physics.add.collider(laptops, laptops);
         this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
 
@@ -73,33 +75,32 @@
           }
           //Mode 1 = Chuck mode
           else if(mode == 1) {
-            var compX = Math.abs(Phaser.Math.Between(0, config.width) - (config.width/2));
-            var compY = Math.abs(Phaser.Math.Between(0, config.height) - (config.height/2));
+            var posX = Phaser.Math.Between(0, config.width);
+            var posY = Phaser.Math.Between(0, config.height);
 
-            var posX;
-            var posY;
+            //Random starting position from edge
+            var compX = Math.abs(posX - (config.width/2));
+            var compY = Math.abs(posY - (config.height/2));
 
-            if(compX < compY) {
-              posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width : 0;
-              posY = compY;
-            }
-            else if(compY < compX) {
-              posX = compX;
-              posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height : 0;
-            }
+            if(compX < compY)
+              posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width + 100 : 0 - 100;
+            else if(compY < compX)
+              posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height + 50 : 0 - 50;
 
             laptop = laptops.create(posX, posY, 'laptop');
             laptop.setData({ laptopMode: mode });
             laptop.disableBody(true, true);
 
+            //Random delay before chucking
             var timer = that.time.addEvent({
                 delay: Phaser.Math.Between(500, 5000),                // ms
                 callback: ()=> {
                   laptop.enableBody(true, posX, posY, true, true);
                   var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-                  var velY = (laptop.y > (config.height/2)) ? -1.5 : -0.5;
+                  var velY = (laptop.y > (config.height/2)) ? -1.5 : -1.0;
                   laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(300, 600) * velY);
                   laptop.setBounce(bounce);
+                  laptop.setScale(1.25);
                 },
                 callbackScope: this,
                 loop: false
@@ -113,8 +114,10 @@
           }
         }
 
-        createLaptop(lap, 0.99, 1);
-        createLaptop(lap2, 0.95, 0);
+        //Created Laptops
+        for(var i = 0; i < laptopsAtOnce; i++) {
+          createLaptop(laptop[i], Phaser.Math.FloatBetween(0.8, 1.05), /*Phaser.Math.Between(0, 1)*/1);
+        }
 
         var laptopsLeft = laptops.children.entries.length;
         var scoreText;
@@ -146,7 +149,7 @@
 
         function hitLaptop (lapt, stick) {
           for(var i = 0; i < sticker.length; i++) {
-            var laptopSensetivity = 0.45;
+            var laptopSensetivity = 0.5;
 
             if(stick.scale <= 0.1 && stick.data.values.patchSticking
             && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity) && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)) {
@@ -215,7 +218,7 @@
       for(var i = 0; i < sticker.length; i++) {
         {
             if(sticker[i].scale > 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
-                sticker[i].scale -= 0.022;
+                sticker[i].scale -= 0.032;
                 sticker[i].setScale(sticker[i].scale, sticker[i].scale);
             }
             else if(sticker[i].scale <= 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
