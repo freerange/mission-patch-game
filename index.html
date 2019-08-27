@@ -29,12 +29,19 @@
     var game = new Phaser.Game(config);
 
     var sticker = [];
+    var laptop = [];
 
     var tar;
-    var stickersAtOnce = 3;
+    var stickersAtOnce = 5;
+    var laptopsAtOnce = 50;
 
     var master;
 
+    var countdownTimer;
+    var countdownSeconds = 120;
+    var timerText;
+
+    var countdownCheck;
 
     function preload ()
     {
@@ -42,23 +49,24 @@
         this.load.image('laptop', 'assets/laptop-prot.png');
         this.load.image('target', 'assets/cursor.png');
         this.load.image('sky', 'assets/sky.png');
-        this.load.image('patch', 'assets/patch.png')
+        this.load.image('patch', 'assets/patch.png');
     }
 
     function create ()
     {
         this.add.image(0, 0, 'sky').setOrigin(0, 0);
 
-        //Launch Laptop
+        //Launch Groups
         laptops = this.physics.add.group();
-
         stickers = this.physics.add.group();
 
-        this.physics.add.collider(laptops, laptops);
+        //Collisions
+        // this.physics.add.collider(laptops, laptops);
         this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
 
         var lap, lap2;
 
+        var that = this;
         function createLaptop(laptop, bounce, mode) {
           // Mode 0 = Bounce mode
           if(mode == 0) {
@@ -72,44 +80,66 @@
           }
           //Mode 1 = Chuck mode
           else if(mode == 1) {
-            var compX = Math.abs(Phaser.Math.Between(0, config.width) - (config.width/2));
-            var compY = Math.abs(Phaser.Math.Between(0, config.height) - (config.height/2));
+            var posX = Phaser.Math.Between(0, config.width);
+            var posY = Phaser.Math.Between(0, config.height);
 
-            var posX;
-            var posY;
+            //Random starting position from edge
+            var compX = Math.abs(posX - (config.width/2));
+            var compY = Math.abs(posY - (config.height/2));
+            var velInfX = 1;
+            var velInfY = 1;
 
-            if(compX < compY) {
-              posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width : 0;
-              posY = compY;
-            }
-            else if(compY < compX) {
-              posX = compX;
-              posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height : 0;
-            }
+            if(compX < compY)
+              posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width + 100 : 0 - 100;
+            else if(compY < compX)
+              posY = config.height + 50;
 
-            // var posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width : 0;
-            // var posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height : 0;
 
             laptop = laptops.create(posX, posY, 'laptop');
-            laptop.setData({ laptopMode: mode });
+            laptop.setData({ laptopMode: mode, hasSticker: false });
+            laptop.disableBody(true, true);
 
-            var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-            var velY = (laptop.y > (config.height/2)) ? -1 : 1;
-            laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
-            laptop.setBounce(bounce);
+            //Random delay before chucking
+            var timer = that.time.addEvent({
+                delay: Phaser.Math.Between(500, countdownSeconds * 1000),                // ms
+                callback: ()=> {
+                  laptop.enableBody(true, posX, posY, true, true);
+                  var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+                  var velY = (laptop.y > (config.height/2)) ? -1.5 : -0.5;
+                  laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(300, 600) * velY);
+                  laptop.setBounce(bounce);
+                  laptop.setScale(1.25);
+                },
+                callbackScope: this,
+                loop: false
+            });
+
+            // laptop = laptops.create(posX, posY, 'laptop');
+
           }
           else {
             console.log('The selected mode doesn\'t exist')
           }
         }
 
-        createLaptop(lap, 0.99, 0);
-        createLaptop(lap2, 0.95, 0);
+        //Created Laptops
+        for(var i = 0; i < laptopsAtOnce; i++) {
+          createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), /*Phaser.Math.Between(0, 1)*/1);
+        }
 
         var laptopsLeft = laptops.children.entries.length;
         var scoreText;
 
-        scoreText = this.add.text(16, 16, laptopsLeft + ' to go', {fontSize: '32px', fill: '#000' })
+        countdownTimer = this.time.addEvent({
+            delay: countdownSeconds * 1000,                // ms
+            callback: ()=> {
+              // console.log('Countdown Over');
+            },
+            callbackScope: this,
+            loop: false
+        });
+        scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft) + ' out of ' + laptopsAtOnce + ' Patched', {fontSize: '32px', fill: '#000' });
+        timerText = this.add.text(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), {fontSize: '32px', fill: '#000' });
 
         tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
 
@@ -119,7 +149,7 @@
         for(var i = 0; i < stickersAtOnce; i++) {
 
           sticker[i] = stickers.create(0, 0, 'patch');
-          sticker[i].setData({ patchSticking: false, currentLaptop: -1, lapDiffX: 0, lapDiffY: 0 });
+          sticker[i].setData({ patchSticking: false, currentLaptop: -1, lapDiffX: 0, lapDiffY: 0, stickerOnLaptop: false });
           sticker[i].scale = 0.8;
           sticker[i].setScale(sticker[i].scale, sticker[i].scale);
           sticker[i].disableBody(true, true);
@@ -127,32 +157,44 @@
 
         }
 
+        function stickToLaptop (lapt, stick, index) {
+          stick.data.values.currentLaptop = index;
+          stick.data.values.lapDiffX = stick.x - lapt.x;
+          stick.data.values.lapDiffY = stick.y - lapt.y;
+          stick.body.setAllowGravity(false);
+        }
+
         function hitLaptop (lapt, stick) {
           for(var i = 0; i < sticker.length; i++) {
-            if(stick.scale <= 0.1 && stick.data.values.patchSticking && lapt.body.collideWorldBounds) {
-                laptopsLeft--;
-                for(var i = 0; i < laptops.children.entries.length; i++) {
-                  if(laptops.children.entries[i] == lapt) {
-                    stick.data.values.currentLaptop = i;
-                    stick.data.values.lapDiffX = stick.x - lapt.x;
-                    stick.data.values.lapDiffY = stick.y - lapt.y;
-                    stick.body.setAllowGravity(false);
+            var laptopSensetivity = 0.5;
+
+            if(stick.scale <= 0.1 && stick.data.values.patchSticking
+            && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity) && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)
+            && !stick.data.values.stickerOnLaptop && !lapt.data.values.hasSticker) {
+                  laptopsLeft--;
+                  lapt.data.values.hasSticker = true;
+                  stick.data.values.stickerOnLaptop = true;
+
+                  for(var i = 0; i < laptops.children.entries.length; i++) {
+                    if(laptops.children.entries[i] == lapt) {
+                      stickToLaptop(lapt, stick, i);
+                    }
                   }
-                }
+
+                  if(lapt.data.values.laptopMode == 0) {
+                    lapt.disableBody(true, false);
+                    lapt.enableBody(true, lapt.x, lapt.y, true, true);
+
+                    lapt.setCollideWorldBounds(false);
+                  }
 
                 if(laptopsLeft > 0)
-                  scoreText.setText(laptopsLeft + ' to go');
+                  scoreText.setText((laptopsAtOnce - laptopsLeft) + ' out of ' + laptopsAtOnce + ' Patched');
                 else
                   scoreText.setText('All laptops are Patched');
-
-                lapt.disableBody(true, false);
-                lapt.enableBody(true, lapt.x, lapt.y, true, true);
-
-                lapt.setCollideWorldBounds(false);
             }
           }
         }
-
         //Follow center of reticle
         this.input.on('pointermove', function (pointer) {
 
@@ -167,12 +209,15 @@
         this.input.on('pointerdown', function (pointer) {
 
             for(var i = 0; i < sticker.length; i++) {
-              if(sticker[i].y > config.height || sticker[i].active == false) {
-                  sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].scale)/2), tar.y + ((sticker[i].height * sticker[i].scale)/2), true, true);
+              if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active) {
+                  sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2), tar.y + ((sticker[i].height * 0.1)/2), true, true);
+                  // console.log('sticker' + i + ': x = ' + sticker[i].x + ' y = ' + sticker[i].y);
                   sticker[i].data.values.patchSticking = true;
 
                   sticker[i].scale = 0.8;
                   sticker[i].setVelocity(0, -175);
+
+
                   break;
               }
             }
@@ -184,11 +229,11 @@
     {
       for(var i = 0; i < sticker.length; i++) {
         {
-            if(sticker[i].scale > 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
-                sticker[i].scale -= 0.022;
+            if(sticker[i].scale > 0.1 && sticker[i].active && sticker[i].data.values.patchSticking) {
+                sticker[i].scale -= 0.032;
                 sticker[i].setScale(sticker[i].scale, sticker[i].scale);
             }
-            else if(sticker[i].scale <= 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
+            else if(sticker[i].scale <= 0.1 && sticker[i].active && sticker[i].data.values.patchSticking) {
                 sticker[i].disableBody(true, false);
                 sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
                 sticker[i].data.values.patchSticking = false;
@@ -202,10 +247,30 @@
             sticker[i].data.values.currentLaptop = -1;
             sticker[i].data.values.lapDiffX = 0;
             sticker[i].data.values.lapDiffY = 0;
+            sticker[i].data.values.stickerOnLaptop = false;
             sticker[i].body.setAllowGravity(true);
           }
         }
       }
+
+      for(var j = 0; j < laptop.length; j++) {
+        if(laptop[j].active && laptop.y > config.height + laptop.height + 50) {
+          laptop[j].disableBody(true, true);
+        }
+      }
+
+      if(countdownCheck == null) {
+        countdownCheck = countdownSeconds;
+        console.log(countdownCheck);
+      }
+      if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0 && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())) {
+        timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
+        countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
+      }
+      else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
+        timerText.setText('Time\'s up');
+      }
+
     }
     </script>
 
