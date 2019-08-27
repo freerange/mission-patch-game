@@ -32,13 +32,13 @@
     var laptop = [];
 
     var tar;
-    var stickersAtOnce = 10;
-    var laptopsAtOnce = 100;
+    var stickersAtOnce = 5;
+    var laptopsAtOnce = 5;
 
     var master;
 
     var countdownTimer;
-    var countdownSeconds = 120;
+    var countdownSeconds = 5;
     var timerText;
 
 
@@ -209,7 +209,8 @@
 
             for(var i = 0; i < sticker.length; i++) {
               if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active) {
-                  sticker[i].enableBody(true, tar.x + ((sticker[i].width * sticker[i].scale)/2), tar.y + ((sticker[i].height * sticker[i].scale)/2), true, true);
+                  sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2), tar.y + ((sticker[i].height * 0.1)/2), true, true);
+                  console.log('sticker' + i + ': x = ' + sticker[i].x + ' y = ' + sticker[i].y);
                   sticker[i].data.values.patchSticking = true;
 
                   sticker[i].scale = 0.8;
