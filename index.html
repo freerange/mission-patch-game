@@ -33,12 +33,13 @@
 
     var tar;
     var stickersAtOnce = 5;
-    var laptopsAtOnce = 300;
+    var laptopsAtOnce = 10;
+    var modeSelect = 0;
 
     var master;
 
     var countdownTimer;
-    var countdownSeconds = 180;
+    var countdownSeconds = 120;
     var timerText;
 
     var countdownCheck;
@@ -63,7 +64,7 @@
         stickers = this.physics.add.group();
 
         //Collisions
-        this.physics.add.collider(laptops, laptops);
+        var lapColl = this.physics.add.collider(laptops, laptops);
         this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
 
         var lap, lap2;
@@ -72,7 +73,7 @@
         function createLaptop(laptop, bounce, mode) {
           // Mode 0 = Bounce mode
           if(mode == 0) {
-            laptop = laptops.create(Phaser.Math.Between(0, config.width /*- 100*/), Phaser.Math.Between(0, config.height /*- 50*/), 'laptop');
+            laptop = laptops.create(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), 'laptop');
             laptop.setData({ laptopMode: mode });
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.y > (config.height/2)) ? -1 : 1;
@@ -125,8 +126,10 @@
         }
 
         //Created Laptops
+        if(modeSelect == 1)
+          lapColl.destroy();
         for(var i = 0; i < laptopsAtOnce; i++) {
-          createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), /*Phaser.Math.Between(0, 1)*/1);
+          createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
         }
 
         var laptopsLeft = laptops.children.entries.length;
@@ -142,7 +145,7 @@
         });
 
         var tab = this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
-        // tab.disableBody(true, true);
+        tab.disableBody(true, true);
 
         tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
 
