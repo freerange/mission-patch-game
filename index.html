@@ -33,14 +33,15 @@
 
     var tar;
     var stickersAtOnce = 5;
-    var laptopsAtOnce = 5;
+    var laptopsAtOnce = 50;
 
     var master;
 
     var countdownTimer;
-    var countdownSeconds = 5;
+    var countdownSeconds = 120;
     var timerText;
 
+    var countdownCheck;
 
     function preload ()
     {
@@ -132,12 +133,12 @@
         countdownTimer = this.time.addEvent({
             delay: countdownSeconds * 1000,                // ms
             callback: ()=> {
-              console.log('Countdown Over');
+              // console.log('Countdown Over');
             },
             callbackScope: this,
             loop: false
         });
-        scoreText = this.add.text(16, 16, laptopsLeft + ' to go', {fontSize: '32px', fill: '#000' });
+        scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft) + ' out of ' + laptopsAtOnce + ' Patched', {fontSize: '32px', fill: '#000' });
         timerText = this.add.text(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), {fontSize: '32px', fill: '#000' });
 
         tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
@@ -188,7 +189,7 @@
                   }
 
                 if(laptopsLeft > 0)
-                  scoreText.setText(laptopsLeft + ' to go');
+                  scoreText.setText((laptopsAtOnce - laptopsLeft) + ' out of ' + laptopsAtOnce + ' Patched');
                 else
                   scoreText.setText('All laptops are Patched');
             }
@@ -210,7 +211,7 @@
             for(var i = 0; i < sticker.length; i++) {
               if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active) {
                   sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2), tar.y + ((sticker[i].height * 0.1)/2), true, true);
-                  console.log('sticker' + i + ': x = ' + sticker[i].x + ' y = ' + sticker[i].y);
+                  // console.log('sticker' + i + ': x = ' + sticker[i].x + ' y = ' + sticker[i].y);
                   sticker[i].data.values.patchSticking = true;
 
                   sticker[i].scale = 0.8;
@@ -258,10 +259,15 @@
         }
       }
 
-      if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0) {
-        timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
+      if(countdownCheck == null) {
+        countdownCheck = countdownSeconds;
+        console.log(countdownCheck);
       }
-      else {
+      if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0 && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())) {
+        timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
+        countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
+      }
+      else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
         timerText.setText('Time\'s up');
       }
 
