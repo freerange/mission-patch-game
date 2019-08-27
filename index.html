@@ -9,8 +9,8 @@
     <script>
     var config = {
         type: Phaser.AUTO,
-        width: 800,
-        height: 600,
+        width: 1000,
+        height: 900,
         backgroundColor: '#0000ff',
         physics: {
             default: 'arcade',
@@ -33,12 +33,12 @@
 
     var tar;
     var stickersAtOnce = 5;
-    var laptopsAtOnce = 50;
+    var laptopsAtOnce = 300;
 
     var master;
 
     var countdownTimer;
-    var countdownSeconds = 120;
+    var countdownSeconds = 180;
     var timerText;
 
     var countdownCheck;
@@ -55,14 +55,15 @@
 
     function create ()
     {
-        this.add.image(0, 0, 'sky').setOrigin(0, 0);
+        background = this.add.image(0, 0, 'sky').setOrigin(0, 0);
+        background.setScale(config.height/600);
 
         //Launch Groups
         laptops = this.physics.add.group();
         stickers = this.physics.add.group();
 
         //Collisions
-        // this.physics.add.collider(laptops, laptops);
+        this.physics.add.collider(laptops, laptops);
         this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
 
         var lap, lap2;
@@ -139,10 +140,9 @@
             callbackScope: this,
             loop: false
         });
-        scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft) + ' out of ' + laptopsAtOnce + ' Patched', {fontSize: '32px', fill: '#000' });
-        timerText = this.add.text(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), {fontSize: '32px', fill: '#000' });
 
-        this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
+        var tab = this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
+        // tab.disableBody(true, true);
 
         tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
 
@@ -166,6 +166,9 @@
           stick.data.values.lapDiffY = stick.y - lapt.y;
           stick.body.setAllowGravity(false);
         }
+
+        scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft) + ' out of ' + laptopsAtOnce + ' Patched', {fontSize: '32px', fill: '#000' });
+        timerText = this.add.text(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), {fontSize: '32px', fill: '#000' });
 
         function hitLaptop (lapt, stick) {
           for(var i = 0; i < sticker.length; i++) {
