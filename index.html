@@ -32,13 +32,13 @@
     var laptop = [];
 
     var tar;
-    var stickersAtOnce = 3;
-    var laptopsAtOnce = 10;
+    var stickersAtOnce = 5;
+    var laptopsAtOnce = 500;
 
     var master;
 
     var countdownTimer;
-    var countdownSeconds = 30;
+    var countdownSeconds = 60;
     var timerText;
 
 
@@ -100,7 +100,7 @@
 
             //Random delay before chucking
             var timer = that.time.addEvent({
-                delay: Phaser.Math.Between(500, 30000),                // ms
+                delay: Phaser.Math.Between(500, countdownSeconds * 1000),                // ms
                 callback: ()=> {
                   laptop.enableBody(true, posX, posY, true, true);
                   var velX = (laptop.x > (config.width/2)) ? -1 : 1;
@@ -234,11 +234,11 @@
     {
       for(var i = 0; i < sticker.length; i++) {
         {
-            if(sticker[i].scale > 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
+            if(sticker[i].scale > 0.1 && sticker[i].active && sticker[i].data.values.patchSticking) {
                 sticker[i].scale -= 0.032;
                 sticker[i].setScale(sticker[i].scale, sticker[i].scale);
             }
-            else if(sticker[i].scale <= 0.1 && sticker[i].active == true && sticker[i].data.values.patchSticking) {
+            else if(sticker[i].scale <= 0.1 && sticker[i].active && sticker[i].data.values.patchSticking) {
                 sticker[i].disableBody(true, false);
                 sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
                 sticker[i].data.values.patchSticking = false;
@@ -254,6 +254,12 @@
             sticker[i].data.values.lapDiffY = 0;
             sticker[i].body.setAllowGravity(true);
           }
+        }
+      }
+
+      for(var j = 0; j < laptop.length; j++) {
+        if(laptop[j].active && laptop.y > config.height + laptop.height + 50) {
+          laptop[j].disableBody(true, true);
         }
       }
 
