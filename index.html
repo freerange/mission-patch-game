@@ -39,7 +39,7 @@
     var master;
 
     var countdownTimer;
-    var countdownSeconds = 120;
+    var countdownSeconds = 10;
     var timerText;
 
     var countdownCheck;
@@ -67,8 +67,6 @@
         var lapColl = this.physics.add.collider(laptops, laptops);
         this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
 
-        var lap, lap2;
-
         var that = this;
         function createLaptop(laptop, bounce, mode) {
           // Mode 0 = Bounce mode
@@ -80,6 +78,7 @@
             laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
             laptop.setBounce(bounce);
             laptop.setCollideWorldBounds(true);
+            console.log(laptop);
           }
           //Mode 1 = Chuck mode
           else if(mode == 1) {
@@ -131,6 +130,7 @@
         for(var i = 0; i < laptopsAtOnce; i++) {
           createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
         }
+
 
         var laptopsLeft = laptops.children.entries.length;
         var scoreText;
@@ -262,15 +262,19 @@
         }
       }
 
-      for(var j = 0; j < laptop.length; j++) {
-        if(laptop[j].active && laptop.y > config.height + laptop.height + 50) {
-          laptop[j].disableBody(true, true);
+      for(var j = 0; j < laptops.children.entries.length; j++) {
+        if(laptops.children.entries[j].active && laptops.children.entries[j].y > config.height + laptops.children.entries[j].height + 50) {
+          console.log('wiped');
+          laptops.children.entries[j].disableBody(true, true);
+        }
+        if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 && modeSelect == 0) {
+          console.log('disable bounds');
+          laptops.children.entries[j].setCollideWorldBounds(false);
         }
       }
 
       if(countdownCheck == null) {
         countdownCheck = countdownSeconds;
-        console.log(countdownCheck);
       }
       if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0 && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())) {
         timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
