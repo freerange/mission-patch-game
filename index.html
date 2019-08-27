@@ -142,7 +142,7 @@
         scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft) + ' out of ' + laptopsAtOnce + ' Patched', {fontSize: '32px', fill: '#000' });
         timerText = this.add.text(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), {fontSize: '32px', fill: '#000' });
 
-        this.add.image(0, 0, 'table').setOrigin(0, 0);
+        this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
 
         tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
 
