@@ -139,7 +139,7 @@
         });
 17
         scoreText = this.add.text(16, 16, laptopsLeft + ' to go', {fontSize: '32px', fill: '#000' });
-        timerText = this.add.text(config.width - 170, 16, 'Timer: ' + (countdownSeconds - countdownTimer.getElapsedSeconds()), {fontSize: '32px', fill: '#000' });
+        timerText = this.add.text(config.width - 170, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), {fontSize: '32px', fill: '#000' });
 
         tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
 
@@ -257,7 +257,7 @@
         }
       }
 
-      timerText.setText('Timer: ' + (countdownSeconds - countdownTimer.getElapsedSeconds()));
+      timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
     }
     </script>
 
