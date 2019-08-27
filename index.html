@@ -33,7 +33,7 @@
 
     var tar;
     var stickersAtOnce = 3;
-    var laptopsAtOnce = 3;
+    var laptopsAtOnce = 10;
 
     var master;
 
@@ -81,11 +81,14 @@
             //Random starting position from edge
             var compX = Math.abs(posX - (config.width/2));
             var compY = Math.abs(posY - (config.height/2));
+            var velInfX = 1;
+            var velInfY = 1;
 
             if(compX < compY)
               posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width + 100 : 0 - 100;
             else if(compY < compX)
-              posY = (Phaser.Math.Between(0, config.height) > (config.height/2)) ? config.height + 50 : 0 - 50;
+              posY = config.height + 50;
+
 
             laptop = laptops.create(posX, posY, 'laptop');
             laptop.setData({ laptopMode: mode });
@@ -93,11 +96,11 @@
 
             //Random delay before chucking
             var timer = that.time.addEvent({
-                delay: Phaser.Math.Between(500, 5000),                // ms
+                delay: Phaser.Math.Between(500, 30000),                // ms
                 callback: ()=> {
                   laptop.enableBody(true, posX, posY, true, true);
                   var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-                  var velY = (laptop.y > (config.height/2)) ? -1.5 : -1.0;
+                  var velY = (laptop.y > (config.height/2)) ? -1.5 : -0.5;
                   laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(300, 600) * velY);
                   laptop.setBounce(bounce);
                   laptop.setScale(1.25);
