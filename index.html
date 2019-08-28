@@ -13,7 +13,7 @@
 
       var tar;
       var stickersAtOnce = 5;
-      var laptopsAtOnce = 1000;
+      var laptopsAtOnce = 25;
       var modeSelect = 1;
 
       var master;
@@ -275,7 +275,7 @@
       && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())) {
         timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
         countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
-        if((modeSelect == 0 && laptops.countActive(true) === 0) && !countdownTimer.paused)
+        if(((modeSelect == 0 && laptops.countActive(true) === 0) || (modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1)) && !countdownTimer.paused)
           countdownTimer.paused = true;
       }
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
@@ -291,9 +291,12 @@
           //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
           const startButton = this.add.text(200, 300, 'Main Menu: Click to start the game', {fontSize: '24px'})
           .setInteractive()
-          .once('pointerdown', ()=> this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 }) );
-          // .on('pointerover', () => setStyle({ fill: '#ff0'}) )
-          // .on('pointerout', () => setStyle({ fill: '#0f0' }) );
+          .once('pointerdown', ()=> {
+            startButton.setStyle({ fill: '#000'});
+            this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 });
+          })
+          .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
+          .on('pointerout', () => startButton.setStyle({ fill: '#fff' }) );
       }
 
     }
