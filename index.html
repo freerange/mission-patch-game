@@ -71,11 +71,13 @@
         function createLaptop(laptop, bounce, mode) {
           // Mode 0 = Bounce mode
           if(mode == 0) {
-            laptop = laptops.create(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), 'laptop');
+            laptop = laptops.create(Phaser.Math.Between(0, config.width),
+              Phaser.Math.Between(0, config.height), 'laptop');
             laptop.setData({ laptopMode: mode });
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.y > (config.height/2)) ? -1 : 1;
-            laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
+            laptop.setVelocity(Phaser.Math.Between(400, 600) * velX,
+              Phaser.Math.Between(400, 600) * velY);
             laptop.setBounce(bounce);
             laptop.setCollideWorldBounds(true);
           }
@@ -91,7 +93,8 @@
             var velInfY = 1;
 
             if(compX < compY)
-              posX = (Phaser.Math.Between(0, config.width) > (config.width/2)) ? config.width + 100 : 0 - 100;
+              posX = (Phaser.Math.Between(0, config.width) > (config.width/2))
+                ? config.width + 100 : 0 - 100;
             else if(compY < compX)
               posY = config.height + 50;
 
@@ -107,7 +110,8 @@
                   laptop.enableBody(true, posX, posY, true, true);
                   var velX = (laptop.x > (config.width/2)) ? -1 : 1;
                   var velY = (laptop.y > (config.height/2)) ? -1.5 : -0.5;
-                  laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(300, 600) * velY);
+                  laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
+                    Phaser.Math.Between(300, 600) * velY);
                   laptop.setBounce(bounce);
                   laptop.setScale(1.25);
                 },
@@ -155,7 +159,8 @@
         for(var i = 0; i < stickersAtOnce; i++) {
 
           sticker[i] = stickers.create(0, 0, 'patch');
-          sticker[i].setData({ patchSticking: false, currentLaptop: -1, lapDiffX: 0, lapDiffY: 0, stickerOnLaptop: false });
+          sticker[i].setData({ patchSticking: false, currentLaptop: -1,
+            lapDiffX: 0, lapDiffY: 0, stickerOnLaptop: false });
           sticker[i].scale = 0.8;
           sticker[i].setScale(sticker[i].scale, sticker[i].scale);
           sticker[i].disableBody(true, true);
@@ -170,15 +175,18 @@
           stick.body.setAllowGravity(false);
         }
 
-        scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft) + ' out of ' + laptopsAtOnce + ' Patched', {fontSize: '32px', fill: '#000' });
-        timerText = this.add.text(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), {fontSize: '32px', fill: '#000' });
+        scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft)
+          + ' out of ' + laptopsAtOnce + ' Patched', {fontSize: '32px', fill: '#000' });
+        timerText = this.add.text(config.width - 190, 16, 'Timer: '
+          + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), {fontSize: '32px', fill: '#000' });
 
         function hitLaptop (lapt, stick) {
           for(var i = 0; i < sticker.length; i++) {
             var laptopSensetivity = 0.5;
 
             if(stick.scale <= 0.1 && stick.data.values.patchSticking
-            && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity) && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)
+            && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity)
+            && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)
             && !stick.data.values.stickerOnLaptop && !lapt.data.values.hasSticker) {
                   laptopsLeft--;
                   lapt.data.values.hasSticker = true;
@@ -198,7 +206,8 @@
                   }
 
                 if(laptopsLeft > 0)
-                  scoreText.setText((laptopsAtOnce - laptopsLeft) + ' out of ' + laptopsAtOnce + ' Patched');
+                  scoreText.setText((laptopsAtOnce - laptopsLeft)
+                    + ' out of ' + laptopsAtOnce + ' Patched');
                 else
                   scoreText.setText('All laptops are Patched');
             }
@@ -219,7 +228,8 @@
 
             for(var i = 0; i < sticker.length; i++) {
               if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active) {
-                  sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2), tar.y + ((sticker[i].height * 0.1)/2), true, true);
+                  sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
+                    tar.y + ((sticker[i].height * 0.1)/2), true, true);
                   // console.log('sticker' + i + ': x = ' + sticker[i].x + ' y = ' + sticker[i].y);
                   sticker[i].data.values.patchSticking = true;
 
@@ -249,8 +259,8 @@
 
         //Keeps position relative to laptop
         if(sticker[i].data.values.currentLaptop != -1)
-          sticker[i].setPosition(laptop[sticker[i].data.values.currentLaptop].x + sticker[i].data.values.lapDiffX,
-            laptop[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
+          sticker[i].setPosition(laptop[sticker[i].data.values.currentLaptop].x
+            + sticker[i].data.values.lapDiffX, laptop[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
       }
 
       for(var j = 0; j < laptops.children.entries.length; j++) {
@@ -277,7 +287,8 @@
       if(countdownCheck == null) {
         countdownCheck = countdownSeconds;
       }
-      if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0 && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())) {
+      if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0
+      && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())) {
         timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
         countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
         if(laptops.countActive(true) === 0 && !countdownTimer.paused) {
