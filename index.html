@@ -33,13 +33,13 @@
 
     var tar;
     var stickersAtOnce = 5;
-    var laptopsAtOnce = 10;
+    var laptopsAtOnce = 5;
     var modeSelect = 0;
 
     var master;
 
     var countdownTimer;
-    var countdownSeconds = 10;
+    var countdownSeconds = 30;
     var timerText;
 
     var countdownCheck;
@@ -78,7 +78,6 @@
             laptop.setVelocity(Phaser.Math.Between(400, 600) * velX, Phaser.Math.Between(400, 600) * velY);
             laptop.setBounce(bounce);
             laptop.setCollideWorldBounds(true);
-            console.log(laptop);
           }
           //Mode 1 = Chuck mode
           else if(mode == 1) {
@@ -129,6 +128,7 @@
           lapColl.destroy();
         for(var i = 0; i < laptopsAtOnce; i++) {
           createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
+          laptop[i] = laptops.children.entries[i];
         }
 
 
@@ -237,39 +237,40 @@
     function update ()
     {
       for(var i = 0; i < sticker.length; i++) {
-        {
-            if(sticker[i].scale > 0.1 && sticker[i].active && sticker[i].data.values.patchSticking) {
-                sticker[i].scale -= 0.032;
-                sticker[i].setScale(sticker[i].scale, sticker[i].scale);
-            }
-            else if(sticker[i].scale <= 0.1 && sticker[i].active && sticker[i].data.values.patchSticking) {
-                sticker[i].disableBody(true, false);
-                sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
-                sticker[i].data.values.patchSticking = false;
-            }
+        if(sticker[i].scale > 0.1 && sticker[i].active && sticker[i].data.values.patchSticking) {
+            sticker[i].scale -= 0.032;
+            sticker[i].setScale(sticker[i].scale, sticker[i].scale);
+        }
+        else if(sticker[i].scale <= 0.1 && sticker[i].active && sticker[i].data.values.patchSticking) {
+            sticker[i].disableBody(true, false);
+            sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
+            sticker[i].data.values.patchSticking = false;
         }
 
-        //Keeps position relative to laptop it's sticking to until it leaves the screen
-        if(sticker[i].data.values.currentLaptop != -1) {
-          sticker[i].setPosition(laptops.children.entries[sticker[i].data.values.currentLaptop].x + sticker[i].data.values.lapDiffX, laptops.children.entries[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
-          if(sticker[i].y > config.height + sticker[i].height) {
-            sticker[i].data.values.currentLaptop = -1;
-            sticker[i].data.values.lapDiffX = 0;
-            sticker[i].data.values.lapDiffY = 0;
-            sticker[i].data.values.stickerOnLaptop = false;
-            sticker[i].body.setAllowGravity(true);
-          }
-        }
+        //Keeps position relative to laptop
+        if(sticker[i].data.values.currentLaptop != -1)
+          sticker[i].setPosition(laptop[sticker[i].data.values.currentLaptop].x + sticker[i].data.values.lapDiffX,
+            laptop[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
       }
 
       for(var j = 0; j < laptops.children.entries.length; j++) {
-        if(laptops.children.entries[j].active && laptops.children.entries[j].y > config.height + laptops.children.entries[j].height + 50) {
-          console.log('wiped');
-          laptops.children.entries[j].disableBody(true, true);
+        if(laptop[j].active && laptop[j].y > config.height + laptop[j].height + 50) {
+          // console.log('wiped');
+          laptop/*s.children.entries*/[j].disableBody(true, true);
+
+          //Resets when sticker leaves the screen
+          var stickerIndex = sticker.findIndex((stick) => {
+            return stick.data.values.currentLaptop == j;
+          });
+          sticker[stickerIndex].data.values.currentLaptop = -1;
+          sticker[stickerIndex].data.values.lapDiffX = 0;
+          sticker[stickerIndex].data.values.lapDiffY = 0;
+          sticker[stickerIndex].data.values.stickerOnLaptop = false;
+          sticker[stickerIndex].body.setAllowGravity(true);
         }
         if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 && modeSelect == 0) {
-          console.log('disable bounds');
-          laptops.children.entries[j].setCollideWorldBounds(false);
+          // console.log('disable bounds');
+          laptop/*s.children.entries*/[j].setCollideWorldBounds(false);
         }
       }
 
@@ -283,7 +284,6 @@
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
         timerText.setText('Time\'s up');
       }
-
     }
     </script>
 
