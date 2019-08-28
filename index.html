@@ -33,13 +33,13 @@
 
     var tar;
     var stickersAtOnce = 5;
-    var laptopsAtOnce = 5;
-    var modeSelect = 0;
+    var laptopsAtOnce = 50;
+    var modeSelect = 1;
 
     var master;
 
     var countdownTimer;
-    var countdownSeconds = 30;
+    var countdownSeconds = 60;
     var timerText;
 
     var countdownCheck;
@@ -119,8 +119,6 @@
                 loop: false
             });
 
-            // laptop = laptops.create(posX, posY, 'laptop');
-
           }
           else {
             console.log('The selected mode doesn\'t exist')
@@ -142,7 +140,6 @@
         countdownTimer = this.time.addEvent({
             delay: countdownSeconds * 1000,                // ms
             callback: ()=> {
-              // console.log('Countdown Over');
             },
             callbackScope: this,
             loop: false
@@ -272,11 +269,13 @@
           var stickerIndex = sticker.findIndex((stick) => {
             return stick.data.values.currentLaptop == j;
           });
-          sticker[stickerIndex].data.values.currentLaptop = -1;
-          sticker[stickerIndex].data.values.lapDiffX = 0;
-          sticker[stickerIndex].data.values.lapDiffY = 0;
-          sticker[stickerIndex].data.values.stickerOnLaptop = false;
-          sticker[stickerIndex].body.setAllowGravity(true);
+          if(stickerIndex != -1) {
+            sticker[stickerIndex].data.values.currentLaptop = -1;
+            sticker[stickerIndex].data.values.lapDiffX = 0;
+            sticker[stickerIndex].data.values.lapDiffY = 0;
+            sticker[stickerIndex].data.values.stickerOnLaptop = false;
+            sticker[stickerIndex].body.setAllowGravity(true);
+          }
         }
         if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 && modeSelect == 0) {
           // console.log('disable bounds');
@@ -291,14 +290,12 @@
       && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())) {
         timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
         countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
-        if(laptops.countActive(true) === 0 && !countdownTimer.paused) {
-          console.log('paused');
+        if(laptops.countActive(true) === 0 && !countdownTimer.paused)
           countdownTimer.paused = true;
       }
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
         timerText.setText('Time\'s up');
         }
-      }
     }
     </script>
 
