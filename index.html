@@ -27,7 +27,8 @@
     return {
     Extends: Phaser.Scene,
 
-    preload: function() {
+    preload: function()
+    {
       //Loads all assets
       this.load.image('laptop', 'assets/laptop-prot.png');
       this.load.image('target', 'assets/cursor.png');
@@ -36,7 +37,8 @@
       this.load.image('table', 'assets/table.png');
     },
 
-    create: function() {
+    create: function()
+    {
       background = this.add.image(0, 0, 'sky').setOrigin(0, 0);
       background.setScale(config.height/600);
 
@@ -223,8 +225,9 @@
 
       });
     },
-    
-    update: function() {
+
+    update: function()
+    {
       for(var i = 0; i < sticker.length; i++) {
         if(sticker[i].scale > 0.1 && sticker[i].active && sticker[i].data.values.patchSticking) {
             sticker[i].scale -= 0.032;
@@ -281,6 +284,21 @@
     }
     }}());
 
+    class MainMenu extends Phaser.Scene {
+
+      create ()
+      {
+          this.add.text(270, 300, 'Main Menu: Click to start the game');
+
+          this.input.once('pointerdown', function () {
+
+              this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 });
+
+          }, this);
+      }
+
+    }
+
     var config = {
         type: Phaser.AUTO,
         width: 800,
@@ -293,7 +311,7 @@
                 debug: false
             }
         },
-        scene: mainGame
+        scene: MainMenu
     };
 
     var game = new Phaser.Game(config);
