@@ -164,7 +164,7 @@
 
       function hitLaptop (lapt, stick) {
         for(var i = 0; i < sticker.length; i++) {
-          var laptopSensetivity = 0.5;
+          var laptopSensetivity = 0.45;
 
           if(stick.scale <= 0.1 && stick.data.values.patchSticking
           && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity)
@@ -289,15 +289,9 @@
       create ()
       {
           //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
-          const startButton = this.add.text(270, 300, 'Main Menu: Click to start the game')
+          const startButton = this.add.text(200, 300, 'Main Menu: Click to start the game', {fontSize: '24px'})
           .setInteractive()
-          .on('pointerdown', ()=> this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 }) );
-
-          // this.input.once('pointerdown', function () {
-          //
-          //     this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 });
-          //
-          // }, this);
+          .once('pointerdown', ()=> this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 }) );
       }
 
     }
