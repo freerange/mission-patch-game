@@ -68,6 +68,7 @@
         this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
 
         var that = this;
+
         function createLaptop(laptop, bounce, mode) {
           // Mode 0 = Bounce mode
           if(mode == 0) {
@@ -100,7 +101,7 @@
 
 
             laptop = laptops.create(posX, posY, 'laptop');
-            laptop.setData({ laptopMode: mode, hasSticker: false });
+            laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true });
             laptop.disableBody(true, true);
 
             //Random delay before chucking
@@ -108,6 +109,7 @@
                 delay: Phaser.Math.Between(500, countdownSeconds * 1000),                // ms
                 callback: ()=> {
                   laptop.enableBody(true, posX, posY, true, true);
+                  laptop.data.values.delayActive = false;
                   var velX = (laptop.x > (config.width/2)) ? -1 : 1;
                   var velY = (laptop.y > (config.height/2)) ? -1.5 : -0.5;
                   laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
@@ -290,7 +292,7 @@
       && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())) {
         timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
         countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
-        if(laptops.countActive(true) === 0 && !countdownTimer.paused)
+        if((modeSelect == 0 && laptops.countActive(true) === 0) && !countdownTimer.paused)
           countdownTimer.paused = true;
       }
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
