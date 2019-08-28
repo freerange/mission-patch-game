@@ -13,7 +13,7 @@
 
       var tar;
       var stickersAtOnce = 5;
-      var laptopsAtOnce = 50;
+      var laptopsAtOnce = 1000;
       var modeSelect = 1;
 
       var master;
@@ -78,7 +78,7 @@
 
           if(compX < compY)
             posX = (Phaser.Math.Between(0, config.width) > (config.width/2))
-              ? config.width + 100 : 0 - 100;
+              ? config.width + 100 : -100;
           else if(compY < compX)
             posY = config.height + 50;
 
@@ -292,6 +292,8 @@
           const startButton = this.add.text(200, 300, 'Main Menu: Click to start the game', {fontSize: '24px'})
           .setInteractive()
           .once('pointerdown', ()=> this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 }) );
+          // .on('pointerover', () => setStyle({ fill: '#ff0'}) )
+          // .on('pointerout', () => setStyle({ fill: '#0f0' }) );
       }
 
     }
