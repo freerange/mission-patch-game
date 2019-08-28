@@ -288,13 +288,16 @@
 
       create ()
       {
-          this.add.text(270, 300, 'Main Menu: Click to start the game');
+          //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
+          const startButton = this.add.text(270, 300, 'Main Menu: Click to start the game')
+          .setInteractive()
+          .on('pointerdown', ()=> this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 }) );
 
-          this.input.once('pointerdown', function () {
-
-              this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 });
-
-          }, this);
+          // this.input.once('pointerdown', function () {
+          //
+          //     this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 });
+          //
+          // }, this);
       }
 
     }
