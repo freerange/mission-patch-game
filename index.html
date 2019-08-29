@@ -14,6 +14,8 @@
       var tar;
       var stickersAtOnce = 5;
       var laptopsAtOnce = 25;
+
+      var laptopsLeft;
       var modeSelect = 1;
 
       var master;
@@ -21,6 +23,8 @@
       var countdownTimer;
       var countdownSeconds = 60;
       var timerText;
+
+      var scoreText;
 
       var countdownCheck;
 
@@ -129,8 +133,7 @@
       }
 
 
-      var laptopsLeft = laptops.children.entries.length;
-      var scoreText;
+      laptopsLeft = laptops.children.entries.length;
 
       countdownTimer = this.time.addEvent({
           delay: countdownSeconds * 1000,                // ms
@@ -297,7 +300,10 @@
         timerText.setText('Last one!');
       }
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
-        timerText.setText('Time\'s up');
+        // timerText.setText('Time\'s up');
+        scoreText.setText('');
+        timerText.setText('');
+        this.add.text((config.width/2) - 200, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold' });
       }
       else if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0) {
         timerText.setText('No More');
