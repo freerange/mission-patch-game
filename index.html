@@ -76,6 +76,7 @@
           var velInfX = 1;
           var velInfY = 1;
 
+          //Locks Edge Position
           if(compX < compY)
             posX = (Phaser.Math.Between(0, config.width) > (config.width/2))
               ? config.width + 100 : -100;
@@ -289,8 +290,6 @@
       create ()
       {
           var test = this.add.text((config.width/16) * 5, 120, 'Mission Patch Game', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold'});
-          test.style.shadowStroke = true;
-          console.log(test);
 
           var graphics = this.add.graphics();
           var rect = new Phaser.Geom.Rectangle((config.width/2)-100, (config.height/2)-50, 200, 100);
