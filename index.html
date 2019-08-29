@@ -96,7 +96,7 @@
                 var velX = (laptop.x > (config.width/2)) ? -1 : 1;
                 var velY = (laptop.y > (config.height/2)) ? -1.5 : -0.5;
                 laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
-                  Phaser.Math.Between(300, 600) * velY);
+                  Phaser.Math.Between(400, 600) * velY);
                 laptop.setBounce(bounce);
                 laptop.setScale(1.25);
               },
@@ -288,8 +288,13 @@
 
       create ()
       {
+          var graphics = this.add.graphics();
+          var rect = new Phaser.Geom.Rectangle((config.width/2)-100, (config.height/2)-50, 200, 100);
+          graphics.fillStyle('#000');
+          graphics.fillRectShape(rect);
+
           //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
-          const startButton = this.add.text(200, 300, 'Main Menu: Click to start the game', {fontSize: '24px'})
+          const startButton = this.add.text(rect.x + 70, rect.y + 35, 'Start', {fontSize: '24px'})
           .setInteractive()
           .once('pointerdown', ()=> {
             startButton.setStyle({ fill: '#000'});
