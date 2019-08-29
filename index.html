@@ -34,7 +34,9 @@
       this.load.image('target', 'assets/cursor.png');
       this.load.image('sky', 'assets/sky.png');
       this.load.image('patch', 'assets/patch.png');
-      this.load.image('shape', 'assets/particles/shapes.png');
+
+      this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
+      this.load.text('blast', 'assets/particles/Blast.json');
 
       this.load.image('table', 'assets/table.png');
     },
@@ -44,14 +46,9 @@
       background = this.add.image(0, 0, 'sky').setOrigin(0, 0);
       background.setScale(config.height/600);
 
-      var particles = this.add.particles('shape');
-
-      var emitter = particles.createEmitter({
-            speed: 100,
-            scale: { start: 1, end: 0 },
-            blendMode: 'ADD'
-      });
-      emitter.on = false;
+      var particles = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
+      particles.emitters.list[0].on = false;
+      console.log(particles.emitters.list[0].on);
 
       //Launch Groups
       laptops = this.physics.add.group();
@@ -168,9 +165,13 @@
         stick.data.values.lapDiffY = stick.y - lapt.y;
         stick.body.setAllowGravity(false);
 
-        if(!emitter.on)
-          emitter.on = true;
-        emitter.startFollow(lapt);
+        if(!particles.emitters.list[0].on) {
+          particles.emitters.list[0].on = true;
+          console.log('laptop hit');
+        }
+
+        particles.emitters.list[0].setPosition(lapt.x - 400, lapt.y - 300);
+        particles.emitters.list[0].startFollow(lapt);
       }
 
       scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft)
@@ -341,7 +342,7 @@
         physics: {
             default: 'arcade',
             arcade: {
-                gravity: { y: 800 },
+                gravity: { y: 700 },
                 debug: false
             }
         },
