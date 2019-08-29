@@ -47,6 +47,7 @@
       background.setScale(config.height/600);
 
       var particles = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
+      particles.emitters.list[0].setPosition(0, 0);
       particles.emitters.list[0].on = false;
       console.log(particles.emitters.list[0].on);
 
@@ -169,8 +170,9 @@
           particles.emitters.list[0].on = true;
           console.log('laptop hit');
         }
+        if(particles.emitters.list[0].on)
+          console.log("x: " + particles.emitters.list[0].x + "y: " + particles.emitters.list[0].y);
 
-        particles.emitters.list[0].setPosition(lapt.x - 400, lapt.y - 300);
         particles.emitters.list[0].startFollow(lapt);
       }
 
