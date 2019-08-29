@@ -34,6 +34,8 @@
       this.load.image('target', 'assets/cursor.png');
       this.load.image('sky', 'assets/sky.png');
       this.load.image('patch', 'assets/patch.png');
+      this.load.image('shape', 'assets/particles/shapes.png');
+
       this.load.image('table', 'assets/table.png');
     },
 
@@ -41,6 +43,8 @@
     {
       background = this.add.image(0, 0, 'sky').setOrigin(0, 0);
       background.setScale(config.height/600);
+
+      var particles = this.add.particles('shape');
 
       //Launch Groups
       laptops = this.physics.add.group();
