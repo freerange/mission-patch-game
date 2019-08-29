@@ -51,6 +51,7 @@
             scale: { start: 1, end: 0 },
             blendMode: 'ADD'
       });
+      emitter.on = false;
 
       //Launch Groups
       laptops = this.physics.add.group();
@@ -166,6 +167,9 @@
         stick.data.values.lapDiffX = stick.x - lapt.x;
         stick.data.values.lapDiffY = stick.y - lapt.y;
         stick.body.setAllowGravity(false);
+
+        if(!emitter.on)
+          emitter.on = true;
         emitter.startFollow(lapt);
       }
 
