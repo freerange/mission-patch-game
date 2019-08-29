@@ -272,11 +272,17 @@
       if(countdownCheck == null) {
         countdownCheck = countdownSeconds;
       }
+      if(countdownTimer.paused) {
+        timerText.setText('Finish!');
+      }
       if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) > 0) {
         timerText.setText('Last one!');
       }
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
         timerText.setText('Time\'s up');
+      }
+      else if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0) {
+        timerText.setText('No More');
       }
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0
       && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())) {
