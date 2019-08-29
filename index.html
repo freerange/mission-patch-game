@@ -270,7 +270,10 @@
       for(var j = 0; j < laptops.children.entries.length; j++) {
         if(laptop[j].active && laptop[j].y > config.height + laptop[j].height + 50) {
           // console.log('wiped');
-          laptop/*s.children.entries*/[j].disableBody(true, true);
+          laptop[j].disableBody(true, true);
+          // if(laptop[j].data.values.hasSticker && particles.emitters.list[0].on) {
+          //   particles.emitters.list[0].on = false;
+          // }
 
           //Resets when sticker leaves the screen
           var stickerIndex = sticker.findIndex((stick) => {
@@ -303,7 +306,8 @@
         // timerText.setText('Time\'s up');
         scoreText.setText('');
         timerText.setText('');
-        this.add.text((config.width/2) - 200, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold' });
+        this.add.text((config.width/2) - 200, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+        this.scene.stop();
       }
       else if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0) {
         timerText.setText('No More');
