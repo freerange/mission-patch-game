@@ -30,6 +30,8 @@
 
       var gameDelay;
 
+      var particle1, particle2;
+
     return {
     Extends: Phaser.Scene,
 
@@ -43,6 +45,7 @@
 
       this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
       this.load.text('blast', 'assets/particles/Blast.json');
+      this.load.text('explosion', 'assets/particles/Explosion.json');
 
       this.load.image('table', 'assets/table.png');
     },
@@ -56,9 +59,12 @@
       background = this.add.image(0, 0, 'sky').setOrigin(0, 0);
       background.setScale(config.height/600);
 
-      var particles = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
-      particles.emitters.list[0].setPosition(0, 0);
-      particles.emitters.list[0].on = false;
+      particle1 = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
+      particle1.emitters.list[0].setPosition(0, 0);
+      particle1.emitters.list[0].on = false;
+
+      particle2 = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('explosion'))());
+      particle2.emitters.list[0].on = false;
 
       //Launch Groups
       laptops = this.physics.add.group();
@@ -181,11 +187,11 @@
         stick.data.values.lapDiffY = stick.y - lapt.y;
         stick.body.setAllowGravity(false);
 
-        if(!particles.emitters.list[0].on) {
-          particles.emitters.list[0].on = true;
+        if(!particle1.emitters.list[0].on) {
+          particle1.emitters.list[0].on = true;
         }
 
-        particles.emitters.list[0].startFollow(lapt);
+        particle1.emitters.list[0].startFollow(lapt);
       }
 
       scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft)
@@ -217,12 +223,11 @@
 
                   lapt.setCollideWorldBounds(false);
                 }
-
-              if(laptopsLeft > 0)
-                scoreText.setText((laptopsAtOnce - laptopsLeft)
-                  + ' out of ' + laptopsAtOnce + ' Patched');
-              else
-                scoreText.setText('All laptops are Patched');
+                if(laptopsLeft > 0)
+                  scoreText.setText((laptopsAtOnce - laptopsLeft)
+                    + ' out of ' + laptopsAtOnce + ' Patched');
+                else
+                  scoreText.setText('All laptops are Patched');
           }
         }
       }
@@ -278,8 +283,8 @@
       for(var j = 0; j < laptops.children.entries.length; j++) {
         if(laptop[j].active && laptop[j].y > config.height + laptop[j].height + 50) {
           laptop[j].disableBody(true, true);
-          // if(laptop[j].data.values.hasSticker && particles.emitters.list[0].on) {
-          //   particles.emitters.list[0].on = false;
+          // if(laptop[j].data.values.hasSticker && particle1.emitters.list[0].on) {
+          //   particle1.emitters.list[0].on = false;
           // }
 
           //Resets when sticker leaves the screen
@@ -316,6 +321,7 @@
                 scoreText.setText('');
                 timerText.setText('');
                 tar.disableBody(true, true);
+                particle2.emitters.list[0].on = true;
                 this.add.text((config.width/2) - 230, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
                 this.time.addEvent({
                   delay: 5000,
