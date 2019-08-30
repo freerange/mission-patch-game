@@ -34,7 +34,7 @@
     preload: function()
     {
       //Loads all assets
-      this.load.image('laptop', 'assets/laptop-prot.png');
+      this.load.image('laptop', 'assets/laptop.png');
       this.load.image('target', 'assets/cursor.png');
       this.load.image('sky', 'assets/sky.png');
       this.load.image('patch', 'assets/patch.png');
@@ -186,7 +186,7 @@
 
       function hitLaptop (lapt, stick) {
         for(var i = 0; i < sticker.length; i++) {
-          var laptopSensetivity = 0.45;
+          var laptopSensetivity = 0.5;
 
           if(stick.scale <= 0.1 && stick.data.values.patchSticking
           && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity)
