@@ -311,8 +311,8 @@
         timerText.setText('Last one!');
       }
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
-        timerText.setText('Time\'s up');
         if(gameDelay == null) {
+          timerText.setText('Time\'s up');
           gameDelay = this.time.addEvent({
               delay: 2000,                // ms
               callback: ()=> {
