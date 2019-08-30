@@ -287,8 +287,6 @@
           laptop[j].setCollideWorldBounds(false);
       }
 
-      var that = this;
-
       if(countdownCheck == null) {
         countdownCheck = countdownSeconds;
       }
@@ -301,15 +299,22 @@
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
         timerText.setText('Time\'s up');
         if(gameDelay == null) {
-          gameDelay = that.time.addEvent({
+          gameDelay = this.time.addEvent({
               delay: 3000,                // ms
               callback: ()=> {
                 scoreText.setText('');
                 timerText.setText('');
                 this.add.text((config.width/2) - 230, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
-                var menuScene = this.scene.get('mainMenu');
-                menuScene.scene.restart();
-                this.scene.stop();
+                this.time.addEvent({
+                  delay: 3000,
+                  callback: ()=> {
+                    var menuScene = this.scene.get('mainMenu');
+                    menuScene.scene.restart();
+                    this.scene.stop();
+                  },
+                  callbackScope: this,
+                  loop: false
+                });
               },
               callbackScope: this,
               loop: false
