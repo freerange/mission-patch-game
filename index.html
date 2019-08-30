@@ -28,6 +28,8 @@
 
       var countdownCheck;
 
+      var gameDelay;
+
     return {
     Extends: Phaser.Scene,
 
@@ -53,7 +55,6 @@
       var particles = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
       particles.emitters.list[0].setPosition(0, 0);
       particles.emitters.list[0].on = false;
-      console.log(particles.emitters.list[0].on);
 
       //Launch Groups
       laptops = this.physics.add.group();
@@ -171,10 +172,7 @@
 
         if(!particles.emitters.list[0].on) {
           particles.emitters.list[0].on = true;
-          console.log('laptop hit');
         }
-        if(particles.emitters.list[0].on)
-          console.log("x: " + particles.emitters.list[0].x + "y: " + particles.emitters.list[0].y);
 
         particles.emitters.list[0].startFollow(lapt);
       }
@@ -234,7 +232,6 @@
             if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active) {
                 sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
                   tar.y + ((sticker[i].height * 0.1)/2), true, true);
-                // console.log('sticker' + i + ': x = ' + sticker[i].x + ' y = ' + sticker[i].y);
                 sticker[i].data.values.patchSticking = true;
 
                 sticker[i].scale = 0.8;
@@ -269,7 +266,6 @@
 
       for(var j = 0; j < laptops.children.entries.length; j++) {
         if(laptop[j].active && laptop[j].y > config.height + laptop[j].height + 50) {
-          // console.log('wiped');
           laptop[j].disableBody(true, true);
           // if(laptop[j].data.values.hasSticker && particles.emitters.list[0].on) {
           //   particles.emitters.list[0].on = false;
@@ -287,11 +283,11 @@
             sticker[stickerIndex].body.setAllowGravity(true);
           }
         }
-        if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 && modeSelect == 0) {
-          // console.log('disable bounds');
+        if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 && modeSelect == 0)
           laptop[j].setCollideWorldBounds(false);
-        }
       }
+
+      var that = this;
 
       if(countdownCheck == null) {
         countdownCheck = countdownSeconds;
@@ -303,13 +299,22 @@
         timerText.setText('Last one!');
       }
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0) {
-        // timerText.setText('Time\'s up');
-        scoreText.setText('');
-        timerText.setText('');
-        this.add.text((config.width/2) - 230, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
-        var menuScene = this.scene.get('mainMenu');
-        menuScene.scene.restart();
-        this.scene.stop();
+        timerText.setText('Time\'s up');
+        if(gameDelay == null) {
+          gameDelay = that.time.addEvent({
+              delay: 3000,                // ms
+              callback: ()=> {
+                scoreText.setText('');
+                timerText.setText('');
+                this.add.text((config.width/2) - 230, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+                var menuScene = this.scene.get('mainMenu');
+                menuScene.scene.restart();
+                this.scene.stop();
+              },
+              callbackScope: this,
+              loop: false
+          });
+        }
       }
       else if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0) {
         timerText.setText('No More');
