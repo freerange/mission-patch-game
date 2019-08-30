@@ -33,8 +33,7 @@
 
       var particle1, particle2;
 
-    return
-    {
+    return {
     Extends: Phaser.Scene,
 
     preload: function()
@@ -427,6 +426,7 @@
 
     game.scene.add('mainMenu', MainMenu);
     game.scene.add('mainGame', mainGame);
+    game.scene.add('pauseMenu', PauseMenu);
 
     game.scene.start('mainMenu');
     </script>
