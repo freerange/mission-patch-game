@@ -49,6 +49,10 @@
 
     create: function()
     {
+      //Resets variable on repeat (will delete once bug is figured out)
+      if(gameDelay != null)
+        gameDelay = null;
+
       background = this.add.image(0, 0, 'sky').setOrigin(0, 0);
       background.setScale(config.height/600);
 
@@ -300,13 +304,14 @@
         timerText.setText('Time\'s up');
         if(gameDelay == null) {
           gameDelay = this.time.addEvent({
-              delay: 3000,                // ms
+              delay: 2000,                // ms
               callback: ()=> {
                 scoreText.setText('');
                 timerText.setText('');
+                tar.disableBody(true, true);
                 this.add.text((config.width/2) - 230, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
                 this.time.addEvent({
-                  delay: 3000,
+                  delay: 5000,
                   callback: ()=> {
                     var menuScene = this.scene.get('mainMenu');
                     menuScene.scene.restart();
