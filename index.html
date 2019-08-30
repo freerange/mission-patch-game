@@ -100,6 +100,16 @@
               ? config.width + 100 : -100;
           else if(compY < compX)
             posY = config.height + 50;
+          else {
+            console.log('tiebreak');
+            if(Phaser.Math.FloatBetween(0, 1) > 0.5) {
+              posX = (Phaser.Math.Between(0, config.width) > (config.width/2))
+                ? config.width + 100 : -100;
+            }
+            else {
+              posY = config.height + 50;
+            }
+          }
 
 
           laptop = laptops.create(posX, posY, 'laptop');
