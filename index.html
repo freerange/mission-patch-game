@@ -91,8 +91,6 @@
           //Random starting position from edge
           var compX = Math.abs(posX - (config.width/2));
           var compY = Math.abs(posY - (config.height/2));
-          var velInfX = 1;
-          var velInfY = 1;
 
           //Locks Edge Position
           if(compX < compY)
@@ -100,15 +98,14 @@
               ? config.width + 100 : -100;
           else if(compY < compX)
             posY = config.height + 50;
+          else if (compX == compY && Phaser.Math.FloatBetween(0, 1) > 0.5){
+            console.log('tiebreak');
+            posX = (Phaser.Math.Between(0, config.width) > (config.width/2))
+              ? config.width + 100 : -100;
+          }
           else {
             console.log('tiebreak');
-            if(Phaser.Math.FloatBetween(0, 1) > 0.5) {
-              posX = (Phaser.Math.Between(0, config.width) > (config.width/2))
-                ? config.width + 100 : -100;
-            }
-            else {
-              posY = config.height + 50;
-            }
+            posY = config.height + 50;
           }
 
 
