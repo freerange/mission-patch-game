@@ -306,7 +306,9 @@
         // timerText.setText('Time\'s up');
         scoreText.setText('');
         timerText.setText('');
-        this.add.text((config.width/2) - 200, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+        this.add.text((config.width/2) - 230, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+        var menuScene = this.scene.get('mainMenu');
+        menuScene.scene.restart();
         this.scene.stop();
       }
       else if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0) {
@@ -326,6 +328,7 @@
 
       create ()
       {
+          // this.scene.add('mainMenu', MainMenu, false);
           var test = this.add.text((config.width/16) * 5, 120, 'Mission Patch Game', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold'});
 
           var graphics = this.add.graphics();
@@ -338,7 +341,7 @@
           .setInteractive()
           .once('pointerdown', ()=> {
             startButton.setStyle({ fill: '#aa0'});
-            this.scene.add('mainGame', mainGame, true, { x: 400, y: 300 });
+            this.scene.start('mainGame');
           })
           .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
           .on('pointerout', () => startButton.setStyle({ fill: '#fff' }) );
@@ -350,18 +353,22 @@
         type: Phaser.AUTO,
         width: 800,
         height: 600,
-        backgroundColor: '#0000ff',
+        backgroundColor: '#00f',
         physics: {
             default: 'arcade',
             arcade: {
                 gravity: { y: 700 },
                 debug: false
             }
-        },
-        scene: MainMenu
+        }
     };
 
     var game = new Phaser.Game(config);
+
+    game.scene.add('mainMenu', MainMenu);
+    game.scene.add('mainGame', mainGame);
+
+    game.scene.start('mainMenu');
     </script>
 
 </body>
