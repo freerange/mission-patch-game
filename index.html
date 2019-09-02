@@ -240,11 +240,11 @@
 
                   lapt.setCollideWorldBounds(false);
                 }
-                if(laptopsLeft > 0)
+                // if(laptopsLeft > 0)
                   scoreText.setText((laptopsAtOnce - laptopsLeft)
                     + ' out of ' + laptopsAtOnce + ' Patched');
-                else
-                  scoreText.setText('All laptops are Patched');
+                // else
+                //   scoreText.setText('All laptops are Patched');
           }
         }
       }
@@ -344,8 +344,39 @@
       if(countdownCheck == null)
         countdownCheck = countdownSeconds;
 
-      if(countdownTimer.paused)
-        timerText.setText('Finish!');
+      if(countdownTimer.paused) {
+        if(gameDelay == null)
+        {
+          timerText.setText('Finish!');
+          gameOver = true;
+          gameDelay = this.time.addEvent(
+            {
+              delay: 2000,                // ms
+              callback: ()=> {
+                scoreText.setText('');
+                timerText.setText('');
+                tar.disableBody(true, true);
+                particle2.emitters.list[0].on = true;
+
+                this.add.text((config.width/2) - 300, (config.height/2) - 50, 'All laptops are Patched', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+                this.time.addEvent(
+                  {
+                  delay: 5000,
+                  callback: ()=> {
+                    gameOver = false;
+                    var menuScene = this.scene.get('mainMenu');
+                    menuScene.scene.restart();
+                    this.scene.stop();
+                  },
+                  callbackScope: this,
+                  loop: false
+                  });
+              },
+              callbackScope: this,
+              loop: false
+            });
+        }
+      }
 
       //Will indicate when last laptop is being chucked
       if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) > 0)
