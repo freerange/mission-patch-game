@@ -428,6 +428,17 @@
         })
         .on('pointerover', () => resumeButton.setStyle({ fill: '#ff0'}) )
         .on('pointerout', () => resumeButton.setStyle({ fill: '#000' }) );
+
+        const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit', {fontFamily: "Arial", fontSize: '24px', fill: '#000'})
+        .setInteractive()
+        .once('pointerdown', ()=> {
+          quitButton.setStyle({ fill: '#aa0'});
+          this.scene.start('mainMenu');
+          this.scene.stop('mainGame');
+          this.scene.stop();
+        })
+        .on('pointerover', () => quitButton.setStyle({ fill: '#ff0'}) )
+        .on('pointerout', () => quitButton.setStyle({ fill: '#000' }) );
       }
     }
 
