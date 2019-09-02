@@ -30,6 +30,7 @@
       var countdownCheck;
 
       var gameDelay;
+      var gameOver = false;
 
       var particle1, particle2;
 
@@ -265,8 +266,11 @@
 
       this.input.keyboard.on('keydown_P', function (event)
       {
-        master.scene.pause();
-        master.scene.launch('pauseMenu');
+        if(!gameOver)
+        {
+          master.scene.pause();
+          master.scene.launch('pauseMenu');
+        }
       });
     },
 
@@ -329,6 +333,7 @@
         if(gameDelay == null)
         {
           timerText.setText('Time\'s up');
+          gameOver = true;
           gameDelay = this.time.addEvent(
             {
               delay: 2000,                // ms
@@ -399,7 +404,7 @@
 
       create ()
       {
-        this.add.text((config.width/16) * 5, 120, 'Paused', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold'});
+        this.add.text((config.width/16) * 5, 120, 'Paused', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold', fill: '#000'});
 
         var master = this;
         this.input.keyboard.on('keydown_P', function (event)
