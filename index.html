@@ -342,11 +342,18 @@
                 timerText.setText('');
                 tar.disableBody(true, true);
                 particle2.emitters.list[0].on = true;
-                this.add.text((config.width/2) - 230, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+
+                if(laptopsAtOnce - laptopsLeft == 0)
+                  this.add.text((config.width/2) - 300, (config.height/2) - 50, 'No laptops were patched', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+                else if(laptopsAtOnce - laptopsLeft == 1)
+                  this.add.text((config.width/2) - 210, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+                else
+                  this.add.text((config.width/2) - 220, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
                 this.time.addEvent(
                   {
                   delay: 5000,
                   callback: ()=> {
+                    gameOver = false;
                     var menuScene = this.scene.get('mainMenu');
                     menuScene.scene.restart();
                     this.scene.stop();
@@ -409,17 +416,21 @@
 
       create ()
       {
-        // var graphics = this.add.graphics();
-        // var rect = new Phaser.Geom.Rectangle((config.width/2)-100, (config.height/2) + 150, 200, 100);
-        // graphics.fillStyle('#cf9830');
-        // graphics.fillRectShape(rect);
+        var graphics = this.add.graphics();
+        var rect = new Phaser.Geom.Rectangle((config.width/2) - 103, (config.height/2) + 150, 95, 30);
+        graphics.fillStyle('#cf9830');
+        graphics.fillRectShape(rect);
+
+        var rect2 = new Phaser.Geom.Rectangle((config.width/2) + 97, (config.height/2) + 150, 50, 30);
+        graphics.fillStyle('#cf9830');
+        graphics.fillRectShape(rect2);
 
         // button1 = this.add.image((config.width/2)-100, (config.height/2) + 150, 'button');
         // button1.setScale(0.5, 0.25);
 
         this.add.text((config.width/2) - 50, config.height/2, 'Paused', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold', fill: '#000'});
 
-        const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume', {fontFamily: "Arial", fontSize: '24px', fill: '#000'})
+        const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume', {fontFamily: "Arial", fontSize: '24px', fill: '#fff'})
         .setInteractive()
         .once('pointerdown', ()=> {
           resumeButton.setStyle({ fill: '#aa0'});
@@ -427,9 +438,9 @@
           this.scene.stop();
         })
         .on('pointerover', () => resumeButton.setStyle({ fill: '#ff0'}) )
-        .on('pointerout', () => resumeButton.setStyle({ fill: '#000' }) );
+        .on('pointerout', () => resumeButton.setStyle({ fill: '#fff' }) );
 
-        const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit', {fontFamily: "Arial", fontSize: '24px', fill: '#000'})
+        const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit', {fontFamily: "Arial", fontSize: '24px', fill: '#fff'})
         .setInteractive()
         .once('pointerdown', ()=> {
           quitButton.setStyle({ fill: '#aa0'});
@@ -438,7 +449,7 @@
           this.scene.stop();
         })
         .on('pointerover', () => quitButton.setStyle({ fill: '#ff0'}) )
-        .on('pointerout', () => quitButton.setStyle({ fill: '#000' }) );
+        .on('pointerout', () => quitButton.setStyle({ fill: '#fff' }) );
       }
     }
 
