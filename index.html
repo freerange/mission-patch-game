@@ -263,10 +263,10 @@
           }
       });
 
-      this.input.keyboard.on('keydown-' + 'P', function (key)
+      this.input.keyboard.on('keydown_P', function (event)
       {
-        this.scene.pause();
-        this.scene.launch('pauseMenu');
+        master.scene.pause();
+        master.scene.launch('pauseMenu');
       });
     },
 
@@ -401,10 +401,11 @@
       {
         this.add.text((config.width/16) * 5, 120, 'Paused', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold'});
 
-        this.input.keyboard.on('keydown-' + 'P', function (key)
+        var master = this;
+        this.input.keyboard.on('keydown_P', function (event)
         {
-          this.scene.resume('mainGame');
-          this.scene.stop();
+          master.scene.resume('mainGame');
+          master.scene.stop();
         });
       }
     }
