@@ -401,17 +401,33 @@
 
     class PauseMenu extends Phaser.Scene
     {
+      preload()
+      {
+        // this.load.image('button', 'assets/button.png');
+
+      }
 
       create ()
       {
-        this.add.text((config.width/16) * 5, 120, 'Paused', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold', fill: '#000'});
+        // var graphics = this.add.graphics();
+        // var rect = new Phaser.Geom.Rectangle((config.width/2)-100, (config.height/2) + 150, 200, 100);
+        // graphics.fillStyle('#cf9830');
+        // graphics.fillRectShape(rect);
 
-        var master = this;
-        this.input.keyboard.on('keydown_P', function (event)
-        {
-          master.scene.resume('mainGame');
-          master.scene.stop();
-        });
+        // button1 = this.add.image((config.width/2)-100, (config.height/2) + 150, 'button');
+        // button1.setScale(0.5, 0.25);
+
+        this.add.text((config.width/2) - 50, config.height/2, 'Paused', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold', fill: '#000'});
+
+        const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume', {fontFamily: "Arial", fontSize: '24px', fill: '#000'})
+        .setInteractive()
+        .once('pointerdown', ()=> {
+          resumeButton.setStyle({ fill: '#aa0'});
+          this.scene.resume('mainGame');
+          this.scene.stop();
+        })
+        .on('pointerover', () => resumeButton.setStyle({ fill: '#ff0'}) )
+        .on('pointerout', () => resumeButton.setStyle({ fill: '#000' }) );
       }
     }
 
