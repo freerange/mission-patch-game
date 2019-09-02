@@ -103,22 +103,12 @@
           var compY = Math.abs(posY - (config.height/2));
 
           //Locks Edge Position
-          if(compX < compY)
+          if(compX < compY
+          || (compX == compY && Phaser.Math.FloatBetween(0, 1) > 0.5))
             posX = (Phaser.Math.Between(0, config.width) > (config.width/2))
               ? config.width + 100 : -100;
-          else if(compY < compX)
+          else if(compY <= compX)
             posY = config.height + 50;
-          else if (compX == compY && Phaser.Math.FloatBetween(0, 1) > 0.5)
-          {
-            console.log('tiebreak');
-            posX = (Phaser.Math.Between(0, config.width) > (config.width/2))
-              ? config.width + 100 : -100;
-          }
-          else
-          {
-            console.log('tiebreak');
-            posY = config.height + 50;
-          }
 
 
           laptop = laptops.create(posX, posY, 'laptop');
@@ -272,6 +262,12 @@
             }
           }
       });
+
+      this.input.keyboard.on('keydown-' + 'P', function (key)
+      {
+        this.scene.pause();
+        this.scene.launch('pauseMenu');
+      });
     },
 
     update: function()
@@ -378,7 +374,7 @@
       create ()
       {
           // this.scene.add('mainMenu', MainMenu, false);
-          var test = this.add.text((config.width/16) * 5, 120, 'Mission Patch Game', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold'});
+          this.add.text((config.width/16) * 5, 120, 'Mission Patch Game', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold'});
 
           var graphics = this.add.graphics();
           var rect = new Phaser.Geom.Rectangle((config.width/2)-100, (config.height/2)-50, 200, 100);
@@ -403,7 +399,13 @@
 
       create ()
       {
+        this.add.text((config.width/16) * 5, 120, 'Paused', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold'});
 
+        this.input.keyboard.on('keydown-' + 'P', function (key)
+        {
+          this.scene.resume('mainGame');
+          this.scene.stop();
+        });
       }
     }
 
