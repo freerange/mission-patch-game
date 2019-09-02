@@ -58,9 +58,11 @@
       if(gameDelay != null)
         gameDelay = null;
 
+      //Game Background
       background = this.add.image(0, 0, 'sky').setOrigin(0, 0);
       background.setScale(config.height/600);
 
+      //Game Particles
       particle1 = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
       particle1.emitters.list[0].setPosition(0, 0);
       particle1.emitters.list[0].on = false;
@@ -76,7 +78,8 @@
       var lapColl = this.physics.add.collider(laptops, laptops);
       this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
 
-      var that = this;
+      //Referenced for time and key press events
+      var master = this;
 
       function createLaptop(laptop, bounce, mode)
       {
@@ -111,13 +114,13 @@
           else if(compY <= compX)
             posY = config.height + 50;
 
-
+          //Sets up laptop
           laptop = laptops.create(posX, posY, 'laptop');
           laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true });
           laptop.disableBody(true, true);
 
           //Random delay before chucking
-          var timer = that.time.addEvent(
+          var timer = master.time.addEvent(
             {
               delay: Phaser.Math.Between(500, countdownSeconds * 1000),                // ms
               callback: ()=> {
@@ -139,9 +142,10 @@
             console.log('The selected mode doesn\'t exist');
       }
 
-      //Created Laptops
+      //No collision on chuck mode
       if(modeSelect == 1)
         lapColl.destroy();
+
       for(var i = 0; i < laptopsAtOnce; i++)
       {
         createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
@@ -151,6 +155,7 @@
 
       laptopsLeft = laptops.children.entries.length;
 
+      //Sets timer depending on countdown seconds
       countdownTimer = this.time.addEvent(
         {
           delay: countdownSeconds * 1000,                // ms
@@ -160,14 +165,12 @@
           loop: false
         });
 
-      var tab = this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
-      tab.disableBody(true, true);
+      // var tab = this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
+      // tab.disableBody(true, true);
 
       tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
 
-      master = this;
-
-      //Sticker is prepped
+      //Stickers are being prepped
       for(var i = 0; i < stickersAtOnce; i++)
       {
 
@@ -181,6 +184,7 @@
 
       }
 
+      //Will follow movement of laptop relative to the position where the sticker hit the laptop
       function stickToLaptop (lapt, stick, index)
       {
         stick.data.values.currentLaptop = index;
@@ -194,32 +198,41 @@
         particle1.emitters.list[0].startFollow(lapt);
       }
 
+      //UI Text
       scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft)
         + ' out of ' + laptopsAtOnce + ' Patched', {fontSize: '32px', fill: '#000' });
       timerText = this.add.text(config.width - 190, 16, 'Timer: '
         + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), {fontSize: '32px', fill: '#000' });
 
+      //Overlap check for whether sticker clearly hit the laptop
       function hitLaptop (lapt, stick)
       {
         for(var i = 0; i < sticker.length; i++)
         {
+          //Determines size of laptop hitbox
+          //1 = Full hitbox; 0 = No hitbox; 0.5 = Half hitbox
           var laptopSensetivity = 0.5;
 
+          //Will only check when sticker is at minimum size
           if(stick.scale <= 0.1 && stick.data.values.patchSticking
           && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity)
           && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)
           && !stick.data.values.stickerOnLaptop && !lapt.data.values.hasSticker)
           {
                 laptopsLeft--;
+
+                //Prevents overlapping laptops from counting if the sticker is already taken
                 lapt.data.values.hasSticker = true;
                 stick.data.values.stickerOnLaptop = true;
 
+                //Checks for first overlapping laptop
                 for(var i = 0; i < laptops.children.entries.length; i++)
                 {
                   if(laptops.children.entries[i] == lapt)
                     stickToLaptop(lapt, stick, i);
                 }
 
+                //Makes laptops stop and fall in bounce mode
                 if(lapt.data.values.laptopMode == 0)
                 {
                   lapt.disableBody(true, false);
@@ -235,6 +248,7 @@
           }
         }
       }
+
       //Follow center of reticle
       this.input.on('pointermove', function (pointer)
       {
@@ -242,9 +256,7 @@
           tar.y = pointer.y - (tar.height/2);
       });
 
-
-      var id;
-
+      //Shoots Sticker
       this.input.on('pointerdown', function (pointer)
       {
           for(var i = 0; i < sticker.length; i++)
@@ -264,6 +276,7 @@
           }
       });
 
+      //Pauses Game
       this.input.keyboard.on('keydown_P', function (event)
       {
         if(!gameOver)
@@ -278,11 +291,13 @@
     {
       for(var i = 0; i < sticker.length; i++)
       {
+        //Gives moving from camera effect
         if(sticker[i].scale > 0.1 && sticker[i].active && sticker[i].data.values.patchSticking)
         {
             sticker[i].scale -= 0.032;
             sticker[i].setScale(sticker[i].scale, sticker[i].scale);
         }
+        //Will drop when shrunk to a certain size
         else if(sticker[i].scale <= 0.1 && sticker[i].active && sticker[i].data.values.patchSticking)
         {
             sticker[i].disableBody(true, false);
@@ -300,12 +315,13 @@
       {
         if(laptop[j].active && laptop[j].y > config.height + laptop[j].height + 50)
         {
+          //For optimisation reasons, laptop disables itself when it leaves the screen
           laptop[j].disableBody(true, true);
           // if(laptop[j].data.values.hasSticker && particle1.emitters.list[0].on) {
           //   particle1.emitters.list[0].on = false;
           // }
 
-          //Resets when sticker leaves the screen
+          //Sticker resets when accompanying laptop leaves the screen
           var stickerIndex = sticker.findIndex((stick) => {
             return stick.data.values.currentLaptop == j;
           });
@@ -318,16 +334,24 @@
             sticker[stickerIndex].body.setAllowGravity(true);
           }
         }
+
+        //In bounce mode, laptops will leave the screen when the time runs out
         if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 && modeSelect == 0)
           laptop[j].setCollideWorldBounds(false);
       }
 
+
       if(countdownCheck == null)
         countdownCheck = countdownSeconds;
+
       if(countdownTimer.paused)
         timerText.setText('Finish!');
+
+      //Will indicate when last laptop is being chucked
       if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) > 0)
         timerText.setText('Last one!');
+
+      //Will initiate game over sequence when timer runs out
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0)
       {
         if(gameDelay == null)
@@ -343,6 +367,7 @@
                 tar.disableBody(true, true);
                 particle2.emitters.list[0].on = true;
 
+                //Dialog will change depending on how many laptops you have patched
                 if(laptopsAtOnce - laptopsLeft == 0)
                   this.add.text((config.width/2) - 300, (config.height/2) - 50, 'No laptops were patched', {fontSize: '45px', fontStyle: 'bold', fill: '#000' });
                 else if(laptopsAtOnce - laptopsLeft == 1)
@@ -367,8 +392,10 @@
             });
         }
       }
+      //Will occur if there are no laptops left to chuck and timer hasn't run out yet
       else if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0)
         timerText.setText('No More');
+      //Countdown check will be compared against the floor of countdown seconds to see if it has changed; prevents unnecesary updates to second timer
       else if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0
       && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds()))
       {
@@ -385,9 +412,10 @@
 
       create ()
       {
-          // this.scene.add('mainMenu', MainMenu, false);
+          //Title
           this.add.text((config.width/16) * 5, 120, 'Mission Patch Game', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold'});
 
+          //Button to start game
           var graphics = this.add.graphics();
           var rect = new Phaser.Geom.Rectangle((config.width/2)-100, (config.height/2)-50, 200, 100);
           graphics.fillStyle('#000');
@@ -416,11 +444,13 @@
 
       create ()
       {
+        //Resume Button
         var graphics = this.add.graphics();
         var rect = new Phaser.Geom.Rectangle((config.width/2) - 103, (config.height/2) + 150, 95, 30);
         graphics.fillStyle('#cf9830');
         graphics.fillRectShape(rect);
 
+        //Quit Button
         var rect2 = new Phaser.Geom.Rectangle((config.width/2) + 97, (config.height/2) + 150, 50, 30);
         graphics.fillStyle('#cf9830');
         graphics.fillRectShape(rect2);
@@ -428,8 +458,10 @@
         // button1 = this.add.image((config.width/2)-100, (config.height/2) + 150, 'button');
         // button1.setScale(0.5, 0.25);
 
+        //Text for "paused"
         this.add.text((config.width/2) - 50, config.height/2, 'Paused', {fontFamily: "Arial", fontSize: '30px', fontStyle: 'bold', fill: '#000'});
 
+        //Interactable resume text for continuing ongoing game
         const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume', {fontFamily: "Arial", fontSize: '24px', fill: '#fff'})
         .setInteractive()
         .once('pointerdown', ()=> {
@@ -440,6 +472,7 @@
         .on('pointerover', () => resumeButton.setStyle({ fill: '#ff0'}) )
         .on('pointerout', () => resumeButton.setStyle({ fill: '#fff' }) );
 
+        //Interactable quit text for going back to the main menu
         const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit', {fontFamily: "Arial", fontSize: '24px', fill: '#fff'})
         .setInteractive()
         .once('pointerdown', ()=> {
@@ -470,6 +503,7 @@
 
     var game = new Phaser.Game(config);
 
+    //List of scenes for game
     game.scene.add('mainMenu', MainMenu);
     game.scene.add('mainGame', mainGame);
     game.scene.add('pauseMenu', PauseMenu);
