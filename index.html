@@ -60,7 +60,7 @@
 
       //Game Background
       background = this.add.image(0, 0, 'sky').setOrigin(0, 0);
-      background.setScale(config.height/600);
+      background.setScale(config.width/800, config.height/600);
 
       //Game Particles
       particle1 = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
@@ -259,6 +259,13 @@
       //Shoots Sticker
       this.input.on('pointerdown', function (pointer)
       {
+          //Instantly updates position for mobile devices
+          if(tar.x != pointer.x - (tar.width/2) || tar.y != pointer.y - (tar.height/2))
+          {
+            tar.x = pointer.x - (tar.width/2);
+            tar.y = pointer.y - (tar.height/2);
+          }
+
           for(var i = 0; i < sticker.length; i++)
           {
             if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
