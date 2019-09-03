@@ -257,20 +257,22 @@ create: function()
         tar.x = pointer.x - (tar.width/2);
         tar.y = pointer.y - (tar.height/2);
       }
-
-      for(var i = 0; i < sticker.length; i++)
+      if(!gameOver)
       {
-        if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
+        for(var i = 0; i < sticker.length; i++)
         {
-            sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
-              tar.y + ((sticker[i].height * 0.1)/2), true, true);
-            sticker[i].data.values.patchSticking = true;
+          if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
+          {
+              sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
+                tar.y + ((sticker[i].height * 0.1)/2), true, true);
+              sticker[i].data.values.patchSticking = true;
 
-            sticker[i].scale = 0.8;
-            sticker[i].setVelocity(0, -175);
+              sticker[i].scale = 0.8;
+              sticker[i].setVelocity(0, -175);
 
 
-            break;
+              break;
+          }
         }
       }
   });
