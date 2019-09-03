@@ -54,11 +54,13 @@ create: function()
   background.setScale(config.width/800, config.height/600);
 
   //Game Particles
-  particle1 = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
+  particle1 = this.add.particles('shapes',  new Function('return '
+    + this.cache.text.get('blast'))());
   particle1.emitters.list[0].setPosition(0, 0);
   particle1.emitters.list[0].on = false;
 
-  particle2 = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('explosion'))());
+  particle2 = this.add.particles('shapes',  new Function('return '
+    + this.cache.text.get('explosion'))());
   particle2.emitters.list[0].on = false;
 
   //Launch Groups
@@ -191,9 +193,11 @@ create: function()
 
   //UI Text
   scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft)
-    + ' out of ' + laptopsAtOnce + ' Patched', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
+    + ' out of ' + laptopsAtOnce + ' Patched',
+      { fontFamily: "Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
   timerText = this.add.text(config.width - 190, 16, 'Timer: '
-    + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())), { fontFamily: "Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
+    + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())),
+      { fontFamily: "Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
 
   //Overlap check for whether sticker clearly hit the laptop
   function hitLaptop (lapt, stick)
@@ -302,8 +306,8 @@ update: function()
 
     //Keeps position relative to laptop
     if(sticker[i].data.values.currentLaptop != -1)
-      sticker[i].setPosition(laptop[sticker[i].data.values.currentLaptop].x
-        + sticker[i].data.values.lapDiffX, laptop[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
+      sticker[i].setPosition(laptop[sticker[i].data.values.currentLaptop].x + sticker[i].data.values.lapDiffX,
+        laptop[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
   }
 
   for(var j = 0; j < laptops.children.entries.length; j++)
@@ -313,7 +317,7 @@ update: function()
       //For optimisation reasons, laptop disables itself when it leaves the screen
       if(laptop[j].data.values.hasSticker && particle1.emitters.list[0].on)
         particle1.emitters.list[0].on = false;
-        
+
       laptop[j].disableBody(true, true);
 
       //Sticker resets when accompanying laptop leaves the screen
@@ -353,7 +357,9 @@ update: function()
             tar.disableBody(true, true);
             particle2.emitters.list[0].on = true;
 
-            this.add.text((config.width/2) - 300, (config.height/2) - 50, 'All laptops are Patched', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+            this.add.text((config.width/2) - 300, (config.height/2) - 50,
+              'All laptops are Patched', { fontFamily: "Arial, Carrois Gothic SC",
+              fontSize: '45px', fontStyle: 'bold', fill: '#000' });
             this.time.addEvent(
               {
               delay: 5000,
@@ -374,7 +380,8 @@ update: function()
   }
 
   //Will indicate when last laptop is being chucked
-  if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) > 0)
+  if(modeSelect == 1 && laptop.findIndex((lapt) =>
+  { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) > 0)
     timerText.setText('Last one!');
 
   //Will initiate game over sequence when timer runs out
@@ -395,11 +402,17 @@ update: function()
 
             //Dialog will change depending on how many laptops you have patched
             if(laptopsAtOnce - laptopsLeft == 0)
-              this.add.text((config.width/2) - 300, (config.height/2) - 50, 'No laptops were patched', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              this.add.text((config.width/2) - 300, (config.height/2) - 50,
+                'No laptops were patched', { fontFamily: "Arial, Carrois Gothic SC",
+                fontSize: '45px', fontStyle: 'bold', fill: '#000' });
             else if(laptopsAtOnce - laptopsLeft == 1)
-              this.add.text((config.width/2) - 210, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              this.add.text((config.width/2) - 210, (config.height/2) - 50,
+                'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
+                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
             else
-              this.add.text((config.width/2) - 220, (config.height/2) - 50, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              this.add.text((config.width/2) - 220, (config.height/2) - 50,
+                'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
+                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
             this.time.addEvent(
               {
               delay: 5000,
@@ -419,7 +432,8 @@ update: function()
     }
   }
   //Will occur if there are no laptops left to chuck and timer hasn't run out yet
-  else if(modeSelect == 1 && laptop.findIndex((lapt) => { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0)
+  else if(modeSelect == 1 && laptop.findIndex((lapt) =>
+  { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0)
     timerText.setText('No More');
   //Countdown check will be compared against the floor of countdown seconds to see if it has changed; prevents unnecesary updates to second timer
   else if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0
@@ -439,7 +453,8 @@ class MainMenu extends Phaser.Scene
   create ()
   {
       //Title
-      this.add.text((config.width/16) * 5, 120, 'Mission Patch Game', {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
+      this.add.text((config.width/16) * 5, 120, 'Mission Patch Game',
+        {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
 
       //Button to start game
       var graphics = this.add.graphics();
@@ -448,7 +463,8 @@ class MainMenu extends Phaser.Scene
       graphics.fillRectShape(rect);
 
       //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
-      const startButton = this.add.text(rect.x + 70, rect.y + 35, 'Start', {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
+      const startButton = this.add.text(rect.x + 70, rect.y + 35, 'Start',
+      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .once('pointerdown', ()=> {
         startButton.setStyle({ fill: '#aa0'});
@@ -465,7 +481,6 @@ class PauseMenu extends Phaser.Scene
   preload()
   {
     // this.load.image('button', 'assets/button.png');
-
   }
 
   create ()
@@ -485,10 +500,12 @@ class PauseMenu extends Phaser.Scene
     // button1.setScale(0.5, 0.25);
 
     //Text for "paused"
-    this.add.text((config.width/2) - 50, config.height/2, 'Paused', {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold', fill: '#000'});
+    this.add.text((config.width/2) - 50, config.height/2, 'Paused',
+      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold', fill: '#000'});
 
     //Interactable resume text for continuing ongoing game
-    const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume', {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
+    const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume',
+    {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
       resumeButton.setStyle({ fill: '#aa0'});
@@ -499,7 +516,8 @@ class PauseMenu extends Phaser.Scene
     .on('pointerout', () => resumeButton.setStyle({ fill: '#fff' }) );
 
     //Interactable quit text for going back to the main menu
-    const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit', {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
+    const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit',
+    {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
       quitButton.setStyle({ fill: '#aa0'});
