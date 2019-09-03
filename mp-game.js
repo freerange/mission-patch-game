@@ -231,11 +231,8 @@ create: function()
 
               lapt.setCollideWorldBounds(false);
             }
-            // if(laptopsLeft > 0)
-              scoreText.setText((laptopsAtOnce - laptopsLeft)
+            scoreText.setText((laptopsAtOnce - laptopsLeft)
                 + ' out of ' + laptopsAtOnce + ' Patched');
-            // else
-            //   scoreText.setText('All laptops are Patched');
       }
     }
   }
@@ -314,10 +311,10 @@ update: function()
     if(laptop[j].active && laptop[j].y > config.height + laptop[j].height + 50)
     {
       //For optimisation reasons, laptop disables itself when it leaves the screen
+      if(laptop[j].data.values.hasSticker && particle1.emitters.list[0].on)
+        particle1.emitters.list[0].on = false;
+        
       laptop[j].disableBody(true, true);
-      // if(laptop[j].data.values.hasSticker && particle1.emitters.list[0].on) {
-      //   particle1.emitters.list[0].on = false;
-      // }
 
       //Sticker resets when accompanying laptop leaves the screen
       var stickerIndex = sticker.findIndex((stick) => {
