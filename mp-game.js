@@ -290,7 +290,7 @@ create: function()
       }
     }
   });
-
+  
   //Pauses Game
   this.input.keyboard.on('keydown_P', function (event)
   {
