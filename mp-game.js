@@ -56,7 +56,6 @@ create: function()
   //Game Particles
   particle1 = this.add.particles('shapes',  new Function('return '
     + this.cache.text.get('blast'))());
-  particle1.emitters.list[0].setPosition(0, 0);
   particle1.emitters.list[0].on = false;
 
   particle2 = this.add.particles('shapes',  new Function('return '
@@ -253,6 +252,8 @@ create: function()
   //Shoots Sticker
   this.input.on('pointerdown', function (pointer)
   {
+    if(pointer.leftButtonDown())
+    {
       //Instantly updates position for mobile devices
       if(tar.x != pointer.x - (tar.width/2) || tar.y != pointer.y - (tar.height/2))
       {
@@ -277,6 +278,7 @@ create: function()
           }
         }
       }
+    }
   });
 
   //Pauses Game
@@ -488,8 +490,11 @@ class MainMenu extends Phaser.Scene
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .once('pointerdown', ()=> {
-        startButton.setStyle({ fill: '#aa0'});
-        this.scene.start('mainGame');
+        if(pointer.leftButtonDown())
+        {
+          startButton.setStyle({ fill: '#aa0'});
+          this.scene.start('mainGame');
+        }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
       .on('pointerout', () => startButton.setStyle({ fill: '#fff' }) );
@@ -529,9 +534,12 @@ class PauseMenu extends Phaser.Scene
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
-      resumeButton.setStyle({ fill: '#aa0'});
-      this.scene.resume('mainGame');
-      this.scene.stop();
+      if(pointer.leftButtonDown())
+      {
+        resumeButton.setStyle({ fill: '#aa0'});
+        this.scene.resume('mainGame');
+        this.scene.stop();
+      }
     })
     .on('pointerover', () => resumeButton.setStyle({ fill: '#ff0'}) )
     .on('pointerout', () => resumeButton.setStyle({ fill: '#fff' }) );
@@ -541,10 +549,13 @@ class PauseMenu extends Phaser.Scene
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
-      quitButton.setStyle({ fill: '#aa0'});
-      this.scene.start('mainMenu');
-      this.scene.stop('mainGame');
-      this.scene.stop();
+      if(pointer.leftButtonDown())
+      {
+        quitButton.setStyle({ fill: '#aa0'});
+        this.scene.start('mainMenu');
+        this.scene.stop('mainGame');
+        this.scene.stop();
+      }
     })
     .on('pointerover', () => quitButton.setStyle({ fill: '#ff0'}) )
     .on('pointerout', () => quitButton.setStyle({ fill: '#fff' }) );
