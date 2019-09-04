@@ -5,7 +5,7 @@ var mainGame = new Phaser.Class(function()
 
   var tar;
   var stickersAtOnce = 5;
-  var laptopsAtOnce = 25;
+  var laptopsAtOnce = 30;
 
   var laptopsLeft;
   var modeSelect = 1;
@@ -73,6 +73,8 @@ create: function()
   //Referenced for time and key press events
   var master = this;
 
+  var laptSpread = 1;
+
   function createLaptop(laptop, bounce, mode)
   {
     // Mode 0 = Bounce mode
@@ -111,10 +113,17 @@ create: function()
       laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true });
       laptop.disableBody(true, true);
 
+      var laptSetDelay = (((countdownSeconds * 1000)/laptopsAtOnce) * laptSpread) + Phaser.Math.Between(-(((countdownSeconds * 1000)/laptopsAtOnce)/2), (((countdownSeconds * 1000)/laptopsAtOnce)/2));
+
+      if(laptSetDelay < 500)
+        laptSetDelay = 500;
+      else if(laptSetDelay > (countdownSeconds * 1000))
+        laptSetDelay = (countdownSeconds * 1000);
+
       //Random delay before chucking
       var timer = master.time.addEvent(
         {
-          delay: Phaser.Math.Between(500, countdownSeconds * 1000),                // ms
+          delay: laptSetDelay,                // ms
           callback: ()=> {
             laptop.enableBody(true, posX, posY, true, true);
             laptop.data.values.delayActive = false;
@@ -142,6 +151,7 @@ create: function()
   {
     createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
     laptop[i] = laptops.children.entries[i];
+    laptSpread++;
   }
 
 
@@ -489,11 +499,12 @@ class MainMenu extends Phaser.Scene
       const startButton = this.add.text(rect.x + 70, rect.y + 35, 'Start',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
-      .once('pointerdown', (pointer)=> {
+      .on('pointerdown', (pointer)=> {
         if(pointer.leftButtonDown())
         {
-            startButton.setStyle({ fill: '#aa0'});
-            this.scene.start('mainGame');
+          startButton.setStyle({ fill: '#aa0'});
+          this.scene.start('mainGame');
+          this.scene.stop();
         }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
@@ -533,7 +544,7 @@ class PauseMenu extends Phaser.Scene
     const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume',
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
-    .once('pointerdown', (pointer)=> {
+    .on('pointerdown', (pointer)=> {
       if(pointer.leftButtonDown())
       {
         resumeButton.setStyle({ fill: '#aa0'});
@@ -548,7 +559,7 @@ class PauseMenu extends Phaser.Scene
     const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit',
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
-    .once('pointerdown', (pointer)=> {
+    .on('pointerdown', (pointer)=> {
       if(pointer.leftButtonDown())
       {
         quitButton.setStyle({ fill: '#aa0'});
