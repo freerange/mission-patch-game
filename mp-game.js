@@ -56,7 +56,6 @@ create: function()
   //Game Particles
   particle1 = this.add.particles('shapes',  new Function('return '
     + this.cache.text.get('blast'))());
-  particle1.emitters.list[0].setPosition(0, 0);
   particle1.emitters.list[0].on = false;
 
   particle2 = this.add.particles('shapes',  new Function('return '
@@ -185,8 +184,10 @@ create: function()
     stick.data.values.lapDiffY = stick.y - lapt.y;
     stick.body.setAllowGravity(false);
 
-    if(!particle1.emitters.list[0].on)
+    if(!particle1.emitters.list[0].on) {
       particle1.emitters.list[0].on = true;
+      particle1.emitters.list[0].setPosition((lapt.width/2), (lapt.height/2));
+    }
 
     particle1.emitters.list[0].startFollow(lapt);
   }
@@ -251,28 +252,33 @@ create: function()
   //Shoots Sticker
   this.input.on('pointerdown', function (pointer)
   {
+    if(pointer.leftButtonDown())
+    {
       //Instantly updates position for mobile devices
       if(tar.x != pointer.x - (tar.width/2) || tar.y != pointer.y - (tar.height/2))
       {
         tar.x = pointer.x - (tar.width/2);
         tar.y = pointer.y - (tar.height/2);
       }
-
-      for(var i = 0; i < sticker.length; i++)
+      if(!gameOver)
       {
-        if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
+        for(var i = 0; i < sticker.length; i++)
         {
-            sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
-              tar.y + ((sticker[i].height * 0.1)/2), true, true);
-            sticker[i].data.values.patchSticking = true;
+          if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
+          {
+              sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
+                tar.y + ((sticker[i].height * 0.1)/2), true, true);
+              sticker[i].data.values.patchSticking = true;
 
-            sticker[i].scale = 0.8;
-            sticker[i].setVelocity(0, -175);
+              sticker[i].scale = 0.8;
+              sticker[i].setVelocity(0, -175);
 
 
-            break;
+              break;
+          }
         }
       }
+    }
   });
 
   //Pauses Game
@@ -357,9 +363,12 @@ update: function()
             tar.disableBody(true, true);
             particle2.emitters.list[0].on = true;
 
-            this.add.text((config.width/2) - 300, (config.height/2) - 50,
+            var finishText = this.add.text((config.width/2) - 300, (config.height/2) - 50,
               'All laptops are Patched', { fontFamily: "Arial, Carrois Gothic SC",
               fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+
+            particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+            particle2.emitters.list[0].startFollow(finishText);
             this.time.addEvent(
               {
               delay: 5000,
@@ -402,17 +411,31 @@ update: function()
 
             //Dialog will change depending on how many laptops you have patched
             if(laptopsAtOnce - laptopsLeft == 0)
-              this.add.text((config.width/2) - 300, (config.height/2) - 50,
+            {
+              var finishText = this.add.text((config.width/2) - 300, (config.height/2) - 50,
                 'No laptops were patched', { fontFamily: "Arial, Carrois Gothic SC",
                 fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+              particle2.emitters.list[0].startFollow(finishText);
+            }
             else if(laptopsAtOnce - laptopsLeft == 1)
-              this.add.text((config.width/2) - 210, (config.height/2) - 50,
+            {
+              var finishText = this.add.text((config.width/2) - 210, (config.height/2) - 50,
                 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+              particle2.emitters.list[0].startFollow(finishText);
+            }
+
             else
-              this.add.text((config.width/2) - 220, (config.height/2) - 50,
+            {
+              var finishText = this.add.text((config.width/2) - 220, (config.height/2) - 50,
                 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+              particle2.emitters.list[0].startFollow(finishText);
+            }
+
             this.time.addEvent(
               {
               delay: 5000,
@@ -453,7 +476,7 @@ class MainMenu extends Phaser.Scene
   create ()
   {
       //Title
-      this.add.text((config.width/16) * 5, 120, 'Mission Patch Game',
+      this.add.text((config.width/2) - 145, (config.height/2) - 180, 'Mission Patch Game',
         {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
 
       //Button to start game
@@ -467,8 +490,11 @@ class MainMenu extends Phaser.Scene
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .once('pointerdown', ()=> {
-        startButton.setStyle({ fill: '#aa0'});
-        this.scene.start('mainGame');
+        if(pointer.leftButtonDown())
+        {
+          startButton.setStyle({ fill: '#aa0'});
+          this.scene.start('mainGame');
+        }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
       .on('pointerout', () => startButton.setStyle({ fill: '#fff' }) );
@@ -496,8 +522,8 @@ class PauseMenu extends Phaser.Scene
     graphics.fillStyle('#cf9830');
     graphics.fillRectShape(rect2);
 
-    // button1 = this.add.image((config.width/2)-100, (config.height/2) + 150, 'button');
-    // button1.setScale(0.5, 0.25);
+    // var button1 = this.add.image((config.width/2)-100, (config.height/2) + 150, 'button');
+    // button1.setScale(0.25, 0.125);
 
     //Text for "paused"
     this.add.text((config.width/2) - 50, config.height/2, 'Paused',
@@ -508,9 +534,12 @@ class PauseMenu extends Phaser.Scene
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
-      resumeButton.setStyle({ fill: '#aa0'});
-      this.scene.resume('mainGame');
-      this.scene.stop();
+      if(pointer.leftButtonDown())
+      {
+        resumeButton.setStyle({ fill: '#aa0'});
+        this.scene.resume('mainGame');
+        this.scene.stop();
+      }
     })
     .on('pointerover', () => resumeButton.setStyle({ fill: '#ff0'}) )
     .on('pointerout', () => resumeButton.setStyle({ fill: '#fff' }) );
@@ -520,10 +549,13 @@ class PauseMenu extends Phaser.Scene
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
-      quitButton.setStyle({ fill: '#aa0'});
-      this.scene.start('mainMenu');
-      this.scene.stop('mainGame');
-      this.scene.stop();
+      if(pointer.leftButtonDown())
+      {
+        quitButton.setStyle({ fill: '#aa0'});
+        this.scene.start('mainMenu');
+        this.scene.stop('mainGame');
+        this.scene.stop();
+      }
     })
     .on('pointerover', () => quitButton.setStyle({ fill: '#ff0'}) )
     .on('pointerout', () => quitButton.setStyle({ fill: '#fff' }) );
