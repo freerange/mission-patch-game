@@ -113,14 +113,12 @@ create: function()
       laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true });
       laptop.disableBody(true, true);
 
-      var laptSetDelay = (((countdownSeconds * 1000)/laptopsAtOnce) * laptSpread) + Phaser.Math.Between(-((((countdownSeconds * 1000)/laptopsAtOnce)/4)*3), ((((countdownSeconds * 1000)/laptopsAtOnce)/4)*3));
+      var laptSetDelay = (((countdownSeconds * 1000)/laptopsAtOnce) * laptSpread) + Phaser.Math.Between(-(((countdownSeconds * 1000)/laptopsAtOnce)/2), (((countdownSeconds * 1000)/laptopsAtOnce)/2));
 
       if(laptSetDelay < 500)
         laptSetDelay = 500;
       else if(laptSetDelay > (countdownSeconds * 1000))
         laptSetDelay = (countdownSeconds * 1000);
-
-      console.log(laptSetDelay);
 
       //Random delay before chucking
       var timer = master.time.addEvent(
