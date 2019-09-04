@@ -290,7 +290,7 @@ create: function()
       }
     }
   });
-  
+
   //Pauses Game
   this.input.keyboard.on('keydown_P', function (event)
   {
@@ -373,9 +373,10 @@ update: function()
             tar.disableBody(true, true);
             particle2.emitters.list[0].on = true;
 
-            var finishText = this.add.text((config.width/2) - 300, (config.height/2) - 50,
-              'All laptops are Patched', { fontFamily: "Arial, Carrois Gothic SC",
-              fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+            var finishText = this.add.text(0, 0, 'All laptops are Patched',
+            { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
+            fontStyle: 'bold', fill: '#000' });
+            finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
 
             particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
             particle2.emitters.list[0].startFollow(finishText);
@@ -422,26 +423,27 @@ update: function()
             //Dialog will change depending on how many laptops you have patched
             if(laptopsAtOnce - laptopsLeft == 0)
             {
-              var finishText = this.add.text((config.width/2) - 300, (config.height/2) - 50,
-                'No laptops were patched', { fontFamily: "Arial, Carrois Gothic SC",
-                fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              var finishText = this.add.text(0, 0, 'No laptops were patched',
+              { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
+              fontStyle: 'bold', fill: '#000' });
+              finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
               particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
               particle2.emitters.list[0].startFollow(finishText);
             }
             else if(laptopsAtOnce - laptopsLeft == 1)
             {
-              var finishText = this.add.text((config.width/2) - 210, (config.height/2) - 50,
-                'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
+              var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
               particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
               particle2.emitters.list[0].startFollow(finishText);
             }
 
             else
             {
-              var finishText = this.add.text((config.width/2) - 220, (config.height/2) - 50,
-                'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
+              var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
               particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
               particle2.emitters.list[0].startFollow(finishText);
             }
@@ -486,12 +488,15 @@ class MainMenu extends Phaser.Scene
   create ()
   {
       //Title
-      this.add.text((config.width/2) - 145, (config.height/2) - 180, 'Mission Patch Game',
+      var title = this.add.text(0, 0, 'Mission Patch Game',
         {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
+
+      title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
 
       //Button to start game
       var graphics = this.add.graphics();
-      var rect = new Phaser.Geom.Rectangle((config.width/2)-100, (config.height/2)-50, 200, 100);
+      var rect = new Phaser.Geom.Rectangle(0, 0, 200, 100);
+      rect.setPosition((config.width/2)-(rect.width/2), (config.height/2)-50);
       graphics.fillStyle('#000');
       graphics.fillRectShape(rect);
 
