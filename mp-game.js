@@ -252,7 +252,7 @@ create: function()
   //Shoots Sticker
   this.input.on('pointerdown', function (pointer)
   {
-    if(pointer.primaryDown)
+    if(pointer.leftButtonDown())
     {
       //Instantly updates position for mobile devices
       if(tar.x != pointer.x - (tar.width/2) || tar.y != pointer.y - (tar.height/2))
@@ -490,7 +490,7 @@ class MainMenu extends Phaser.Scene
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .once('pointerdown', ()=> {
-        if(pointer.primaryDown)
+        if(pointer.leftButtonDown())
         {
           startButton.setStyle({ fill: '#aa0'});
           this.scene.start('mainGame');
@@ -534,7 +534,7 @@ class PauseMenu extends Phaser.Scene
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
-      if(pointer.primaryDown)
+      if(pointer.leftButtonDown())
       {
         resumeButton.setStyle({ fill: '#aa0'});
         this.scene.resume('mainGame');
@@ -549,7 +549,7 @@ class PauseMenu extends Phaser.Scene
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
-      if(pointer.primaryDown)
+      if(pointer.leftButtonDown())
       {
         quitButton.setStyle({ fill: '#aa0'});
         this.scene.start('mainMenu');
