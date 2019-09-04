@@ -185,8 +185,10 @@ create: function()
     stick.data.values.lapDiffY = stick.y - lapt.y;
     stick.body.setAllowGravity(false);
 
-    if(!particle1.emitters.list[0].on)
+    if(!particle1.emitters.list[0].on) {
       particle1.emitters.list[0].on = true;
+      particle1.emitters.list[0].setPosition((lapt.width/2), (lapt.height/2));
+    }
 
     particle1.emitters.list[0].startFollow(lapt);
   }
@@ -359,9 +361,12 @@ update: function()
             tar.disableBody(true, true);
             particle2.emitters.list[0].on = true;
 
-            this.add.text((config.width/2) - 300, (config.height/2) - 50,
+            var finishText = this.add.text((config.width/2) - 300, (config.height/2) - 50,
               'All laptops are Patched', { fontFamily: "Arial, Carrois Gothic SC",
               fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+
+            particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+            particle2.emitters.list[0].startFollow(finishText);
             this.time.addEvent(
               {
               delay: 5000,
@@ -404,17 +409,31 @@ update: function()
 
             //Dialog will change depending on how many laptops you have patched
             if(laptopsAtOnce - laptopsLeft == 0)
-              this.add.text((config.width/2) - 300, (config.height/2) - 50,
+            {
+              var finishText = this.add.text((config.width/2) - 300, (config.height/2) - 50,
                 'No laptops were patched', { fontFamily: "Arial, Carrois Gothic SC",
                 fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+              particle2.emitters.list[0].startFollow(finishText);
+            }
             else if(laptopsAtOnce - laptopsLeft == 1)
-              this.add.text((config.width/2) - 210, (config.height/2) - 50,
+            {
+              var finishText = this.add.text((config.width/2) - 210, (config.height/2) - 50,
                 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+              particle2.emitters.list[0].startFollow(finishText);
+            }
+
             else
-              this.add.text((config.width/2) - 220, (config.height/2) - 50,
+            {
+              var finishText = this.add.text((config.width/2) - 220, (config.height/2) - 50,
                 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+              particle2.emitters.list[0].startFollow(finishText);
+            }
+
             this.time.addEvent(
               {
               delay: 5000,
@@ -455,7 +474,7 @@ class MainMenu extends Phaser.Scene
   create ()
   {
       //Title
-      this.add.text((config.width/16) * 5, 120, 'Mission Patch Game',
+      this.add.text((config.width/2) - 145, (config.height/2) - 180, 'Mission Patch Game',
         {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
 
       //Button to start game
@@ -498,8 +517,8 @@ class PauseMenu extends Phaser.Scene
     graphics.fillStyle('#cf9830');
     graphics.fillRectShape(rect2);
 
-    // button1 = this.add.image((config.width/2)-100, (config.height/2) + 150, 'button');
-    // button1.setScale(0.5, 0.25);
+    // var button1 = this.add.image((config.width/2)-100, (config.height/2) + 150, 'button');
+    // button1.setScale(0.25, 0.125);
 
     //Text for "paused"
     this.add.text((config.width/2) - 50, config.height/2, 'Paused',
