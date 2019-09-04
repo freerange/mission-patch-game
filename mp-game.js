@@ -280,7 +280,7 @@ create: function()
       }
     }
   });
-
+  
   //Pauses Game
   this.input.keyboard.on('keydown_P', function (event)
   {
@@ -489,12 +489,12 @@ class MainMenu extends Phaser.Scene
       const startButton = this.add.text(rect.x + 70, rect.y + 35, 'Start',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
-      .once('pointerdown', ()=> {
-        // if(pointer.leftButtonDown())
-        // {
-          startButton.setStyle({ fill: '#aa0'});
-          this.scene.start('mainGame');
-        // }
+      .once('pointerdown', (pointer)=> {
+        if(pointer.leftButtonDown())
+        {
+            startButton.setStyle({ fill: '#aa0'});
+            this.scene.start('mainGame');
+        }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
       .on('pointerout', () => startButton.setStyle({ fill: '#fff' }) );
@@ -533,13 +533,13 @@ class PauseMenu extends Phaser.Scene
     const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume',
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
-    .once('pointerdown', ()=> {
-      // if(pointer.leftButtonDown())
-      // {
+    .once('pointerdown', (pointer)=> {
+      if(pointer.leftButtonDown())
+      {
         resumeButton.setStyle({ fill: '#aa0'});
         this.scene.resume('mainGame');
         this.scene.stop();
-      // }
+      }
     })
     .on('pointerover', () => resumeButton.setStyle({ fill: '#ff0'}) )
     .on('pointerout', () => resumeButton.setStyle({ fill: '#fff' }) );
@@ -548,14 +548,14 @@ class PauseMenu extends Phaser.Scene
     const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit',
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
-    .once('pointerdown', ()=> {
-      // if(pointer.leftButtonDown())
-      // {
+    .once('pointerdown', (pointer)=> {
+      if(pointer.leftButtonDown())
+      {
         quitButton.setStyle({ fill: '#aa0'});
         this.scene.start('mainMenu');
         this.scene.stop('mainGame');
         this.scene.stop();
-      // }
+      }
     })
     .on('pointerover', () => quitButton.setStyle({ fill: '#ff0'}) )
     .on('pointerout', () => quitButton.setStyle({ fill: '#fff' }) );
