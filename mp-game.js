@@ -490,11 +490,11 @@ class MainMenu extends Phaser.Scene
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .once('pointerdown', ()=> {
-        if(pointer.leftButtonDown())
-        {
+        // if(pointer.leftButtonDown())
+        // {
           startButton.setStyle({ fill: '#aa0'});
           this.scene.start('mainGame');
-        }
+        // }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
       .on('pointerout', () => startButton.setStyle({ fill: '#fff' }) );
@@ -534,12 +534,12 @@ class PauseMenu extends Phaser.Scene
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
-      if(pointer.leftButtonDown())
-      {
+      // if(pointer.leftButtonDown())
+      // {
         resumeButton.setStyle({ fill: '#aa0'});
         this.scene.resume('mainGame');
         this.scene.stop();
-      }
+      // }
     })
     .on('pointerover', () => resumeButton.setStyle({ fill: '#ff0'}) )
     .on('pointerout', () => resumeButton.setStyle({ fill: '#fff' }) );
@@ -549,13 +549,13 @@ class PauseMenu extends Phaser.Scene
     {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .once('pointerdown', ()=> {
-      if(pointer.leftButtonDown())
-      {
+      // if(pointer.leftButtonDown())
+      // {
         quitButton.setStyle({ fill: '#aa0'});
         this.scene.start('mainMenu');
         this.scene.stop('mainGame');
         this.scene.stop();
-      }
+      // }
     })
     .on('pointerover', () => quitButton.setStyle({ fill: '#ff0'}) )
     .on('pointerout', () => quitButton.setStyle({ fill: '#fff' }) );
