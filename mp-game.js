@@ -40,6 +40,9 @@ preload: function()
   this.load.text('blast', 'assets/particles/Blast.json');
   this.load.text('explosion', 'assets/particles/Explosion.json');
 
+  this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
+  this.load.audio('smack', 'sounds/377157__pfranzen__smashing-head-on-wall.ogg')
+
   this.load.image('table', 'assets/table.png');
 },
 
@@ -276,6 +279,7 @@ create: function()
         {
           if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
           {
+              this.sound.play('throw');
               sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
                 tar.y + ((sticker[i].height * 0.1)/2), true, true);
               sticker[i].data.values.patchSticking = true;
@@ -290,7 +294,7 @@ create: function()
       }
     }
   });
-  
+
   //Pauses Game
   this.input.keyboard.on('keydown_P', function (event)
   {
@@ -315,6 +319,7 @@ update: function()
     //Will drop when shrunk to a certain size
     else if(sticker[i].scale <= 0.1 && sticker[i].active && sticker[i].data.values.patchSticking)
     {
+        this.sound.play('smack');
         sticker[i].disableBody(true, false);
         sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
         sticker[i].data.values.patchSticking = false;
