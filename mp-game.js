@@ -42,7 +42,7 @@ preload: function()
 
   this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
   this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
-  this.load.audio('smack', 'sounds/377157__pfranzen__smashing-head-on-wall.ogg');
+  this.load.audio('smack', 'sounds/377157__pfranzen__smashing-head-on-wall(edited).wav');
   this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
   this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
 
@@ -135,7 +135,7 @@ create: function()
           delay: laptSetDelay,                // ms
           callback: ()=> {
             master.sound.add('laptThrow', {
-              volume: Phaser.Math.FloatBetween(0.5, 0.75),
+              volume: Phaser.Math.FloatBetween(0.2, 0.4),
               rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
             }).play();
             laptop.enableBody(true, posX, posY, true, true);
@@ -293,7 +293,9 @@ create: function()
         {
           if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
           {
-              master.sound.play('throw');
+              master.sound.add('throw', {
+                volume: 0.8
+              }).play();
               sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
                 tar.y + ((sticker[i].height * 0.1)/2), true, true);
               sticker[i].data.values.patchSticking = true;
@@ -333,7 +335,9 @@ update: function()
     //Will drop when shrunk to a certain size
     else if(sticker[i].scale <= 0.1 && sticker[i].active && sticker[i].data.values.patchSticking)
     {
-        this.sound.play('smack');
+        this.sound.add('smack', {
+          volume: 0.8
+        }).play();
         sticker[i].disableBody(true, false);
         sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
         sticker[i].data.values.patchSticking = false;
@@ -355,7 +359,7 @@ update: function()
 
       if(!laptop[j].data.values.hasSticker)
         this.sound.add('crash', {
-          volume: Phaser.Math.FloatBetween(0.8, 0.9),
+          volume: Phaser.Math.FloatBetween(0.6, 0.7),
           rate: 1.0 + Phaser.Math.FloatBetween(-0.04, 0.04)
         }).play();
       laptop[j].disableBody(true, true);
