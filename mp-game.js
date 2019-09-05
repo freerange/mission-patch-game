@@ -41,7 +41,8 @@ preload: function()
   this.load.text('explosion', 'assets/particles/Explosion.json');
 
   this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
-  this.load.audio('smack', 'sounds/377157__pfranzen__smashing-head-on-wall.ogg')
+  this.load.audio('smack', 'sounds/377157__pfranzen__smashing-head-on-wall.ogg');
+  this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav')
 
   this.load.image('table', 'assets/table.png');
 },
@@ -192,6 +193,7 @@ create: function()
   //Will follow movement of laptop relative to the position where the sticker hit the laptop
   function stickToLaptop (lapt, stick, index)
   {
+    master.sound.play('hit');
     stick.data.values.currentLaptop = index;
     stick.data.values.lapDiffX = stick.x - lapt.x;
     stick.data.values.lapDiffY = stick.y - lapt.y;
@@ -279,7 +281,7 @@ create: function()
         {
           if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
           {
-              this.sound.play('throw');
+              master.sound.play('throw');
               sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
                 tar.y + ((sticker[i].height * 0.1)/2), true, true);
               sticker[i].data.values.patchSticking = true;
