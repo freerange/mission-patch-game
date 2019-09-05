@@ -46,6 +46,9 @@ preload: function()
   this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
   this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
 
+  //Done to prevent sound stacking when inactive
+  this.sound.pauseOnBlur = false;
+
   this.load.image('table', 'assets/table.png');
 },
 
