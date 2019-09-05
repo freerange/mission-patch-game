@@ -41,8 +41,10 @@ preload: function()
   this.load.text('explosion', 'assets/particles/Explosion.json');
 
   this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
+  this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
   this.load.audio('smack', 'sounds/377157__pfranzen__smashing-head-on-wall.ogg');
-  this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav')
+  this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
+  this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
 
   this.load.image('table', 'assets/table.png');
 },
@@ -129,6 +131,7 @@ create: function()
         {
           delay: laptSetDelay,                // ms
           callback: ()=> {
+            master.sound.play('laptThrow');
             laptop.enableBody(true, posX, posY, true, true);
             laptop.data.values.delayActive = false;
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
@@ -341,6 +344,8 @@ update: function()
       if(laptop[j].data.values.hasSticker && particle1.emitters.list[0].on)
         particle1.emitters.list[0].on = false;
 
+      if(!laptop[j].data.values.hasSticker)
+        this.sound.play('crash');
       laptop[j].disableBody(true, true);
 
       //Sticker resets when accompanying laptop leaves the screen
