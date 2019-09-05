@@ -134,7 +134,10 @@ create: function()
         {
           delay: laptSetDelay,                // ms
           callback: ()=> {
-            master.sound.play('laptThrow');
+            master.sound.add('laptThrow', {
+              volume: Phaser.Math.FloatBetween(0.5, 0.75),
+              rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
+            }).play();
             laptop.enableBody(true, posX, posY, true, true);
             laptop.data.values.delayActive = false;
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
@@ -199,7 +202,10 @@ create: function()
   //Will follow movement of laptop relative to the position where the sticker hit the laptop
   function stickToLaptop (lapt, stick, index)
   {
-    master.sound.play('hit');
+    master.sound.add('hit', {
+      volume: 0.6,
+      rate: 1.0 + Phaser.Math.FloatBetween(-0.15, 0.15)
+    }).play();
     stick.data.values.currentLaptop = index;
     stick.data.values.lapDiffX = stick.x - lapt.x;
     stick.data.values.lapDiffY = stick.y - lapt.y;
@@ -348,7 +354,10 @@ update: function()
         particle1.emitters.list[0].on = false;
 
       if(!laptop[j].data.values.hasSticker)
-        this.sound.play('crash');
+        this.sound.add('crash', {
+          volume: Phaser.Math.FloatBetween(0.8, 0.9),
+          rate: 1.0 + Phaser.Math.FloatBetween(-0.04, 0.04)
+        }).play();
       laptop[j].disableBody(true, true);
 
       //Sticker resets when accompanying laptop leaves the screen
