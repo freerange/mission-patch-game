@@ -5,7 +5,7 @@ var mainGame = new Phaser.Class(function()
 
   var tar;
   var stickersAtOnce = 5;
-  var laptopsAtOnce = 5;
+  var laptopsAtOnce = 8;
 
   var laptopsLeft;
   var modeSelect = 0;
@@ -437,95 +437,104 @@ update: function()
     }
   }
 
-  //Will indicate when last laptop is being chucked
-  if(modeSelect == 1 && laptop.findIndex((lapt) =>
-  { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) > 0)
-    timerText.setText('Last one!');
-
-  //Will initiate game over sequence when timer runs out
-  else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0)
-  {
-    if(gameDelay == null)
-    {
-      this.sound.play('timesUp');
-      timerText.setText('Time\'s up');
-      gameOver = true;
-      gameDelay = this.time.addEvent(
-        {
-          delay: 2000,                // ms
-          callback: ()=> {
-            scoreText.setText('');
-            timerText.setText('');
-            tar.disableBody(true, true);
-            var finish = this.sound.add('results');
-            finish.play();
-            particle2.emitters.list[0].on = true;
-
-            //Dialog will change depending on how many laptops you have patched
-            if(laptopsAtOnce - laptopsLeft == 0)
-            {
-              var finishText = this.add.text(0, 0, 'No laptops were patched',
-              { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
-              fontStyle: 'bold', fill: '#000' });
-              finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
-              particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-              particle2.emitters.list[0].startFollow(finishText);
-            }
-            else if(laptopsAtOnce - laptopsLeft == 1)
-            {
-              var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
-                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
-              finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
-              particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-              particle2.emitters.list[0].startFollow(finishText);
-            }
-
-            else
-            {
-              var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
-                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
-              finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
-              particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-              particle2.emitters.list[0].startFollow(finishText);
-            }
-
-            this.time.addEvent(
-              {
-              delay: 5000,
-              callback: ()=> {
-                gameOver = false;
-                var menuScene = this.scene.get('mainMenu');
-                finish.stop();
-                menuScene.scene.restart();
-                this.scene.stop();
-              },
-              callbackScope: this,
-              loop: false
-              });
-          },
-          callbackScope: this,
-          loop: false
-        });
-    }
-  }
-  //Will occur if there are no laptops left to chuck and timer hasn't run out yet
-  else if(modeSelect == 1 && laptop.findIndex((lapt) =>
-  { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0)
-    timerText.setText('No More');
-  //Countdown check will be compared against the floor of countdown seconds to see if it has changed; prevents unnecesary updates to second timer
-  else if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0
-  && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds()))
-  {
-    timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
-    countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
-  }
   howManyLaptopsHaveStickers = 0;
   for(var i in laptop) {
     if(laptop[i].data.values.hasSticker)
       howManyLaptopsHaveStickers++;
   }
-  if(howManyLaptopsHaveStickers == laptopsAtOnce && !countdownTimer.paused)
-    countdownTimer.paused = true;
+
+  if(howManyLaptopsHaveStickers == laptopsAtOnce)
+  {
+    if(!countdownTimer.paused)
+      countdownTimer.paused = true;
+  }
+  else
+  {
+    //Will indicate when last laptop is being chucked
+    if(modeSelect == 1 && laptop.findIndex((lapt) =>
+    { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) > 0)
+      timerText.setText('Last one!');
+
+    //Will initiate game over sequence when timer runs out
+    else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0)
+    {
+      if(gameDelay == null)
+      {
+        this.sound.play('timesUp');
+        timerText.setText('Time\'s up');
+        gameOver = true;
+        gameDelay = this.time.addEvent(
+          {
+            delay: 2000,                // ms
+            callback: ()=> {
+              scoreText.setText('');
+              timerText.setText('');
+              tar.disableBody(true, true);
+              var finish = this.sound.add('results');
+              finish.play();
+              particle2.emitters.list[0].on = true;
+
+              //Dialog will change depending on how many laptops you have patched
+              if(laptopsAtOnce - laptopsLeft == 0)
+              {
+                var finishText = this.add.text(0, 0, 'No laptops were patched',
+                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
+                fontStyle: 'bold', fill: '#000' });
+                finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
+                particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+                particle2.emitters.list[0].startFollow(finishText);
+              }
+              else if(laptopsAtOnce - laptopsLeft == 1)
+              {
+                var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
+                  { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+                finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
+                particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+                particle2.emitters.list[0].startFollow(finishText);
+              }
+
+              else
+              {
+                var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
+                  { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+                finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
+                particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+                particle2.emitters.list[0].startFollow(finishText);
+              }
+
+              this.time.addEvent(
+                {
+                delay: 5000,
+                callback: ()=> {
+                  gameOver = false;
+                  var menuScene = this.scene.get('mainMenu');
+                  finish.stop();
+                  menuScene.scene.restart();
+                  this.scene.stop();
+                },
+                callbackScope: this,
+                loop: false
+                });
+            },
+            callbackScope: this,
+            loop: false
+          });
+      }
+    }
+
+    //Will occur if there are no laptops left to chuck and timer hasn't run out yet
+    else if(modeSelect == 1 && laptop.findIndex((lapt) =>
+    { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0)
+      timerText.setText('No More');
+
+    //Countdown check will be compared against the floor of countdown seconds to see if it has changed; prevents unnecesary updates to second timer
+    else if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0
+    && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds()))
+    {
+      timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
+      countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
+    }
+  }
 }
 }}());
 
