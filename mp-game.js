@@ -408,10 +408,10 @@ update: function()
             finish.play();
             particle2.emitters.list[0].on = true;
 
-            var finishText = this.add.text(0, 0,
-              'All laptops are Patched', { fontFamily: "Arial, Carrois Gothic SC",
-              fontSize: '45px', fontStyle: 'bold', fill: '#000' });
-            finishText.setPosition((config.width/2) - Math.floor(finishText.width/2), (config.height/2) - 50);
+            var finishText = this.add.text(0, 0, 'All laptops are Patched',
+            { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
+            fontStyle: 'bold', fill: '#000' });
+            finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
 
             particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
             particle2.emitters.list[0].startFollow(finishText);
@@ -465,7 +465,7 @@ update: function()
               var finishText = this.add.text(0, 0, 'No laptops were patched',
               { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
               fontStyle: 'bold', fill: '#000' });
-              finishText.setPosition((config.width/2) - Math.floor(finishText.width/2), (config.height/2) - 50);
+              finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
               particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
               particle2.emitters.list[0].startFollow(finishText);
             }
@@ -473,7 +473,7 @@ update: function()
             {
               var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
-              finishText.setPosition((config.width/2) - Math.floor(finishText.width/2), (config.height/2) - 50);
+              finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
               particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
               particle2.emitters.list[0].startFollow(finishText);
             }
@@ -482,7 +482,7 @@ update: function()
             {
               var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
-              finishText.setPosition((config.width/2) - Math.floor(finishText.width/2), (config.height/2) - 50);
+              finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
               particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
               particle2.emitters.list[0].startFollow(finishText);
             }
@@ -538,10 +538,12 @@ class MainMenu extends Phaser.Scene
         title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
 
 
+      title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
+
       //Button to start game
       var graphics = this.add.graphics();
       var rect = new Phaser.Geom.Rectangle(0, 0, 200, 100);
-      rect.setPosition((config.width/2)-(rect.width/2), (config.height/2)-50)
+      rect.setPosition((config.width/2)-(rect.width/2), (config.height/2)-50);
       graphics.fillStyle('#000');
       graphics.fillRectShape(rect);
 
