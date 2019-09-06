@@ -5,15 +5,15 @@ var mainGame = new Phaser.Class(function()
 
   var tar;
   var stickersAtOnce = 5;
-  var laptopsAtOnce = 8;
+  var laptopsAtOnce = 30;
 
   var laptopsLeft;
-  var modeSelect = 0;
+  var modeSelect = 1;
 
   var master;
 
   var countdownTimer;
-  var countdownSeconds = 20;
+  var countdownSeconds = 60;
   var timerText;
 
   var scoreText;
@@ -234,7 +234,7 @@ create: function()
   //Overlap check for whether sticker clearly hit the laptop
   function hitLaptop (lapt, stick)
   {
-    for(var i = 0; i < sticker.length; i++)
+    for(var i in sticker)
     {
       //Determines size of laptop hitbox
       //1 = Full hitbox; 0 = No hitbox; 0.5 = Half hitbox
@@ -253,7 +253,7 @@ create: function()
             stick.data.values.stickerOnLaptop = true;
 
             //Checks for first overlapping laptop
-            for(var i = 0; i < laptops.children.entries.length; i++)
+            for(var i in laptops.children.entries)
             {
               if(laptops.children.entries[i] == lapt)
                 stickToLaptop(lapt, stick, i);
@@ -293,7 +293,7 @@ create: function()
       }
       if(!gameOver)
       {
-        for(var i = 0; i < sticker.length; i++)
+        for(var i in sticker)
         {
           if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
           {
@@ -328,7 +328,7 @@ create: function()
 
 update: function()
 {
-  for(var i = 0; i < sticker.length; i++)
+  for(var i in sticker)
   {
     //Gives moving from camera effect
     if(sticker[i].scale > 0.1 && sticker[i].active && sticker[i].data.values.patchSticking)
@@ -353,7 +353,7 @@ update: function()
         laptop[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
   }
 
-  for(var j = 0; j < laptops.children.entries.length; j++)
+  for(var j in laptops.children.entries)
   {
     if(laptop[j].active && laptop[j].y > config.height + laptop[j].height + 50)
     {
