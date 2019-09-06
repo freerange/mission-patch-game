@@ -5,15 +5,15 @@ var mainGame = new Phaser.Class(function()
 
   var tar;
   var stickersAtOnce = 5;
-  var laptopsAtOnce = 100;
+  var laptopsAtOnce = 8;
 
   var laptopsLeft;
-  var modeSelect = 1;
+  var modeSelect = 0;
 
   var master;
 
   var countdownTimer;
-  var countdownSeconds = 3;
+  var countdownSeconds = 20;
   var timerText;
 
   var scoreText;
@@ -394,6 +394,7 @@ update: function()
   if(countdownTimer.paused) {
     if(gameDelay == null)
     {
+      this.sound.play('timesUp');
       timerText.setText('Finish!');
       gameOver = true;
       gameDelay = this.time.addEvent(
@@ -515,7 +516,12 @@ update: function()
   {
     timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
     countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
-    if((modeSelect == 0 && laptops.countActive(true) === 0) && !countdownTimer.paused)
+    var count = 0;
+    for(var i in laptop) {
+      if(laptop[i].data.values.hasSticker)
+        count++;
+    }
+    if(modeSelect == 0 && count == laptopsAtOnce && !countdownTimer.paused)
       countdownTimer.paused = true;
   }
 }
@@ -534,7 +540,8 @@ class MainMenu extends Phaser.Scene
 
       //Button to start game
       var graphics = this.add.graphics();
-      var rect = new Phaser.Geom.Rectangle((config.width/2)-100, (config.height/2)-50, 200, 100);
+      var rect = new Phaser.Geom.Rectangle(0, 0, 200, 100);
+      rect.setPosition((config.width/2)-(rect.width/2), (config.height/2)-50)
       graphics.fillStyle('#000');
       graphics.fillRectShape(rect);
 
