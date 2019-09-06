@@ -540,7 +540,11 @@ update: function()
 
 class MainMenu extends Phaser.Scene
 {
-
+  preload ()
+  {
+    //This is a test sound; will change later
+    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav')
+  }
   create ()
   {
       //Title
@@ -566,6 +570,7 @@ class MainMenu extends Phaser.Scene
         if(pointer.leftButtonDown())
         {
           startButton.setStyle({ fill: '#aa0'});
+          this.sound.play('gong');
           this.scene.start('mainGame');
           this.scene.stop();
         }
