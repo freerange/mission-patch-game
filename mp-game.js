@@ -5,7 +5,7 @@ var mainGame = new Phaser.Class(function()
 
   var tar;
   var stickersAtOnce = 5;
-  var laptopsAtOnce = 8;
+  var laptopsAtOnce = 16;
 
   var laptopsLeft;
   var modeSelect = 0;
@@ -103,6 +103,7 @@ create: function()
       laptop.setVelocity(Phaser.Math.Between(400, 600) * velX,
         Phaser.Math.Between(400, 600) * velY);
       laptop.setBounce(bounce);
+      laptop.setScale(0.625);
       laptop.setCollideWorldBounds(true);
     }
     //Mode 1 = Chuck mode
@@ -219,7 +220,8 @@ create: function()
 
     if(!particle1.emitters.list[0].on) {
       particle1.emitters.list[0].on = true;
-      particle1.emitters.list[0].setPosition((lapt.width/2), (lapt.height/2));
+      particle1.emitters.list[0].setPosition((lapt.width/2)*lapt._scaleX, (lapt.height/2)*lapt._scaleX);
+      console.log();
     }
 
     particle1.emitters.list[0].startFollow(lapt);
