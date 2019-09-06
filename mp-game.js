@@ -5,15 +5,15 @@ var mainGame = new Phaser.Class(function()
 
   var tar;
   var stickersAtOnce = 5;
-  var laptopsAtOnce = 30;
+  var laptopsAtOnce = 5;
 
   var laptopsLeft;
-  var modeSelect = 1;
+  var modeSelect = 0;
 
   var master;
 
   var countdownTimer;
-  var countdownSeconds = 60;
+  var countdownSeconds = 20;
   var timerText;
 
   var scoreText;
@@ -24,6 +24,8 @@ var mainGame = new Phaser.Class(function()
   var gameOver = false;
 
   var particle1, particle2;
+
+  var howManyLaptopsHaveStickers;
 
 return {
 Extends: Phaser.Scene,
@@ -516,14 +518,14 @@ update: function()
   {
     timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
     countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
-    var count = 0;
-    for(var i in laptop) {
-      if(laptop[i].data.values.hasSticker)
-        count++;
-    }
-    if(modeSelect == 0 && count == laptopsAtOnce && !countdownTimer.paused)
-      countdownTimer.paused = true;
   }
+  howManyLaptopsHaveStickers = 0;
+  for(var i in laptop) {
+    if(laptop[i].data.values.hasSticker)
+      howManyLaptopsHaveStickers++;
+  }
+  if(howManyLaptopsHaveStickers == laptopsAtOnce && !countdownTimer.paused)
+    countdownTimer.paused = true;
 }
 }}());
 
