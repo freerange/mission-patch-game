@@ -5,7 +5,7 @@ var mainGame = new Phaser.Class(function()
 
   var tar;
   var stickersAtOnce = 5;
-  var laptopsAtOnce = 30;
+  var laptopsAtOnce = 100;
 
   var laptopsLeft;
   var modeSelect = 1;
@@ -13,7 +13,7 @@ var mainGame = new Phaser.Class(function()
   var master;
 
   var countdownTimer;
-  var countdownSeconds = 60;
+  var countdownSeconds = 3;
   var timerText;
 
   var scoreText;
@@ -40,16 +40,19 @@ preload: function()
   this.load.text('blast', 'assets/particles/Blast.json');
   this.load.text('explosion', 'assets/particles/Explosion.json');
 
+  //Taken and edited from freesound.com
   this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
   this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
   this.load.audio('smack', 'sounds/377157__pfranzen__smashing-head-on-wall(edited).wav');
   this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
   this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
+  this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
+  this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav')
 
   //Done to prevent sound stacking when inactive
   this.sound.pauseOnBlur = false;
 
-  this.load.image('table', 'assets/table.png');
+  // this.load.image('table', 'assets/table.png');
 },
 
 create: function()
@@ -82,6 +85,7 @@ create: function()
   //Referenced for time and key press events
   var master = this;
 
+  //Always starts at 1
   var laptSpread = 1;
 
   function createLaptop(laptop, bounce, mode)
@@ -399,11 +403,14 @@ update: function()
             scoreText.setText('');
             timerText.setText('');
             tar.disableBody(true, true);
+            var finish = this.sound.add('results');
+            finish.play();
             particle2.emitters.list[0].on = true;
 
-            var finishText = this.add.text((config.width/2) - 300, (config.height/2) - 50,
+            var finishText = this.add.text(0, 0,
               'All laptops are Patched', { fontFamily: "Arial, Carrois Gothic SC",
               fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+            finishText.setPosition((config.width/2) - Math.floor(finishText.width/2), (config.height/2) - 50);
 
             particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
             particle2.emitters.list[0].startFollow(finishText);
@@ -413,6 +420,7 @@ update: function()
               callback: ()=> {
                 gameOver = false;
                 var menuScene = this.scene.get('mainMenu');
+                finish.stop();
                 menuScene.scene.restart();
                 this.scene.stop();
               },
@@ -436,6 +444,7 @@ update: function()
   {
     if(gameDelay == null)
     {
+      this.sound.play('timesUp');
       timerText.setText('Time\'s up');
       gameOver = true;
       gameDelay = this.time.addEvent(
@@ -445,31 +454,34 @@ update: function()
             scoreText.setText('');
             timerText.setText('');
             tar.disableBody(true, true);
+            var finish = this.sound.add('results');
+            finish.play();
             particle2.emitters.list[0].on = true;
 
             //Dialog will change depending on how many laptops you have patched
             if(laptopsAtOnce - laptopsLeft == 0)
             {
-              var finishText = this.add.text((config.width/2) - 300, (config.height/2) - 50,
-                'No laptops were patched', { fontFamily: "Arial, Carrois Gothic SC",
-                fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              var finishText = this.add.text(0, 0, 'No laptops were patched',
+              { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
+              fontStyle: 'bold', fill: '#000' });
+              finishText.setPosition((config.width/2) - Math.floor(finishText.width/2), (config.height/2) - 50);
               particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
               particle2.emitters.list[0].startFollow(finishText);
             }
             else if(laptopsAtOnce - laptopsLeft == 1)
             {
-              var finishText = this.add.text((config.width/2) - 210, (config.height/2) - 50,
-                'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
+              var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              finishText.setPosition((config.width/2) - Math.floor(finishText.width/2), (config.height/2) - 50);
               particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
               particle2.emitters.list[0].startFollow(finishText);
             }
 
             else
             {
-              var finishText = this.add.text((config.width/2) - 220, (config.height/2) - 50,
-                'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
+              var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
+              finishText.setPosition((config.width/2) - Math.floor(finishText.width/2), (config.height/2) - 50);
               particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
               particle2.emitters.list[0].startFollow(finishText);
             }
@@ -480,6 +492,7 @@ update: function()
               callback: ()=> {
                 gameOver = false;
                 var menuScene = this.scene.get('mainMenu');
+                finish.stop();
                 menuScene.scene.restart();
                 this.scene.stop();
               },
@@ -514,8 +527,10 @@ class MainMenu extends Phaser.Scene
   create ()
   {
       //Title
-      this.add.text((config.width/2) - 145, (config.height/2) - 180, 'Mission Patch Game',
+      var title = this.add.text(0, 0, 'Mission Patch Game',
         {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
+        title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
+
 
       //Button to start game
       var graphics = this.add.graphics();
