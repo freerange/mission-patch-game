@@ -40,7 +40,19 @@ preload: function()
   this.load.text('blast', 'assets/particles/Blast.json');
   this.load.text('explosion', 'assets/particles/Explosion.json');
 
-  this.load.image('table', 'assets/table.png');
+  //Taken and edited from freesound.com
+  this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
+  this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
+  this.load.audio('smack', 'sounds/377157__pfranzen__smashing-head-on-wall(edited).wav');
+  this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
+  this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
+  this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
+  this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav')
+
+  //Done to prevent sound stacking when inactive
+  this.sound.pauseOnBlur = false;
+
+  // this.load.image('table', 'assets/table.png');
 },
 
 create: function()
@@ -73,6 +85,7 @@ create: function()
   //Referenced for time and key press events
   var master = this;
 
+  //Always starts at 1
   var laptSpread = 1;
 
   function createLaptop(laptop, bounce, mode)
@@ -125,6 +138,10 @@ create: function()
         {
           delay: laptSetDelay,                // ms
           callback: ()=> {
+            master.sound.add('laptThrow', {
+              volume: Phaser.Math.FloatBetween(0.2, 0.4),
+              rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
+            }).play();
             laptop.enableBody(true, posX, posY, true, true);
             laptop.data.values.delayActive = false;
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
@@ -189,6 +206,10 @@ create: function()
   //Will follow movement of laptop relative to the position where the sticker hit the laptop
   function stickToLaptop (lapt, stick, index)
   {
+    master.sound.add('hit', {
+      volume: 0.6,
+      rate: 1.0 + Phaser.Math.FloatBetween(-0.15, 0.15)
+    }).play();
     stick.data.values.currentLaptop = index;
     stick.data.values.lapDiffX = stick.x - lapt.x;
     stick.data.values.lapDiffY = stick.y - lapt.y;
@@ -213,7 +234,7 @@ create: function()
   //Overlap check for whether sticker clearly hit the laptop
   function hitLaptop (lapt, stick)
   {
-    for(var i = 0; i < sticker.length; i++)
+    for(var i in sticker)
     {
       //Determines size of laptop hitbox
       //1 = Full hitbox; 0 = No hitbox; 0.5 = Half hitbox
@@ -232,7 +253,7 @@ create: function()
             stick.data.values.stickerOnLaptop = true;
 
             //Checks for first overlapping laptop
-            for(var i = 0; i < laptops.children.entries.length; i++)
+            for(var i in laptops.children.entries)
             {
               if(laptops.children.entries[i] == lapt)
                 stickToLaptop(lapt, stick, i);
@@ -272,10 +293,13 @@ create: function()
       }
       if(!gameOver)
       {
-        for(var i = 0; i < sticker.length; i++)
+        for(var i in sticker)
         {
           if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
           {
+              master.sound.add('throw', {
+                volume: 0.8
+              }).play();
               sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
                 tar.y + ((sticker[i].height * 0.1)/2), true, true);
               sticker[i].data.values.patchSticking = true;
@@ -304,7 +328,7 @@ create: function()
 
 update: function()
 {
-  for(var i = 0; i < sticker.length; i++)
+  for(var i in sticker)
   {
     //Gives moving from camera effect
     if(sticker[i].scale > 0.1 && sticker[i].active && sticker[i].data.values.patchSticking)
@@ -315,6 +339,9 @@ update: function()
     //Will drop when shrunk to a certain size
     else if(sticker[i].scale <= 0.1 && sticker[i].active && sticker[i].data.values.patchSticking)
     {
+        this.sound.add('smack', {
+          volume: 0.8
+        }).play();
         sticker[i].disableBody(true, false);
         sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
         sticker[i].data.values.patchSticking = false;
@@ -326,7 +353,7 @@ update: function()
         laptop[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
   }
 
-  for(var j = 0; j < laptops.children.entries.length; j++)
+  for(var j in laptops.children.entries)
   {
     if(laptop[j].active && laptop[j].y > config.height + laptop[j].height + 50)
     {
@@ -334,6 +361,11 @@ update: function()
       if(laptop[j].data.values.hasSticker && particle1.emitters.list[0].on)
         particle1.emitters.list[0].on = false;
 
+      if(!laptop[j].data.values.hasSticker)
+        this.sound.add('crash', {
+          volume: Phaser.Math.FloatBetween(0.6, 0.7),
+          rate: 1.0 + Phaser.Math.FloatBetween(-0.04, 0.04)
+        }).play();
       laptop[j].disableBody(true, true);
 
       //Sticker resets when accompanying laptop leaves the screen
@@ -362,6 +394,7 @@ update: function()
   if(countdownTimer.paused) {
     if(gameDelay == null)
     {
+      this.sound.play('timesUp');
       timerText.setText('Finish!');
       gameOver = true;
       gameDelay = this.time.addEvent(
@@ -371,6 +404,8 @@ update: function()
             scoreText.setText('');
             timerText.setText('');
             tar.disableBody(true, true);
+            var finish = this.sound.add('results');
+            finish.play();
             particle2.emitters.list[0].on = true;
 
             var finishText = this.add.text(0, 0, 'All laptops are Patched',
@@ -386,6 +421,7 @@ update: function()
               callback: ()=> {
                 gameOver = false;
                 var menuScene = this.scene.get('mainMenu');
+                finish.stop();
                 menuScene.scene.restart();
                 this.scene.stop();
               },
@@ -409,6 +445,7 @@ update: function()
   {
     if(gameDelay == null)
     {
+      this.sound.play('timesUp');
       timerText.setText('Time\'s up');
       gameOver = true;
       gameDelay = this.time.addEvent(
@@ -418,6 +455,8 @@ update: function()
             scoreText.setText('');
             timerText.setText('');
             tar.disableBody(true, true);
+            var finish = this.sound.add('results');
+            finish.play();
             particle2.emitters.list[0].on = true;
 
             //Dialog will change depending on how many laptops you have patched
@@ -454,6 +493,7 @@ update: function()
               callback: ()=> {
                 gameOver = false;
                 var menuScene = this.scene.get('mainMenu');
+                finish.stop();
                 menuScene.scene.restart();
                 this.scene.stop();
               },
@@ -476,7 +516,12 @@ update: function()
   {
     timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
     countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
-    if((modeSelect == 0 && laptops.countActive(true) === 0) && !countdownTimer.paused)
+    var count = 0;
+    for(var i in laptop) {
+      if(laptop[i].data.values.hasSticker)
+        count++;
+    }
+    if(modeSelect == 0 && count == laptopsAtOnce && !countdownTimer.paused)
       countdownTimer.paused = true;
   }
 }
@@ -490,6 +535,8 @@ class MainMenu extends Phaser.Scene
       //Title
       var title = this.add.text(0, 0, 'Mission Patch Game',
         {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
+        title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
+
 
       title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
 
