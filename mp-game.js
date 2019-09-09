@@ -16,6 +16,7 @@ var mainGame = new Phaser.Class(function()
   var scoreText;
 
   var countdownCheck;
+  var currentFrame;
 
   var gameDelay;
   var gameOver = false;
@@ -338,12 +339,20 @@ create: function()
 
 update: function()
 {
-  var laptopsCaught = Math.floor((laptopsAtOnce - laptopsLeft)/(laptopsAtOnce/25)) + 1;
-  console.log(laptopsCaught);
-  if(laptopsCaught < 10)
-    background.setFrame('000' + laptopsCaught + '.png');
-  else
-    background.setFrame('00' + laptopsCaught + '.png');
+  var laptopsCaught = Math.floor((laptopsAtOnce - laptopsLeft)/(laptopsAtOnce/25));
+  if(currentFrame == null)
+    currentFrame = laptopsCaught;
+
+  if(laptopsCaught != currentFrame) {
+    if(laptopsCaught == 0)
+      background.setFrame('0001.png');
+    else if(laptopsCaught < 10)
+      background.setFrame('000' + laptopsCaught + '.png');
+    else
+      background.setFrame('00' + laptopsCaught + '.png');
+    currentFrame = laptopsCaught;
+  }
+
 
 
   for(var i in stickers.children.entries)
