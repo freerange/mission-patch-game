@@ -1,7 +1,6 @@
 var mainGame = new Phaser.Class(function()
 {
   var sticker = [];
-  var laptop = [];
 
   var tar;
   var stickersAtOnce = 5;
@@ -179,12 +178,10 @@ create: function()
 
   for(var i = 0; i < laptopsAtOnce; i++)
   {
-    console.log('added');
-    createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
-    laptop[i] = laptops.children.entries[i];
+    var laptop;
+    createLaptop(laptop, Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
     laptSpread++;
   }
-
 
   laptopsLeft = laptops.children.entries.length;
 
@@ -363,24 +360,24 @@ update: function()
 
     //Keeps position relative to laptop
     if(sticker[i].data.values.currentLaptop != -1)
-      sticker[i].setPosition(laptop[sticker[i].data.values.currentLaptop].x + sticker[i].data.values.lapDiffX,
-        laptop[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
+      sticker[i].setPosition(laptops.children.entries[sticker[i].data.values.currentLaptop].x + sticker[i].data.values.lapDiffX,
+        laptops.children.entries[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
   }
 
   for(var j in laptops.children.entries)
   {
-    if(laptop[j].active && laptop[j].y > config.height + laptop[j].height + 50)
+    if(laptops.children.entries[j].active && laptops.children.entries[j].y > config.height + laptops.children.entries[j].height + 50)
     {
       //For optimisation reasons, laptop disables itself when it leaves the screen
-      if(laptop[j].data.values.hasSticker && particle1.emitters.list[0].on)
+      if(laptops.children.entries[j].data.values.hasSticker && particle1.emitters.list[0].on)
         particle1.emitters.list[0].on = false;
 
-      if(!laptop[j].data.values.hasSticker)
+      if(!laptops.children.entries[j].data.values.hasSticker)
         this.sound.add('crash', {
           volume: Phaser.Math.FloatBetween(0.6, 0.7),
           rate: 1.0 + Phaser.Math.FloatBetween(-0.04, 0.04)
         }).play();
-      laptop[j].disableBody(true, true);
+      laptops.children.entries[j].disableBody(true, true);
 
       //Sticker resets when accompanying laptop leaves the screen
       var stickerIndex = sticker.findIndex((stick) => {
@@ -398,7 +395,7 @@ update: function()
 
     //In bounce mode, laptops will leave the screen when the time runs out
     if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 && modeSelect == 0)
-      laptop[j].setCollideWorldBounds(false);
+      laptops.children.entries[j].setCollideWorldBounds(false);
   }
 
 
@@ -450,8 +447,8 @@ update: function()
   }
 
   howManyLaptopsHaveStickers = 0;
-  for(var i in laptop) {
-    if(laptop[i].data.values.hasSticker)
+  for(var i in laptops.children.entries) {
+    if(laptops.children.entries[i].data.values.hasSticker)
       howManyLaptopsHaveStickers++;
   }
 
@@ -463,7 +460,7 @@ update: function()
   else
   {
     //Will indicate when last laptop is being chucked
-    if(modeSelect == 1 && laptop.findIndex((lapt) =>
+    if(modeSelect == 1 && laptops.children.entries.findIndex((lapt) =>
     { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) > 0)
       timerText.setText('Last one!');
 
@@ -520,7 +517,6 @@ update: function()
                 callback: ()=> {
                   gameOver = false;
                   var menuScene = this.scene.get('mainMenu');
-                  laptop = [];
                   finish.stop();
                   menuScene.scene.restart();
                   this.scene.stop();
@@ -536,7 +532,7 @@ update: function()
     }
 
     //Will occur if there are no laptops left to chuck and timer hasn't run out yet
-    else if(modeSelect == 1 && laptop.findIndex((lapt) =>
+    else if(modeSelect == 1 && laptops.children.entries.findIndex((lapt) =>
     { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0)
       timerText.setText('No More');
 
