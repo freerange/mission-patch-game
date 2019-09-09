@@ -33,7 +33,8 @@ Extends: Phaser.Scene,
 preload: function()
 {
   //Loads all assets
-  this.load.image('laptop', 'assets/laptop.png');
+  this.load.image('laptop_0', 'assets/laptop.png');
+  this.load.image('laptop_1', 'assets/laptop-prot.png');
   this.load.image('target', 'assets/cursor.png');
   this.load.image('sky', 'assets/sky.png');
   this.load.image('patch', 'assets/patch.png');
@@ -96,7 +97,7 @@ create: function()
     if(mode == 0)
     {
       laptop = laptops.create(Phaser.Math.Between(0, config.width),
-        Phaser.Math.Between(0, config.height), 'laptop');
+        Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
       laptop.setData({ laptopMode: mode });
       var velX = (laptop.x > (config.width/2)) ? -1 : 1;
       var velY = (laptop.y > (config.height/2)) ? -1 : 1;
@@ -125,7 +126,7 @@ create: function()
         posY = config.height + 50;
 
       //Sets up laptop
-      laptop = laptops.create(posX, posY, 'laptop');
+      laptop = laptops.create(posX, posY, 'laptop_' + Phaser.Math.Between(0, 1));
       laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true });
       laptop.disableBody(true, true);
 
@@ -220,8 +221,7 @@ create: function()
 
     if(!particle1.emitters.list[0].on) {
       particle1.emitters.list[0].on = true;
-      particle1.emitters.list[0].setPosition((lapt.width/2)*lapt._scaleX, (lapt.height/2)*lapt._scaleX);
-      console.log();
+      particle1.emitters.list[0].setPosition(0, 0);
     }
 
     particle1.emitters.list[0].startFollow(lapt);
@@ -573,6 +573,7 @@ class MainMenu extends Phaser.Scene
         {
           startButton.setStyle({ fill: '#aa0'});
           this.sound.play('gong');
+          // this.scene.add('mainGame', mainGame, true, { laptopsAtOnce: 16, countdownSeconds: 20, modeSelect: 0});
           this.scene.start('mainGame');
           this.scene.stop();
         }
