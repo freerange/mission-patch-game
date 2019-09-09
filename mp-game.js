@@ -1,6 +1,6 @@
 var mainGame = new Phaser.Class(function()
 {
-  var sticker = [];
+  // var sticker = [];
 
   var tar;
   var stickersAtOnce = 5;
@@ -42,7 +42,7 @@ preload: function()
 {
   //Loads all assets
   this.load.image('laptop_0', 'assets/laptop.png');
-  this.load.image('laptop_1', 'assets/laptop-prot.png');
+  this.load.image('laptop_1', 'assets/laptop-2.png');
   this.load.image('target', 'assets/cursor.png');
   this.load.image('sky', 'assets/sky.png');
   this.load.image('patch', 'assets/patch.png');
@@ -204,12 +204,12 @@ create: function()
   for(var i = 0; i < stickersAtOnce; i++)
   {
 
-    sticker[i] = stickers.create(0, 0, 'patch');
-    sticker[i].setData({ patchSticking: false, currentLaptop: -1,
+    stickers.create(0, 0, 'patch');
+    stickers.children.entries[i].setData({ patchSticking: false, currentLaptop: -1,
       lapDiffX: 0, lapDiffY: 0, stickerOnLaptop: false });
-    sticker[i].scale = 0.8;
-    sticker[i].setScale(sticker[i].scale, sticker[i].scale);
-    sticker[i].disableBody(true, true);
+    stickers.children.entries[i].scale = 0.8;
+    stickers.children.entries[i].setScale(stickers.children.entries[i].scale, stickers.children.entries[i].scale);
+    stickers.children.entries[i].disableBody(true, true);
 
 
   }
@@ -245,7 +245,7 @@ create: function()
   //Overlap check for whether sticker clearly hit the laptop
   function hitLaptop (lapt, stick)
   {
-    for(var i in sticker)
+    for(var i in stickers.children.entries)
     {
       //Determines size of laptop hitbox
       //1 = Full hitbox; 0 = No hitbox; 0.5 = Half hitbox
@@ -304,19 +304,19 @@ create: function()
       }
       if(!gameOver)
       {
-        for(var i in sticker)
+        for(var i in stickers.children.entries)
         {
-          if(sticker[i].y > (config.height + sticker[i].height) || !sticker[i].active)
+          if(stickers.children.entries[i].y > (config.height + stickers.children.entries[i].height) || !stickers.children.entries[i].active)
           {
               master.sound.add('throw', {
                 volume: 0.8
               }).play();
-              sticker[i].enableBody(true, tar.x + ((sticker[i].width * 0.1)/2),
-                tar.y + ((sticker[i].height * 0.1)/2), true, true);
-              sticker[i].data.values.patchSticking = true;
+              stickers.children.entries[i].enableBody(true, tar.x + ((stickers.children.entries[i].width * 0.1)/2),
+                tar.y + ((stickers.children.entries[i].height * 0.1)/2), true, true);
+              stickers.children.entries[i].data.values.patchSticking = true;
 
-              sticker[i].scale = 0.8;
-              sticker[i].setVelocity(0, -175);
+              stickers.children.entries[i].scale = 0.8;
+              stickers.children.entries[i].setVelocity(0, -175);
 
 
               break;
@@ -339,29 +339,29 @@ create: function()
 
 update: function()
 {
-  for(var i in sticker)
+  for(var i in stickers.children.entries)
   {
     //Gives moving from camera effect
-    if(sticker[i].scale > 0.1 && sticker[i].active && sticker[i].data.values.patchSticking)
+    if(stickers.children.entries[i].scale > 0.1 && stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
     {
-        sticker[i].scale -= 0.032;
-        sticker[i].setScale(sticker[i].scale, sticker[i].scale);
+        stickers.children.entries[i].scale -= 0.032;
+        stickers.children.entries[i].setScale(stickers.children.entries[i].scale, stickers.children.entries[i].scale);
     }
     //Will drop when shrunk to a certain size
-    else if(sticker[i].scale <= 0.1 && sticker[i].active && sticker[i].data.values.patchSticking)
+    else if(stickers.children.entries[i].scale <= 0.1 && stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
     {
         this.sound.add('smack', {
           volume: 0.8
         }).play();
-        sticker[i].disableBody(true, false);
-        sticker[i].enableBody(true, sticker[i].x, sticker[i].y, true, true);
-        sticker[i].data.values.patchSticking = false;
+        stickers.children.entries[i].disableBody(true, false);
+        stickers.children.entries[i].enableBody(true, stickers.children.entries[i].x, stickers.children.entries[i].y, true, true);
+        stickers.children.entries[i].data.values.patchSticking = false;
     }
 
     //Keeps position relative to laptop
-    if(sticker[i].data.values.currentLaptop != -1)
-      sticker[i].setPosition(laptops.children.entries[sticker[i].data.values.currentLaptop].x + sticker[i].data.values.lapDiffX,
-        laptops.children.entries[sticker[i].data.values.currentLaptop].y + sticker[i].data.values.lapDiffY);
+    if(stickers.children.entries[i].data.values.currentLaptop != -1)
+      stickers.children.entries[i].setPosition(laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x + stickers.children.entries[i].data.values.lapDiffX,
+        laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y + stickers.children.entries[i].data.values.lapDiffY);
   }
 
   for(var j in laptops.children.entries)
@@ -380,16 +380,16 @@ update: function()
       laptops.children.entries[j].disableBody(true, true);
 
       //Sticker resets when accompanying laptop leaves the screen
-      var stickerIndex = sticker.findIndex((stick) => {
+      var stickerIndex = stickers.children.entries.findIndex((stick) => {
         return stick.data.values.currentLaptop == j;
       });
       if(stickerIndex != -1)
       {
-        sticker[stickerIndex].data.values.currentLaptop = -1;
-        sticker[stickerIndex].data.values.lapDiffX = 0;
-        sticker[stickerIndex].data.values.lapDiffY = 0;
-        sticker[stickerIndex].data.values.stickerOnLaptop = false;
-        sticker[stickerIndex].body.setAllowGravity(true);
+        stickers.children.entries[stickerIndex].data.values.currentLaptop = -1;
+        stickers.children.entries[stickerIndex].data.values.lapDiffX = 0;
+        stickers.children.entries[stickerIndex].data.values.lapDiffY = 0;
+        stickers.children.entries[stickerIndex].data.values.stickerOnLaptop = false;
+        stickers.children.entries[stickerIndex].body.setAllowGravity(true);
       }
     }
 
