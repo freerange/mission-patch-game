@@ -72,7 +72,7 @@ create: function()
     gameDelay = null;
 
   //Game Background
-  background = this.add.sprite(0, 0, 'office', frame = 10).setOrigin(0, 0);
+  background = this.add.sprite(0, 0, 'office').setOrigin(0, 0);
   background.setScale(config.width/800, config.height/600);
 
   //Game Particles
@@ -338,6 +338,14 @@ create: function()
 
 update: function()
 {
+  var laptopsCaught = Math.floor((laptopsAtOnce - laptopsLeft)/(laptopsAtOnce/25)) + 1;
+  console.log(laptopsCaught);
+  if(laptopsCaught < 10)
+    background.setFrame('000' + laptopsCaught + '.png');
+  else
+    background.setFrame('00' + laptopsCaught + '.png');
+
+
   for(var i in stickers.children.entries)
   {
     //Gives moving from camera effect
@@ -602,7 +610,7 @@ class MainMenu extends Phaser.Scene
                     {
                       chuckButton.setStyle({ fill: '#aa0'});
                       master.sound.play('gong');
-                      master.scene.start('mainGame', { laptopsAtOnce: 50, countdownSeconds: 60, modeSelect: 1});
+                      master.scene.start('mainGame', { laptopsAtOnce: 100, countdownSeconds: 120, modeSelect: 1});
                       master.scene.stop();
                     }
                   })
