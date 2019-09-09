@@ -5,15 +5,15 @@ var mainGame = new Phaser.Class(function()
 
   var tar;
   var stickersAtOnce = 5;
-  var laptopsAtOnce = 16;
+  var laptopsAtOnce;
 
   var laptopsLeft;
-  var modeSelect = 0;
+  var modeSelect;
 
   var master;
 
   var countdownTimer;
-  var countdownSeconds = 20;
+  var countdownSeconds;
   var timerText;
 
   var scoreText;
@@ -29,6 +29,15 @@ var mainGame = new Phaser.Class(function()
 
 return {
 Extends: Phaser.Scene,
+
+init: function(data)
+{
+  console.log('init', data);
+
+  laptopsAtOnce = data.laptopsAtOnce;
+  countdownSeconds = data.countdownSeconds;
+  modeSelect = data.modeSelect;
+},
 
 preload: function()
 {
@@ -170,6 +179,7 @@ create: function()
 
   for(var i = 0; i < laptopsAtOnce; i++)
   {
+    console.log(modeSelect);
     createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
     laptop[i] = laptops.children.entries[i];
     laptSpread++;
@@ -573,8 +583,7 @@ class MainMenu extends Phaser.Scene
         {
           startButton.setStyle({ fill: '#aa0'});
           this.sound.play('gong');
-          // this.scene.add('mainGame', mainGame, true, { laptopsAtOnce: 16, countdownSeconds: 20, modeSelect: 0});
-          this.scene.start('mainGame');
+          this.scene.start('mainGame', { laptopsAtOnce: 100, countdownSeconds: 10, modeSelect: 1});
           this.scene.stop();
         }
       })
