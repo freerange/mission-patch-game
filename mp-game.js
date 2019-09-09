@@ -1,7 +1,5 @@
 var mainGame = new Phaser.Class(function()
 {
-  // var sticker = [];
-
   var tar;
   var stickersAtOnce = 5;
   var laptopsAtOnce;
@@ -31,8 +29,6 @@ Extends: Phaser.Scene,
 
 init: function(data)
 {
-  console.log('init', data);
-
   laptopsAtOnce = data.laptopsAtOnce;
   countdownSeconds = data.countdownSeconds;
   modeSelect = data.modeSelect;
@@ -46,6 +42,8 @@ preload: function()
   this.load.image('target', 'assets/cursor.png');
   this.load.image('sky', 'assets/sky.png');
   this.load.image('patch', 'assets/patch.png');
+
+  this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
 
   this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
   this.load.text('blast', 'assets/particles/Blast.json');
@@ -68,12 +66,13 @@ preload: function()
 
 create: function()
 {
+
   //Resets variable on repeat (will delete once bug is figured out)
   if(gameDelay != null)
     gameDelay = null;
 
   //Game Background
-  background = this.add.image(0, 0, 'sky').setOrigin(0, 0);
+  background = this.add.sprite(0, 0, 'office', frame = 10).setOrigin(0, 0);
   background.setScale(config.width/800, config.height/600);
 
   //Game Particles
