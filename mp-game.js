@@ -179,7 +179,7 @@ create: function()
 
   for(var i = 0; i < laptopsAtOnce; i++)
   {
-    console.log(modeSelect);
+    console.log('added');
     createLaptop(laptop[i], Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
     laptop[i] = laptops.children.entries[i];
     laptSpread++;
@@ -520,6 +520,7 @@ update: function()
                 callback: ()=> {
                   gameOver = false;
                   var menuScene = this.scene.get('mainMenu');
+                  laptop = [];
                   finish.stop();
                   menuScene.scene.restart();
                   this.scene.stop();
@@ -564,6 +565,7 @@ class MainMenu extends Phaser.Scene
         {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
         title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
 
+      var master = this;
 
       title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
 
@@ -581,14 +583,43 @@ class MainMenu extends Phaser.Scene
       .on('pointerdown', (pointer)=> {
         if(pointer.leftButtonDown())
         {
-          startButton.setStyle({ fill: '#aa0'});
-          this.sound.play('gong');
-          this.scene.start('mainGame', { laptopsAtOnce: 100, countdownSeconds: 10, modeSelect: 1});
-          this.scene.stop();
+          startButton.destroy();
+          const bounceButton = master.add.text(rect.x - 100, rect.y + 135, 'Bounce mode',
+            {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
+            .setInteractive()
+            .on('pointerdown', (pointer)=> {
+                if(pointer.leftButtonDown())
+                {
+                  bounceButton.setStyle({ fill: '#aa0'});
+                  master.sound.play('gong');
+                  master.scene.start('mainGame', { laptopsAtOnce: 16, countdownSeconds: 20, modeSelect: 0});
+                  master.scene.stop();
+                }
+              })
+              .on('pointerover', () => bounceButton.setStyle({ fill: '#ff0'}) )
+              .on('pointerout', () => bounceButton.setStyle({ fill: '#fff' }) );
+
+              const chuckButton = master.add.text(rect.x + 100, rect.y + 135, 'Chuck mode',
+                {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
+                .setInteractive()
+                .on('pointerdown', (pointer)=> {
+                    if(pointer.leftButtonDown())
+                    {
+                      chuckButton.setStyle({ fill: '#aa0'});
+                      master.sound.play('gong');
+                      master.scene.start('mainGame', { laptopsAtOnce: 50, countdownSeconds: 60, modeSelect: 1});
+                      master.scene.stop();
+                    }
+                  })
+                  .on('pointerover', () => chuckButton.setStyle({ fill: '#ff0'}) )
+                  .on('pointerout', () => chuckButton.setStyle({ fill: '#fff' }) );
+
         }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
       .on('pointerout', () => startButton.setStyle({ fill: '#fff' }) );
+
+
   }
 
 }
