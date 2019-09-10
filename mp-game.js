@@ -101,9 +101,9 @@ create: function()
   var laptSpread = 1;
 
   var laptopFrames = this.anims.generateFrameNames('laptop_1', {
-    start: 1, end: 6, zeroPad: 4, suffix: '.png'
+    start: 1, end: 4, zeroPad: 4, suffix: '.png'
   });
-  this.anims.create({ key: 'open/close', frames: laptopFrames, framerate: 4, repeat: -1 });
+  this.anims.create({ key: 'open/close', frames: laptopFrames, duration: 500, repeat: 0, yoyo: true, showOnStart: true });
 
   function createLaptop(laptop, bounce, mode)
   {
@@ -114,9 +114,18 @@ create: function()
         Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
-        laptop.height = laptop.height/2;
-        laptop.anims.play('open/close');
-      }
+      laptop.height = laptop.height/2;
+      laptop.anims.play('open/close');
+      master.time.addEvent(
+      {
+          delay: 1000,
+          callback: ()=> {
+            laptop.anims.play('open/close');
+          },
+          callbackScope: this,
+          loop: true
+      });
+    }
 
       laptop.setData({ laptopMode: mode });
       var velX = (laptop.x > (config.width/2)) ? -1 : 1;
