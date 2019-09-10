@@ -163,7 +163,6 @@ create: function()
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
         laptop.data.values.laptopID = laptops.children.entries.length - 1;
-        console.log(laptops.children.entries.length - 1);
         master.anims.create({ key: 'open/close' + laptop.data.values.laptopID, frames: laptopFrames, duration: 500, repeat: 0, yoyo: true });
         laptop.anims.play('open/close' + laptop.data.values.laptopID);
         laptop.data.values.currentTimer = master.time.addEvent(
@@ -645,7 +644,11 @@ class MainMenu extends Phaser.Scene
         if(pointer.leftButtonDown())
         {
           startButton.destroy();
-          const bounceButton = master.add.text(rect.x - 100, rect.y + 135, 'Bounce mode',
+          graphics.clear();
+          var rect2 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
+          rect2.setPosition((config.width/2)-(rect2.width-20), (config.height/2)-50);
+          graphics.fillRectShape(rect2);
+          const bounceButton = master.add.text(rect2.x + 10, rect2.y + 10, 'Bounce mode',
             {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
             .setInteractive()
             .on('pointerdown', (pointer)=> {
@@ -660,7 +663,10 @@ class MainMenu extends Phaser.Scene
               .on('pointerover', () => bounceButton.setStyle({ fill: '#ff0'}) )
               .on('pointerout', () => bounceButton.setStyle({ fill: '#fff' }) );
 
-              const chuckButton = master.add.text(rect.x + 100, rect.y + 135, 'Chuck mode',
+              var rect3 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
+              rect3.setPosition((config.width/2)+(rect3.width+20), (config.height/2)-50);
+              graphics.fillRectShape(rect3);
+              const chuckButton = master.add.text(rect3.x + 10, rect3.y + 10, 'Chuck mode',
                 {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
                 .setInteractive()
                 .on('pointerdown', (pointer)=> {
