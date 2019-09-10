@@ -39,7 +39,6 @@ preload: function()
 {
   //Loads all assets
   this.load.image('laptop_0', 'assets/laptop.png');
-  // this.load.image('laptop_1', 'assets/laptop-2.png');
   this.load.image('target', 'assets/cursor.png');
   this.load.image('sky', 'assets/sky.png');
   this.load.image('patch', 'assets/patch.png');
@@ -112,17 +111,18 @@ create: function()
       laptop = laptops.create(Phaser.Math.Between(0, config.width),
         Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
 
-      laptop.setData({ laptopMode: mode, currentTimer: null });
+      laptop.setData({ laptopMode: mode, laptopID: -1, currentTimer: null });
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
-        master.anims.create({ key: 'open/close' + laptSpread, frames: laptopFrames, duration: 500, repeat: 0, yoyo: true });
-        laptop.anims.play('open/close' + laptSpread);
+        laptop.data.values.laptopID = laptops.children.entries.length - 1;
+        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID, frames: laptopFrames, duration: 500, repeat: 0, yoyo: true });
+        laptop.anims.play('open/close' + laptop.data.values.laptopID);
         laptop.data.values.currentTimer = master.time.addEvent(
         {
             delay: 1500,
             callback: ()=> {
-              laptop.anims.play('open/close' + laptSpread);
+              laptop.anims.play('open/close' + laptop.data.values.laptopID);
             },
             callbackScope: this,
             loop: true
@@ -157,18 +157,20 @@ create: function()
 
       //Sets up laptop
       laptop = laptops.create(posX, posY, 'laptop_' + Phaser.Math.Between(0, 1));
-      laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true, currentTimer: null });
+      laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true, laptopID: -1, currentTimer: null });
 
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
-        master.anims.create({ key: 'open/close' + laptSpread, frames: laptopFrames, duration: 500, repeat: 0, yoyo: true });
-        laptop.anims.play('open/close' + laptSpread);
+        laptop.data.values.laptopID = laptops.children.entries.length - 1;
+        console.log(laptops.children.entries.length - 1);
+        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID, frames: laptopFrames, duration: 500, repeat: 0, yoyo: true });
+        laptop.anims.play('open/close' + laptop.data.values.laptopID);
         laptop.data.values.currentTimer = master.time.addEvent(
         {
             delay: 1500,
             callback: ()=> {
-              laptop.anims.play('open/close' + laptSpread);
+              laptop.anims.play('open/close' + laptop.data.values.laptopID);
             },
             callbackScope: this,
             loop: true
@@ -432,6 +434,9 @@ update: function()
       if(laptops.children.entries[j].data.values.hasSticker && particle1.emitters.list[0].on)
         particle1.emitters.list[0].on = false;
 
+      if(laptops.children.entries[j].texture.key == 'laptop_1')
+        laptops.children.entries[j].data.values.currentTimer.remove();
+
       if(!laptops.children.entries[j].data.values.hasSticker)
         this.sound.add('crash', {
           volume: Phaser.Math.FloatBetween(0.6, 0.7),
@@ -663,7 +668,7 @@ class MainMenu extends Phaser.Scene
                     {
                       chuckButton.setStyle({ fill: '#aa0'});
                       master.sound.play('gong');
-                      master.scene.start('mainGame', { laptopsAtOnce: 100, countdownSeconds: 120, modeSelect: 1});
+                      master.scene.start('mainGame', { laptopsAtOnce: 60, countdownSeconds: 120, modeSelect: 1});
                       master.scene.stop();
                     }
                   })
