@@ -103,7 +103,6 @@ create: function()
   var laptopFrames = this.anims.generateFrameNames('laptop_1', {
     start: 1, end: 4, zeroPad: 4, suffix: '.png'
   });
-  this.anims.create({ key: 'open/close', frames: laptopFrames, duration: 500, repeat: 0, yoyo: true, showOnStart: true });
 
   function createLaptop(laptop, bounce, mode)
   {
@@ -112,22 +111,24 @@ create: function()
     {
       laptop = laptops.create(Phaser.Math.Between(0, config.width),
         Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
+
+      laptop.setData({ laptopMode: mode, currentTimer: null });
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
-      laptop.height = laptop.height/2;
-      laptop.anims.play('open/close');
-      master.time.addEvent(
-      {
-          delay: 1500,
-          callback: ()=> {
-            laptop.anims.play('open/close');
-          },
-          callbackScope: this,
-          loop: true
-      });
-    }
+        laptop.height = laptop.height/2;
+        master.anims.create({ key: 'open/close' + laptSpread, frames: laptopFrames, duration: 500, repeat: 0, yoyo: true });
+        laptop.anims.play('open/close' + laptSpread);
+        laptop.data.values.currentTimer = master.time.addEvent(
+        {
+            delay: 1500,
+            callback: ()=> {
+              laptop.anims.play('open/close' + laptSpread);
+            },
+            callbackScope: this,
+            loop: true
+        });
+      }
 
-      laptop.setData({ laptopMode: mode });
       var velX = (laptop.x > (config.width/2)) ? -1 : 1;
       var velY = (laptop.y > (config.height/2)) ? -1 : 1;
       laptop.setVelocity(Phaser.Math.Between(400, 600) * velX,
@@ -156,22 +157,24 @@ create: function()
 
       //Sets up laptop
       laptop = laptops.create(posX, posY, 'laptop_' + Phaser.Math.Between(0, 1));
+      laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true, currentTimer: null });
+
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
-        laptop.anims.play('open/close');
-        master.time.addEvent(
+        master.anims.create({ key: 'open/close' + laptSpread, frames: laptopFrames, duration: 500, repeat: 0, yoyo: true });
+        laptop.anims.play('open/close' + laptSpread);
+        laptop.data.values.currentTimer = master.time.addEvent(
         {
             delay: 1500,
             callback: ()=> {
-              laptop.anims.play('open/close');
+              laptop.anims.play('open/close' + laptSpread);
             },
             callbackScope: this,
             loop: true
         });
       }
 
-      laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true });
       laptop.disableBody(true, true);
 
       var laptSetDelay = (((countdownSeconds * 1000)/laptopsAtOnce) * laptSpread) + Phaser.Math.Between(-(((countdownSeconds * 1000)/laptopsAtOnce)/2), (((countdownSeconds * 1000)/laptopsAtOnce)/2));
@@ -257,6 +260,10 @@ create: function()
       volume: 0.6,
       rate: 1.0 + Phaser.Math.FloatBetween(-0.15, 0.15)
     }).play();
+
+    if(lapt.texture.key == 'laptop_1')
+      lapt.data.values.currentTimer.remove();
+
     stick.data.values.currentLaptop = index;
     stick.data.values.lapDiffX = stick.x - lapt.x;
     stick.data.values.lapDiffY = stick.y - lapt.y;
@@ -291,7 +298,8 @@ create: function()
       if(stick.scale <= 0.1 && stick.data.values.patchSticking
       && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity)
       && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)
-      && !stick.data.values.stickerOnLaptop && !lapt.data.values.hasSticker)
+      && !stick.data.values.stickerOnLaptop && !lapt.data.values.hasSticker
+      && (lapt.texture.key == 'laptop_0' || (lapt.texture.key == 'laptop_1' && lapt.frame.name == '0001.png')))
       {
             laptopsLeft--;
 
