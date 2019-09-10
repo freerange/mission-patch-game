@@ -118,7 +118,7 @@ create: function()
       laptop.anims.play('open/close');
       master.time.addEvent(
       {
-          delay: 1000,
+          delay: 1500,
           callback: ()=> {
             laptop.anims.play('open/close');
           },
@@ -160,6 +160,15 @@ create: function()
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
         laptop.anims.play('open/close');
+        master.time.addEvent(
+        {
+            delay: 1500,
+            callback: ()=> {
+              laptop.anims.play('open/close');
+            },
+            callbackScope: this,
+            loop: true
+        });
       }
 
       laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true });
