@@ -74,7 +74,7 @@ create: function()
     gameDelay = null;
 
   //Game Background
-  background = this.add.sprite(0, 0, 'office').setOrigin(0, 0);
+  background = this.add.sprite(0, 0, 'office', '0001.png').setOrigin(0, 0);
   background.setScale(config.width/800, config.height/600);
 
   //Game Particles
@@ -100,6 +100,11 @@ create: function()
   //Always starts at 1
   var laptSpread = 1;
 
+  var laptopFrames = this.anims.generateFrameNames('laptop_1', {
+    start: 1, end: 6, zeroPad: 4, suffix: '.png'
+  });
+  this.anims.create({ key: 'open/close', frames: laptopFrames, framerate: 4, repeat: -1 });
+
   function createLaptop(laptop, bounce, mode)
   {
     // Mode 0 = Bounce mode
@@ -109,9 +114,8 @@ create: function()
         Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
-        console.log(laptop.height);
         laptop.height = laptop.height/2;
-        console.log(laptop.height);
+        laptop.anims.play('open/close');
       }
 
       laptop.setData({ laptopMode: mode });
@@ -145,9 +149,8 @@ create: function()
       laptop = laptops.create(posX, posY, 'laptop_' + Phaser.Math.Between(0, 1));
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
-        console.log(laptop.height);
         laptop.height = laptop.height/2;
-        console.log(laptop.height);
+        laptop.anims.play('open/close');
       }
 
       laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true });
