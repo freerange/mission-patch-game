@@ -39,12 +39,13 @@ preload: function()
 {
   //Loads all assets
   this.load.image('laptop_0', 'assets/laptop.png');
-  this.load.image('laptop_1', 'assets/laptop-2.png');
+  // this.load.image('laptop_1', 'assets/laptop-2.png');
   this.load.image('target', 'assets/cursor.png');
   this.load.image('sky', 'assets/sky.png');
   this.load.image('patch', 'assets/patch.png');
 
   this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
+  this.load.multiatlas('laptop_1', 'assets/spritesheets/laptop/Laptop.json', 'assets/spritesheets/laptop');
 
   this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
   this.load.text('blast', 'assets/particles/Blast.json');
@@ -106,6 +107,13 @@ create: function()
     {
       laptop = laptops.create(Phaser.Math.Between(0, config.width),
         Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
+      if(laptop.texture.key == 'laptop_1') {
+        laptop.setFrame('0001.png');
+        console.log(laptop.height);
+        laptop.height = laptop.height/2;
+        console.log(laptop.height);
+      }
+
       laptop.setData({ laptopMode: mode });
       var velX = (laptop.x > (config.width/2)) ? -1 : 1;
       var velY = (laptop.y > (config.height/2)) ? -1 : 1;
@@ -135,6 +143,13 @@ create: function()
 
       //Sets up laptop
       laptop = laptops.create(posX, posY, 'laptop_' + Phaser.Math.Between(0, 1));
+      if(laptop.texture.key == 'laptop_1') {
+        laptop.setFrame('0001.png');
+        console.log(laptop.height);
+        laptop.height = laptop.height/2;
+        console.log(laptop.height);
+      }
+
       laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true });
       laptop.disableBody(true, true);
 
@@ -630,8 +645,6 @@ class MainMenu extends Phaser.Scene
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
       .on('pointerout', () => startButton.setStyle({ fill: '#fff' }) );
-
-
   }
 
 }
