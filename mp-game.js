@@ -116,7 +116,8 @@ create: function()
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
         laptop.data.values.laptopID = laptops.children.entries.length - 1;
-        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID, frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
+        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID,
+          frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
         laptop.anims.play('open/close' + laptop.data.values.laptopID);
         laptop.data.values.currentTimer = master.time.addEvent(
         {
@@ -157,13 +158,15 @@ create: function()
 
       //Sets up laptop
       laptop = laptops.create(posX, posY, 'laptop_' + Phaser.Math.Between(0, 1));
-      laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true, laptopID: -1, currentTimer: null });
+      laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true,
+        laptopID: -1, currentTimer: null });
 
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
         laptop.data.values.laptopID = laptops.children.entries.length - 1;
-        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID, frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
+        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID,
+          frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
         laptop.anims.play('open/close' + laptop.data.values.laptopID);
         laptop.data.values.currentTimer = master.time.addEvent(
         {
@@ -178,7 +181,9 @@ create: function()
 
       laptop.disableBody(true, true);
 
-      var laptSetDelay = (((countdownSeconds * 1000)/laptopsAtOnce) * laptSpread) + Phaser.Math.Between(-(((countdownSeconds * 1000)/laptopsAtOnce)/2), (((countdownSeconds * 1000)/laptopsAtOnce)/2));
+      var laptSetDelay = (((countdownSeconds * 1000)/laptopsAtOnce) * laptSpread) +
+        Phaser.Math.Between(-(((countdownSeconds * 1000)/laptopsAtOnce)/2),
+        (((countdownSeconds * 1000)/laptopsAtOnce)/2));
 
       if(laptSetDelay < 500)
         laptSetDelay = 500;
@@ -192,15 +197,29 @@ create: function()
           delay: laptSetDelay - 750,                // ms
           callback: ()=> {
             if(compX < compY && posX > (config.width/2))
-              var readyText = master.add.text(posX - 200, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+              var readyText = master.add.text(posX - 200, posY, 'Ready?',
+                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
+                fontStyle: 'bold', fill: '#2E2ED1' });
+
             else if(compX < compY && posX <= (config.width/2))
-              var readyText = master.add.text(posX + 125, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+              var readyText = master.add.text(posX + 125, posY, 'Ready?',
+                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
+                fontStyle: 'bold', fill: '#2E2ED1' });
+
             else if(compY <= compX && posX >= (config.width-100))
-              var readyText = master.add.text(config.width-100, posY - 100, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+              var readyText = master.add.text(config.width-100, posY - 100, 'Ready?',
+                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
+                fontStyle: 'bold', fill: '#2E2ED1' });
+
             else if(compY <= compX && posX <= 50)
-              var readyText = master.add.text(50, posY - 100, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+              var readyText = master.add.text(50, posY - 100, 'Ready?',
+                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
+                fontStyle: 'bold', fill: '#2E2ED1' });
+
             else
-              var readyText = master.add.text(posX, posY - 100, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+              var readyText = master.add.text(posX, posY - 100, 'Ready?',
+                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
+                fontStyle: 'bold', fill: '#2E2ED1' });
             timer = master.time.addEvent(
               {
                 delay: 750,
@@ -269,7 +288,8 @@ create: function()
     stickers.children.entries[i].setData({ patchSticking: false, currentLaptop: -1,
       lapDiffX: 0, lapDiffY: 0, stickerOnLaptop: false });
     stickers.children.entries[i].scale = 0.8;
-    stickers.children.entries[i].setScale(stickers.children.entries[i].scale, stickers.children.entries[i].scale);
+    stickers.children.entries[i].setScale(stickers.children.entries[i].scale,
+      stickers.children.entries[i].scale);
     stickers.children.entries[i].disableBody(true, true);
 
 
@@ -321,7 +341,8 @@ create: function()
       && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity)
       && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)
       && !stick.data.values.stickerOnLaptop && !lapt.data.values.hasSticker
-      && (lapt.texture.key == 'laptop_0' || (lapt.texture.key == 'laptop_1' && lapt.frame.name == '0001.png')))
+      && (lapt.texture.key == 'laptop_0' || (lapt.texture.key == 'laptop_1'
+      && lapt.frame.name == '0001.png')))
       {
             laptopsLeft--;
 
@@ -372,12 +393,14 @@ create: function()
       {
         for(var i in stickers.children.entries)
         {
-          if(stickers.children.entries[i].y > (config.height + stickers.children.entries[i].height) || !stickers.children.entries[i].active)
+          if(stickers.children.entries[i].y > (config.height + stickers.children.entries[i].height)
+          || !stickers.children.entries[i].active)
           {
               master.sound.add('throw', {
                 volume: 0.8
               }).play();
-              stickers.children.entries[i].enableBody(true, tar.x + ((stickers.children.entries[i].width * 0.1)/2),
+              stickers.children.entries[i].enableBody(true, tar.x +
+                ((stickers.children.entries[i].width * 0.1)/2),
                 tar.y + ((stickers.children.entries[i].height * 0.1)/2), true, true);
               stickers.children.entries[i].data.values.patchSticking = true;
 
@@ -424,31 +447,40 @@ update: function()
   for(var i in stickers.children.entries)
   {
     //Gives moving from camera effect
-    if(stickers.children.entries[i].scale > 0.1 && stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
+    if(stickers.children.entries[i].scale > 0.1 && stickers.children.entries[i].active
+      && stickers.children.entries[i].data.values.patchSticking)
     {
         stickers.children.entries[i].scale -= 0.035;
-        stickers.children.entries[i].setScale(stickers.children.entries[i].scale, stickers.children.entries[i].scale);
+        stickers.children.entries[i].setScale(stickers.children.entries[i].scale,
+          stickers.children.entries[i].scale);
     }
     //Will drop when shrunk to a certain size
-    else if(stickers.children.entries[i].scale <= 0.1 && stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
+    else if(stickers.children.entries[i].scale <= 0.1 && stickers.children.entries[i].active
+      && stickers.children.entries[i].data.values.patchSticking)
     {
         this.sound.add('smack', {
           volume: 0.8
         }).play();
         stickers.children.entries[i].disableBody(true, false);
-        stickers.children.entries[i].enableBody(true, stickers.children.entries[i].x, stickers.children.entries[i].y, true, true);
+        stickers.children.entries[i].enableBody(true, stickers.children.entries[i].x,
+          stickers.children.entries[i].y, true, true);
         stickers.children.entries[i].data.values.patchSticking = false;
     }
 
     //Keeps position relative to laptop
     if(stickers.children.entries[i].data.values.currentLaptop != -1)
-      stickers.children.entries[i].setPosition(laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x + stickers.children.entries[i].data.values.lapDiffX,
-        laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y + stickers.children.entries[i].data.values.lapDiffY);
+      stickers.children.entries[i].setPosition(
+        laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x
+        + stickers.children.entries[i].data.values.lapDiffX,
+        laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y
+        + stickers.children.entries[i].data.values.lapDiffY
+      );
   }
 
   for(var j in laptops.children.entries)
   {
-    if(laptops.children.entries[j].active && laptops.children.entries[j].y > config.height + laptops.children.entries[j].height + 50)
+    if(laptops.children.entries[j].active && laptops.children.entries[j].y > config.height
+      + laptops.children.entries[j].height + 50)
     {
       //For optimisation reasons, laptop disables itself when it leaves the screen
       if(laptops.children.entries[j].data.values.hasSticker && particle1.emitters.list[0].on)
@@ -507,7 +539,8 @@ update: function()
             var finishText = this.add.text(0, 0, 'All laptops are Patched',
             { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
             fontStyle: 'bold', fill: '#000' });
-            finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
+            finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)),
+              (config.height/2) - 50);
 
             // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
             // particle2.emitters.list[0].startFollow(finishText);
@@ -574,7 +607,8 @@ update: function()
                 var finishText = this.add.text(0, 0, 'No laptops were patched',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
                 fontStyle: 'bold', fill: '#000' });
-                finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
+                finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)),
+                  (config.height/2) - 50);
                 // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
                 // particle2.emitters.list[0].startFollow(finishText);
               }
