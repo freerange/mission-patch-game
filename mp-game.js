@@ -637,7 +637,7 @@ class MainMenu extends Phaser.Scene
   preload ()
   {
     //This is a test sound; will change later
-    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav')
+    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
   }
   create ()
   {
@@ -712,7 +712,7 @@ class MainMenu extends Phaser.Scene
 
 class PauseMenu extends Phaser.Scene
 {
-  preload()
+  preload ()
   {
     // this.load.image('button', 'assets/button.png');
   }
@@ -769,6 +769,11 @@ class PauseMenu extends Phaser.Scene
 
 class ChuckModeInstructions extends Phaser.Scene
 {
+  preload ()
+  {
+    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
+  }
+
   create ()
   {
     var title = this.add.text(0, 0, 'Chuck Mode',
@@ -778,6 +783,21 @@ class ChuckModeInstructions extends Phaser.Scene
     this.add.text((config.width/2) - 350, (config.height/2),
       'Catch the incoming flying laptops by sticking them with a mission patch within two minutes',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+
+    const playButton = this.add.text((config.width/2)-75, (config.height/2)+50, 'Play',
+      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
+      .setInteractive()
+      .on('pointerdown', (pointer)=> {
+          if(pointer.leftButtonDown())
+          {
+            playButton.setStyle({ fill: '#aa0'});
+            this.sound.play('gong');
+            this.scene.start('mainGame', { laptopsAtOnce: 100, countdownSeconds: 120, modeSelect: 1});
+            this.scene.stop();
+          }
+        })
+        .on('pointerover', () => playButton.setStyle({ fill: '#ff0'}) )
+        .on('pointerout', () => playButton.setStyle({ fill: '#fff' }) );
   }
 }
 
@@ -804,4 +824,4 @@ game.scene.add('mainGame', mainGame);
 game.scene.add('pauseMenu', PauseMenu);
 game.scene.add('chuckMode', ChuckModeInstructions);
 
-game.scene.start('mainMenu');
+game.scene.start('chuckMode');
