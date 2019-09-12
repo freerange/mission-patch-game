@@ -81,9 +81,9 @@ create: function()
     + this.cache.text.get('blast'))());
   particle1.emitters.list[0].on = false;
 
-  particle2 = this.add.particles('shapes',  new Function('return '
-    + this.cache.text.get('explosion'))());
-  particle2.emitters.list[0].on = false;
+  // particle2 = this.add.particles('shapes',  new Function('return '
+  //   + this.cache.text.get('explosion'))());
+  // particle2.emitters.list[0].on = false;
 
   //Launch Groups
   laptops = this.physics.add.group();
@@ -116,7 +116,7 @@ create: function()
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
         laptop.data.values.laptopID = laptops.children.entries.length - 1;
-        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID, frames: laptopFrames, duration: 500, repeat: 0, yoyo: true });
+        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID, frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
         laptop.anims.play('open/close' + laptop.data.values.laptopID);
         laptop.data.values.currentTimer = master.time.addEvent(
         {
@@ -163,7 +163,7 @@ create: function()
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
         laptop.data.values.laptopID = laptops.children.entries.length - 1;
-        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID, frames: laptopFrames, duration: 500, repeat: 0, yoyo: true });
+        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID, frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
         laptop.anims.play('open/close' + laptop.data.values.laptopID);
         laptop.data.values.currentTimer = master.time.addEvent(
         {
@@ -405,7 +405,7 @@ update: function()
     //Gives moving from camera effect
     if(stickers.children.entries[i].scale > 0.1 && stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
     {
-        stickers.children.entries[i].scale -= 0.032;
+        stickers.children.entries[i].scale -= 0.035;
         stickers.children.entries[i].setScale(stickers.children.entries[i].scale, stickers.children.entries[i].scale);
     }
     //Will drop when shrunk to a certain size
@@ -480,16 +480,16 @@ update: function()
             timerText.setText('');
             tar.disableBody(true, true);
             var finish = this.sound.add('results');
-            finish.play();
-            particle2.emitters.list[0].on = true;
+            // finish.play();
+            // particle2.emitters.list[0].on = true;
 
             var finishText = this.add.text(0, 0, 'All laptops are Patched',
             { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
             fontStyle: 'bold', fill: '#000' });
             finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
 
-            particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-            particle2.emitters.list[0].startFollow(finishText);
+            // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+            // particle2.emitters.list[0].startFollow(finishText);
             this.time.addEvent(
               {
               delay: 5000,
@@ -544,8 +544,8 @@ update: function()
               timerText.setText('');
               tar.disableBody(true, true);
               var finish = this.sound.add('results');
-              finish.play();
-              particle2.emitters.list[0].on = true;
+              // finish.play();
+              // particle2.emitters.list[0].on = true;
 
               //Dialog will change depending on how many laptops you have patched
               if(laptopsAtOnce - laptopsLeft == 0)
@@ -554,16 +554,16 @@ update: function()
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
                 fontStyle: 'bold', fill: '#000' });
                 finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
-                particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-                particle2.emitters.list[0].startFollow(finishText);
+                // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+                // particle2.emitters.list[0].startFollow(finishText);
               }
               else if(laptopsAtOnce - laptopsLeft == 1)
               {
                 var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
                   { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
                 finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
-                particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-                particle2.emitters.list[0].startFollow(finishText);
+                // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+                // particle2.emitters.list[0].startFollow(finishText);
               }
 
               else
@@ -571,8 +571,8 @@ update: function()
                 var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
                   { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
                 finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
-                particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-                particle2.emitters.list[0].startFollow(finishText);
+                // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+                // particle2.emitters.list[0].startFollow(finishText);
               }
 
               this.time.addEvent(
@@ -646,7 +646,7 @@ class MainMenu extends Phaser.Scene
           startButton.destroy();
           graphics.clear();
           var rect2 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
-          rect2.setPosition((config.width/2)-(rect2.width-20), (config.height/2)-50);
+          rect2.setPosition((config.width/2)-(rect2.width + 20), (config.height/2)-50);
           graphics.fillRectShape(rect2);
           const bounceButton = master.add.text(rect2.x + 10, rect2.y + 10, 'Bounce mode',
             {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
@@ -664,7 +664,7 @@ class MainMenu extends Phaser.Scene
               .on('pointerout', () => bounceButton.setStyle({ fill: '#fff' }) );
 
               var rect3 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
-              rect3.setPosition((config.width/2)+(rect3.width+20), (config.height/2)-50);
+              rect3.setPosition((config.width/2) + 20, (config.height/2)-50);
               graphics.fillRectShape(rect3);
               const chuckButton = master.add.text(rect3.x + 10, rect3.y + 10, 'Chuck mode',
                 {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
@@ -674,7 +674,7 @@ class MainMenu extends Phaser.Scene
                     {
                       chuckButton.setStyle({ fill: '#aa0'});
                       master.sound.play('gong');
-                      master.scene.start('mainGame', { laptopsAtOnce: 60, countdownSeconds: 120, modeSelect: 1});
+                      master.scene.start('mainGame', { laptopsAtOnce: 100, countdownSeconds: 120, modeSelect: 1});
                       master.scene.stop();
                     }
                   })
