@@ -188,20 +188,36 @@ create: function()
       //Random delay before chucking
       var timer = master.time.addEvent(
         {
-          delay: laptSetDelay,                // ms
+          delay: laptSetDelay - 750,                // ms
           callback: ()=> {
-            master.sound.add('laptThrow', {
-              volume: Phaser.Math.FloatBetween(0.2, 0.4),
-              rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
-            }).play();
-            laptop.enableBody(true, posX, posY, true, true);
-            laptop.data.values.delayActive = false;
-            var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-            var velY = (laptop.y > (config.height/2)) ? -1.375 : -0.5;
-            laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
-              Phaser.Math.Between(400, 600) * velY);
-            laptop.setBounce(bounce);
-            laptop.setScale(1.25);
+            if(compX < compY && posX > (config.width/2))
+              var readyText = master.add.text(posX - 150, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fill: '#000' });
+            else if(compX < compY && posX <= (config.width/2))
+              var readyText = master.add.text(posX + 150, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fill: '#000' });
+            else
+              var readyText = master.add.text(posX, posY - 100, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fill: '#000' });
+            master.time.addEvent(
+              {
+                delay: 750,
+                callback: ()=> {
+                  readyText.destroy();
+                  master.sound.add('laptThrow', {
+                    volume: Phaser.Math.FloatBetween(0.2, 0.4),
+                    rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
+                  }).play();
+                  laptop.enableBody(true, posX, posY, true, true);
+                  laptop.data.values.delayActive = false;
+                  var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+                  var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
+                  laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
+                    Phaser.Math.Between(400, 600) * velY);
+                  laptop.setBounce(bounce);
+                  laptop.setScale(1.25);
+                },
+                callbackScope: this,
+                loop: false
+              }
+            )
           },
           callbackScope: this,
           loop: false
@@ -708,9 +724,6 @@ class PauseMenu extends Phaser.Scene
     var rect2 = new Phaser.Geom.Rectangle((config.width/2) + 97, (config.height/2) + 150, 50, 30);
     graphics.fillStyle('#cf9830');
     graphics.fillRectShape(rect2);
-
-    // var button1 = this.add.image((config.width/2)-100, (config.height/2) + 150, 'button');
-    // button1.setScale(0.25, 0.125);
 
     //Text for "paused"
     this.add.text((config.width/2) - 50, config.height/2, 'Paused',
