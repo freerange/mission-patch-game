@@ -783,8 +783,11 @@ class ChuckModeInstructions extends Phaser.Scene
     this.add.text((config.width/2) - 350, (config.height/2),
       'Catch the incoming flying laptops by sticking them with a mission patch within two minutes',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+    this.add.text((config.width/2) - 350, (config.height/2)+30,
+      'Move the cursor around the screen and click to throw a sticker',
+      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
 
-    const playButton = this.add.text((config.width/2)-75, (config.height/2)+50, 'Play',
+    const playButton = this.add.text((config.width/2)-75, (config.height/2)+80, 'Play',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .on('pointerdown', (pointer)=> {
