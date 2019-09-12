@@ -767,6 +767,20 @@ class PauseMenu extends Phaser.Scene
   }
 }
 
+class ChuckModeInstructions extends Phaser.Scene
+{
+  create ()
+  {
+    var title = this.add.text(0, 0, 'Chuck Mode',
+      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
+      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
+
+    this.add.text((config.width/2) - 350, (config.height/2),
+      'Catch the incoming flying laptops by sticking them with a mission patch within two minutes',
+      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+  }
+}
+
 var config =
 {
     type: Phaser.AUTO,
@@ -788,5 +802,6 @@ var game = new Phaser.Game(config);
 game.scene.add('mainMenu', MainMenu);
 game.scene.add('mainGame', mainGame);
 game.scene.add('pauseMenu', PauseMenu);
+game.scene.add('chuckMode', ChuckModeInstructions);
 
 game.scene.start('mainMenu');
