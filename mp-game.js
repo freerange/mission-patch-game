@@ -186,17 +186,18 @@ create: function()
         laptSetDelay = (countdownSeconds * 1000);
 
       //Random delay before chucking
-      var timer = master.time.addEvent(
+      var timer;
+      master.time.addEvent(
         {
           delay: laptSetDelay - 750,                // ms
           callback: ()=> {
             if(compX < compY && posX > (config.width/2))
-              var readyText = master.add.text(posX - 150, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fill: '#000' });
+              var readyText = master.add.text(posX - 250, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
             else if(compX < compY && posX <= (config.width/2))
-              var readyText = master.add.text(posX + 150, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fill: '#000' });
+              var readyText = master.add.text(posX + 150, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
             else
-              var readyText = master.add.text(posX, posY - 100, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fill: '#000' });
-            master.time.addEvent(
+              var readyText = master.add.text(posX, posY - 100, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+            timer = master.time.addEvent(
               {
                 delay: 750,
                 callback: ()=> {
