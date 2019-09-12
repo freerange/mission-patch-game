@@ -192,9 +192,13 @@ create: function()
           delay: laptSetDelay - 750,                // ms
           callback: ()=> {
             if(compX < compY && posX > (config.width/2))
-              var readyText = master.add.text(posX - 250, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+              var readyText = master.add.text(posX - 200, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
             else if(compX < compY && posX <= (config.width/2))
-              var readyText = master.add.text(posX + 150, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+              var readyText = master.add.text(posX + 125, posY, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+            else if(compY <= compX && posX >= (config.width-100))
+              var readyText = master.add.text(config.width-100, posY - 100, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+            else if(compY <= compX && posX <= 50)
+              var readyText = master.add.text(50, posY - 100, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
             else
               var readyText = master.add.text(posX, posY - 100, 'Ready?', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
             timer = master.time.addEvent(
