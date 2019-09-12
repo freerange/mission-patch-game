@@ -53,7 +53,7 @@ preload: function()
   //Taken and edited from freesound.com
   this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
   this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
-  this.load.audio('smack', 'sounds/377157__pfranzen__smashing-head-on-wall(edited).wav');
+  this.load.audio('smack', 'sounds/37186__volivieri__newspapers-large-hard(edited).wav');
   this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
   this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
   this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
@@ -197,7 +197,7 @@ create: function()
             laptop.enableBody(true, posX, posY, true, true);
             laptop.data.values.delayActive = false;
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-            var velY = (laptop.y > (config.height/2)) ? -1.5 : -0.5;
+            var velY = (laptop.y > (config.height/2)) ? -1.375 : -0.5;
             laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
               Phaser.Math.Between(400, 600) * velY);
             laptop.setBounce(bounce);
