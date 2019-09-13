@@ -815,7 +815,9 @@ class BounceModeInstructions extends Phaser.Scene
 {
   preload ()
   {
+    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
 
+    this.load.image('preview', 'assets/bounce-mode-example.png');
   }
 
   create ()
@@ -823,6 +825,28 @@ class BounceModeInstructions extends Phaser.Scene
     var title = this.add.text(0, 0, 'Bounce Mode',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
       title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
+
+    this.add.text((config.width/2) - 390, (config.height/2)+105,
+      'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out',
+      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+
+      var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
+      previewPic.setScale(0.5);
+
+    const playButton = this.add.text(rect.x + 10, rect.y+10, 'Play',
+      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
+      .setInteractive()
+      .on('pointerdown', (pointer)=> {
+          if(pointer.leftButtonDown())
+          {
+            playButton.setStyle({ fill: '#aa0'});
+            this.sound.play('gong');
+            this.scene.start('mainGame', { laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
+            this.scene.stop();
+          }
+        })
+        .on('pointerover', () => playButton.setStyle({ fill: '#ff0'}) )
+        .on('pointerout', () => playButton.setStyle({ fill: '#fff' }) );
   }
 }
 
