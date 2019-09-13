@@ -585,7 +585,8 @@ update: function()
     //Will initiate game over sequence when timer runs out
     else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0)
     {
-      if(gameDelay == null)
+      if(gameDelay == null && (stickers.countActive(true) == 0 || (stickers.countActive(true) > 0
+      && stickers.children.entries.findIndex((stick) => { return stick.scale > 0.1 }) == -1)))
       {
         this.sound.play('timesUp');
         timerText.setText('Time\'s up');
@@ -711,7 +712,7 @@ class MainMenu extends Phaser.Scene
                 {
                   bounceButton.setStyle({ fill: '#aa0'});
                   master.sound.play('gong');
-                  master.scene.start('mainGame', { laptopsAtOnce: 16, countdownSeconds: 20, modeSelect: 0});
+                  master.scene.start('mainGame', { laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
                   master.scene.stop();
                 }
               })
