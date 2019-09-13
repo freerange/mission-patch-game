@@ -557,6 +557,7 @@ update: function()
               callback: ()=> {
                 gameOver = false;
                 var menuScene = this.scene.get('mainMenu');
+                this.anims.remove();
                 finish.stop();
                 menuScene.scene.restart();
                 this.scene.stop();
@@ -644,6 +645,7 @@ update: function()
                 callback: ()=> {
                   gameOver = false;
                   var menuScene = this.scene.get('mainMenu');
+                  this.anims.remove();
                   finish.stop();
                   menuScene.scene.restart();
                   this.scene.stop();
@@ -820,6 +822,8 @@ class ChuckModeInstructions extends Phaser.Scene
 
   create ()
   {
+    var graphics = this.add.graphics();
+
     var title = this.add.text(0, 0, 'Chuck Mode',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
       title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
@@ -827,12 +831,20 @@ class ChuckModeInstructions extends Phaser.Scene
     this.add.text((config.width/2) - 350, (config.height/2)+105,
       'Catch the incoming flying laptops by sticking them with a mission patch within two minutes',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+
     this.add.text((config.width/2) - 350, (config.height/2)+135,
       'Move the cursor around the screen and click to throw a sticker',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+
+    var rect = new Phaser.Geom.Rectangle((config.width/2)-25, (config.height/2)+185, 65, 50);
+    rect.setPosition((config.width/2)-25, (config.height/2)+185);
+    graphics.fillStyle('#cf9830');
+    graphics.fillRectShape(rect);
+
     var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
     previewPic.setScale(0.5);
-    const playButton = this.add.text((config.width/2)-25, (config.height/2)+185, 'Play',
+
+    const playButton = this.add.text(rect.x + 10, rect.y+10, 'Play',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .on('pointerdown', (pointer)=> {
