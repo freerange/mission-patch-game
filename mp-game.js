@@ -728,8 +728,8 @@ class MainMenu extends Phaser.Scene
                     if(pointer.leftButtonDown())
                     {
                       chuckButton.setStyle({ fill: '#aa0'});
-                      master.sound.play('gong');
-                      master.scene.start('mainGame', { laptopsAtOnce: 100, countdownSeconds: 120, modeSelect: 1});
+                      // master.sound.play('gong');
+                      master.scene.start('chuckMode');
                       master.scene.stop();
                     }
                   })
@@ -806,22 +806,25 @@ class ChuckModeInstructions extends Phaser.Scene
   preload ()
   {
     this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
+
+    this.load.image('preview', 'assets/chuck-mode-example.png');
   }
 
   create ()
   {
     var title = this.add.text(0, 0, 'Chuck Mode',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
-      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
+      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
 
-    this.add.text((config.width/2) - 350, (config.height/2),
+    this.add.text((config.width/2) - 350, (config.height/2)+105,
       'Catch the incoming flying laptops by sticking them with a mission patch within two minutes',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
-    this.add.text((config.width/2) - 350, (config.height/2)+30,
+    this.add.text((config.width/2) - 350, (config.height/2)+135,
       'Move the cursor around the screen and click to throw a sticker',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
-
-    const playButton = this.add.text((config.width/2)-75, (config.height/2)+80, 'Play',
+    var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
+    previewPic.setScale(0.5);
+    const playButton = this.add.text((config.width/2)-25, (config.height/2)+185, 'Play',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .on('pointerdown', (pointer)=> {
@@ -861,4 +864,4 @@ game.scene.add('mainGame', mainGame);
 game.scene.add('pauseMenu', PauseMenu);
 game.scene.add('chuckMode', ChuckModeInstructions);
 
-game.scene.start('chuckMode');
+game.scene.start('mainMenu');
