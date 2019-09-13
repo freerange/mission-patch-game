@@ -475,6 +475,10 @@ update: function()
         laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y
         + stickers.children.entries[i].data.values.lapDiffY
       );
+
+      if(stickers.children.entries[i].active && stickers.children.entries[i].y > config.height
+      + stickers.children.entries[i].height + 50)
+        stickers.children.entries[i].disableBody(true, true);
   }
 
   for(var j in laptops.children.entries)
@@ -507,11 +511,14 @@ update: function()
         stickers.children.entries[stickerIndex].data.values.lapDiffY = 0;
         stickers.children.entries[stickerIndex].data.values.stickerOnLaptop = false;
         stickers.children.entries[stickerIndex].body.setAllowGravity(true);
+        stickers.children.entries[stickerIndex].disableBody(true, true);
       }
     }
 
     //In bounce mode, laptops will leave the screen when the time runs out
-    if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 && modeSelect == 0)
+    if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 && modeSelect == 0
+    && (stickers.countActive(true) == 0 || (stickers.countActive(true) > 0
+    && stickers.children.entries.findIndex((stick) => { return stick.scale > 0.1 && stick.active }) == -1)))
       laptops.children.entries[j].setCollideWorldBounds(false);
   }
 
@@ -579,7 +586,7 @@ update: function()
   {
     //Will indicate when last laptop is being chucked
     if(modeSelect == 1 && laptops.children.entries.findIndex((lapt) =>
-    { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) > 0)
+    { return lapt.data.values.delayActive }) == -1 && laptops.countActive(true) > 0)
       timerText.setText('Last one!');
 
     //Will initiate game over sequence when timer runs out
@@ -653,7 +660,7 @@ update: function()
 
     //Will occur if there are no laptops left to chuck and timer hasn't run out yet
     else if(modeSelect == 1 && laptops.children.entries.findIndex((lapt) =>
-    { return lapt.data.values.delayActive == true }) == -1 && laptops.countActive(true) === 0)
+    { return lapt.data.values.delayActive }) == -1 && laptops.countActive(true) === 0)
       timerText.setText('No More');
 
     //Countdown check will be compared against the floor of countdown seconds to see if it has changed; prevents unnecesary updates to second timer
