@@ -811,6 +811,21 @@ class PauseMenu extends Phaser.Scene
   }
 }
 
+class BounceModeInstructions extends Phaser.Scene
+{
+  preload ()
+  {
+
+  }
+
+  create ()
+  {
+    var title = this.add.text(0, 0, 'Bounce Mode',
+      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
+      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
+  }
+}
+
 class ChuckModeInstructions extends Phaser.Scene
 {
   preload ()
@@ -883,5 +898,6 @@ game.scene.add('mainMenu', MainMenu);
 game.scene.add('mainGame', mainGame);
 game.scene.add('pauseMenu', PauseMenu);
 game.scene.add('chuckMode', ChuckModeInstructions);
+game.scene.add('bounceMode', BounceModeInstructions);
 
 game.scene.start('mainMenu');
