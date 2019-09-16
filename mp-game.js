@@ -74,8 +74,7 @@ create: function()
 {
 
   //Resets variable on repeat (will delete once bug is figured out)
-  if(gameDelay != null)
-    gameDelay = null;
+  gameDelay = null;
 
   stickersLeft = (modeSelect == 0) ? 20 : -1;
 
@@ -110,161 +109,149 @@ create: function()
     start: 1, end: 4, zeroPad: 4, suffix: '.png'
   });
 
+  function animateLaptop (key) {
+    //Will animate if a certain laptop type is assigned
+    if(laptop.texture.key == key) {
+      laptop.setFrame('0001.png');
+      laptop.body.setSize(157, 101);
+      master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
+        frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
+      laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+      laptop.data.values.currentTimer = master.time.addEvent(
+      {
+          delay: 1500,
+          callback: ()=> {
+            laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+          },
+          callbackScope: this,
+          loop: true
+      });
+  }
+
+  function foo (x, y, laptopMode, delayActive) {
+    var laptop = laptops.create(Phaser.Math.Between(0, config.width),
+      Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
+
+    laptop.setData({ laptopMode: laptopMode, hasSticker: false, delayActive: delayActive,
+      laptopID: -1, currentTimer: null });
+
+    laptop.data.values.laptopID = laptops.children.entries.length - 1;
+
+    return laptop;
+  }
+
+  function createMode0Laptop (laptop, bounce, mode) {
+    var laptop = foo(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), mode, false);
+
+    animateLaptop('laptop_1');
+
+    var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+    var velY = (laptop.y > (config.height/2)) ? -1 : 1;
+    laptop.setVelocity(Phaser.Math.Between(400, 600) * velX,
+      Phaser.Math.Between(400, 600) * velY);
+    laptop.setBounce(bounce);
+    laptop.setScale(0.625);
+    laptop.setCollideWorldBounds(true);
+  }
+
+  function randomBoolean() {
+    return Phaser.Math.FloatBetween(0, 1) > 0.5;
+  }
+
+  function chooseLaptopStartPosition () {
+    //Locks Edge Position
+    if(randomBoolean()) {
+      posX = randomBoolean() ? config.width + 100 : -100;
+      posY = Phaser.Math.Between(0,config.height);
+    } else {
+      posX = Phaser.Math.Between(0,config.width);
+      posY = config.height + 50;
+    }
+
+    return { x: posX, y: posY };
+  }
+
+  function createMode1Laptop (laptop, bounce, mode) {
+    var pos = chooseLaptopStartPosition();
+    //Sets up laptop
+    laptop = foo(pos.x, pos.y, mode, true);
+
+    animateLaptop('laptop_1');
+  }
+
+    laptop.disableBody(true, true);
+
+    var msPerLaptop = (countdownSeconds * 1000)/laptopsAtOnce;
+
+    var laptSetDelay = (msPerLaptop * laptSpread) +
+      Phaser.Math.Between(-(msPerLaptop/2), (msPerLaptop/2));
+
+    laptSetDelay = Phaser.Math.Clamp(laptSetDelay, 500, (countdownSeconds * 1000) - 1);
+
+    //Random delay before chucking
+    var timer;
+    master.time.addEvent(
+      {
+        delay: laptSetDelay - 750,                // ms
+        callback: ()=> {
+          var x, y;
+
+          if(pos.y > config.height) {
+            y = pos.y - 100;
+            x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
+          } else  {
+            y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
+            x = (pos.x > (config.width/2)) ? config.width - 100 : 50;
+          }
+
+          var readyText = master.add.text(x, y, 'Ready?',
+            { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
+            fontStyle: 'bold', fill: '#2E2ED1' });
+
+          timer = master.time.addEvent(
+            {
+              delay: 750,
+              callback: ()=> {
+                readyText.destroy();
+                master.sound.add('laptThrow', {
+                  volume: Phaser.Math.FloatBetween(0.2, 0.4),
+                  rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
+                }).play();
+                laptop.enableBody(true, posX, posY, true, true);
+                laptop.data.values.delayActive = false;
+                var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+                var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
+                laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
+                  Phaser.Math.Between(400, 600) * velY);
+                laptop.setBounce(bounce);
+                laptop.setScale(1.25);
+              },
+              callbackScope: this,
+              loop: false
+            }
+          )
+        },
+        callbackScope: this,
+        loop: false
+      });
+  }
+
+
   function createLaptop(laptop, bounce, mode)
   {
     // Mode 0 = Bounce mode
     if(mode == 0)
     {
-      laptop = laptops.create(Phaser.Math.Between(0, config.width),
-        Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
-
-      laptop.setData({ laptopMode: mode, laptopID: -1, currentTimer: null });
-
-      laptop.data.values.laptopID = laptops.children.entries.length - 1;
-
-      //Will animate if a certain laptop type is assigned
-      if(laptop.texture.key == 'laptop_1') {
-        laptop.setFrame('0001.png');
-        laptop.body.setSize(157, 101);
-        master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
-          frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
-        laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-        laptop.data.values.currentTimer = master.time.addEvent(
-        {
-            delay: 1500,
-            callback: ()=> {
-              laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-            },
-            callbackScope: this,
-            loop: true
-        });
-      }
-
-      var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-      var velY = (laptop.y > (config.height/2)) ? -1 : 1;
-      laptop.setVelocity(Phaser.Math.Between(400, 600) * velX,
-        Phaser.Math.Between(400, 600) * velY);
-      laptop.setBounce(bounce);
-      laptop.setScale(0.625);
-      laptop.setCollideWorldBounds(true);
+      createMode0Laptop(laptop, bounce, mode);
     }
 
     //Mode 1 = Chuck mode
     else if(mode == 1)
     {
-      var posX = Phaser.Math.Between(0, config.width);
-      var posY = Phaser.Math.Between(0, config.height);
-
-      //Random starting position from edge
-      var compX = Math.abs(posX - (config.width/2));
-      var compY = Math.abs(posY - (config.height/2));
-
-      //Locks Edge Position
-      if(compX < compY
-      || (compX == compY && Phaser.Math.FloatBetween(0, 1) > 0.5))
-        posX = (Phaser.Math.Between(0, config.width) > (config.width/2))
-          ? config.width + 100 : -100;
-      else if(compY <= compX)
-        posY = config.height + 50;
-
-      //Sets up laptop
-      laptop = laptops.create(posX, posY, 'laptop_' + Phaser.Math.Between(0, 1));
-      laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true,
-        laptopID: -1, currentTimer: null });
-
-      laptop.data.values.laptopID = laptops.children.entries.length - 1;
-
-      laptop.body.debugShowVelocity = false;
-
-      if(laptop.texture.key == 'laptop_1') {
-        laptop.setFrame('0001.png');
-        laptop.body.setSize(157, 101);
-
-        master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
-          frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
-        laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-        laptop.data.values.currentTimer = master.time.addEvent(
-        {
-            delay: 1500,
-            callback: ()=> {
-              laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-            },
-            callbackScope: this,
-            loop: true
-        });
-      }
-
-      laptop.disableBody(true, true);
-
-      var laptSetDelay = (((countdownSeconds * 1000)/laptopsAtOnce) * laptSpread) +
-        Phaser.Math.Between(-(((countdownSeconds * 1000)/laptopsAtOnce)/2),
-        (((countdownSeconds * 1000)/laptopsAtOnce)/2));
-
-      if(laptSetDelay < 500)
-        laptSetDelay = 500;
-      else if(laptSetDelay >= (countdownSeconds * 1000))
-        laptSetDelay = (countdownSeconds * 1000) - 1;
-
-      //Random delay before chucking
-      var timer;
-      master.time.addEvent(
-        {
-          delay: laptSetDelay - 750,                // ms
-          callback: ()=> {
-            if(compX < compY && posX > (config.width/2))
-              var readyText = master.add.text(posX - 200, posY, 'Ready?',
-                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
-                fontStyle: 'bold', fill: '#2E2ED1' });
-
-            else if(compX < compY && posX <= (config.width/2))
-              var readyText = master.add.text(posX + 125, posY, 'Ready?',
-                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
-                fontStyle: 'bold', fill: '#2E2ED1' });
-
-            else if(compY <= compX && posX >= (config.width-100))
-              var readyText = master.add.text(config.width-100, posY - 100, 'Ready?',
-                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
-                fontStyle: 'bold', fill: '#2E2ED1' });
-
-            else if(compY <= compX && posX <= 50)
-              var readyText = master.add.text(50, posY - 100, 'Ready?',
-                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
-                fontStyle: 'bold', fill: '#2E2ED1' });
-
-            else
-              var readyText = master.add.text(posX, posY - 100, 'Ready?',
-                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
-                fontStyle: 'bold', fill: '#2E2ED1' });
-            timer = master.time.addEvent(
-              {
-                delay: 750,
-                callback: ()=> {
-                  readyText.destroy();
-                  master.sound.add('laptThrow', {
-                    volume: Phaser.Math.FloatBetween(0.2, 0.4),
-                    rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
-                  }).play();
-                  laptop.enableBody(true, posX, posY, true, true);
-                  laptop.data.values.delayActive = false;
-                  var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-                  var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-                  laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
-                    Phaser.Math.Between(400, 600) * velY);
-                  laptop.setBounce(bounce);
-                  laptop.setScale(1.25);
-                },
-                callbackScope: this,
-                loop: false
-              }
-            )
-          },
-          callbackScope: this,
-          loop: false
-        });
-
-      }
-      else
-        console.log('The selected mode doesn\'t exist');
+      createMode1Laptop(laptop, bounce, mode);
+    }
+    else
+      console.log('The selected mode doesn\'t exist');
   }
 
   //No collision on chuck mode
@@ -354,7 +341,7 @@ create: function()
     {
       //Determines size of laptop hitbox
       //1 = Full hitbox; 0 = No hitbox; 0.5 = Half hitbox
-      var laptopSensetivity = 0.5;
+      //var laptopSensetivity = 0.5;
 
       //Will only check when sticker is at minimum size
       if(stick.scale <= 0.1 && stick.data.values.patchSticking
