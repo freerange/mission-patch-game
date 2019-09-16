@@ -7,6 +7,7 @@ var mainGame = new Phaser.Class(function()
   var laptopsAtOnce;
 
   var laptopsLeft;
+  var stickersLeft = 20;
   var modeSelect;
 
   var countdownTimer;
@@ -394,13 +395,14 @@ create: function()
         tar.x = pointer.x - (tar.width/2);
         tar.y = pointer.y - (tar.height/2);
       }
-      if(!gameOver)
+      if(!gameOver || (modeSelect == 0 && stickersLeft > 0))
       {
         for(var i in stickers.children.entries)
         {
           if(stickers.children.entries[i].y > (config.height + stickers.children.entries[i].height)
           || !stickers.children.entries[i].active)
           {
+              stickersLeft--;
               master.sound.add('throw', {
                 volume: 0.8
               }).play();
@@ -570,6 +572,7 @@ update: function()
                   if(laptops.children.entries[i].texture.key == 'laptop_1')
                     this.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
                 }
+                stickersLeft = 20;
                 finish.stop();
                 menuScene.scene.restart();
                 this.scene.stop();
@@ -603,7 +606,7 @@ update: function()
       timerText.setText('Last one!');
 
     //Will initiate game over sequence when timer runs out
-    else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0)
+    else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 || (modeSelect == 0 && stickersLeft <= 0))
     {
       if(gameDelay == null && (stickers.countActive(true) == 0 || (stickers.countActive(true) > 0
       && stickers.children.entries.findIndex((stick) => { return stick.scale > 0.1 }) == -1)))
@@ -662,6 +665,7 @@ update: function()
                     if(laptops.children.entries[i].texture.key == 'laptop_1')
                       this.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
                   }
+                  stickersLeft = 20;
                   finish.stop();
                   menuScene.scene.restart();
                   this.scene.stop();
@@ -739,7 +743,7 @@ class MainMenu extends Phaser.Scene
                 {
                   bounceButton.setStyle({ fill: '#aa0'});
                   master.sound.play('gong');
-                  master.scene.start('mainGame', { stickersAtOnce: 2, laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
+                  master.scene.start('mainGame', { stickersAtOnce: 3, laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
                   master.scene.stop();
                 }
               })
@@ -864,7 +868,7 @@ class BounceModeInstructions extends Phaser.Scene
           {
             playButton.setStyle({ fill: '#aa0'});
             this.sound.play('gong');
-            this.scene.start('mainGame', { stickersAtOnce: 2, laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
+            this.scene.start('mainGame', { stickersAtOnce: 3, laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
             this.scene.stop();
           }
         })
