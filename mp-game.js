@@ -116,11 +116,12 @@ create: function()
 
       laptop.setData({ laptopMode: mode, laptopID: -1, currentTimer: null });
 
+      laptop.data.values.laptopID = laptops.children.entries.length - 1;
+
       //Will animate if a certain laptop type is assigned
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
-        laptop.data.values.laptopID = laptops.children.entries.length - 1;
         master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
           frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
         laptop.anims.play('open/close_' + laptop.data.values.laptopID);
@@ -167,10 +168,11 @@ create: function()
       laptop.setData({ laptopMode: mode, hasSticker: false, delayActive: true,
         laptopID: -1, currentTimer: null });
 
+      laptop.data.values.laptopID = laptops.children.entries.length - 1;
+
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
-        laptop.data.values.laptopID = laptops.children.entries.length - 1;
         master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
           frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
         laptop.anims.play('open/close_' + laptop.data.values.laptopID);
@@ -358,11 +360,7 @@ create: function()
             stick.data.values.stickerOnLaptop = true;
 
             //Checks for first overlapping laptop
-            for(var i in laptops.children.entries)
-            {
-               if(laptops.children.entries[i] == lapt)
-                stickToLaptop(lapt, stick, i);
-            }
+            stickToLaptop(lapt, stick, lapt.data.values.laptopID);
 
             //Makes laptops stop and fall in bounce mode
             if(lapt.data.values.laptopMode == 0)
@@ -477,7 +475,6 @@ update: function()
 
     //Keeps position relative to laptop
     if(stickers.children.entries[i].data.values.currentLaptop != -1) {
-      console.log(laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x);
       stickers.children.entries[i].setPosition(
         laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x
         + stickers.children.entries[i].data.values.lapDiffX,
