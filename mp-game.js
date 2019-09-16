@@ -1,13 +1,13 @@
 var mainGame = new Phaser.Class(function()
 {
+  var master;
+
   var tar;
-  var stickersAtOnce = 5;
+  var stickersAtOnce;
   var laptopsAtOnce;
 
   var laptopsLeft;
   var modeSelect;
-
-  var master;
 
   var countdownTimer;
   var countdownSeconds;
@@ -30,6 +30,7 @@ Extends: Phaser.Scene,
 
 init: function(data)
 {
+  stickersAtOnce = data.stickersAtOnce;
   laptopsAtOnce = data.laptopsAtOnce;
   countdownSeconds = data.countdownSeconds;
   modeSelect = data.modeSelect;
@@ -43,14 +44,16 @@ preload: function()
   this.load.image('sky', 'assets/sky.png');
   this.load.image('patch', 'assets/patch.png');
 
+  //Spritesheet assets
   this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
   this.load.multiatlas('laptop_1', 'assets/spritesheets/laptop/Laptop.json', 'assets/spritesheets/laptop');
 
+  //Particle Assets
   this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
   this.load.text('blast', 'assets/particles/Blast.json');
   this.load.text('explosion', 'assets/particles/Explosion.json');
 
-  //Taken and edited from freesound.com
+  //Sound assets taken and edited from freesound.com
   this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
   this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
   this.load.audio('smack', 'sounds/37186__volivieri__newspapers-large-hard(edited).wav');
@@ -112,18 +115,20 @@ create: function()
         Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
 
       laptop.setData({ laptopMode: mode, laptopID: -1, currentTimer: null });
+
+      //Will animate if a certain laptop type is assigned
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
         laptop.data.values.laptopID = laptops.children.entries.length - 1;
-        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID,
+        master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
           frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
-        laptop.anims.play('open/close' + laptop.data.values.laptopID);
+        laptop.anims.play('open/close_' + laptop.data.values.laptopID);
         laptop.data.values.currentTimer = master.time.addEvent(
         {
             delay: 1500,
             callback: ()=> {
-              laptop.anims.play('open/close' + laptop.data.values.laptopID);
+              laptop.anims.play('open/close_' + laptop.data.values.laptopID);
             },
             callbackScope: this,
             loop: true
@@ -138,6 +143,7 @@ create: function()
       laptop.setScale(0.625);
       laptop.setCollideWorldBounds(true);
     }
+
     //Mode 1 = Chuck mode
     else if(mode == 1)
     {
@@ -165,14 +171,14 @@ create: function()
         laptop.setFrame('0001.png');
         laptop.height = laptop.height/2;
         laptop.data.values.laptopID = laptops.children.entries.length - 1;
-        master.anims.create({ key: 'open/close' + laptop.data.values.laptopID,
+        master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
           frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
-        laptop.anims.play('open/close' + laptop.data.values.laptopID);
+        laptop.anims.play('open/close_' + laptop.data.values.laptopID);
         laptop.data.values.currentTimer = master.time.addEvent(
         {
             delay: 1500,
             callback: ()=> {
-              laptop.anims.play('open/close' + laptop.data.values.laptopID);
+              laptop.anims.play('open/close_' + laptop.data.values.laptopID);
             },
             callbackScope: this,
             loop: true
@@ -256,6 +262,7 @@ create: function()
   if(modeSelect == 1)
     lapColl.destroy();
 
+  //Creates each laptop for game
   for(var i = 0; i < laptopsAtOnce; i++)
   {
     var laptop;
@@ -353,7 +360,7 @@ create: function()
             //Checks for first overlapping laptop
             for(var i in laptops.children.entries)
             {
-              if(laptops.children.entries[i] == lapt)
+               if(laptops.children.entries[i] == lapt)
                 stickToLaptop(lapt, stick, i);
             }
 
@@ -428,6 +435,7 @@ create: function()
 
 update: function()
 {
+  //Dynamic background based on amount of laptops patched
   var laptopsCaught = Math.floor((laptopsAtOnce - laptopsLeft)/(laptopsAtOnce/25));
   if(currentFrame == null)
     currentFrame = laptopsCaught;
@@ -468,14 +476,16 @@ update: function()
     }
 
     //Keeps position relative to laptop
-    if(stickers.children.entries[i].data.values.currentLaptop != -1)
+    if(stickers.children.entries[i].data.values.currentLaptop != -1) {
+      console.log(laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x);
       stickers.children.entries[i].setPosition(
         laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x
         + stickers.children.entries[i].data.values.lapDiffX,
         laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y
         + stickers.children.entries[i].data.values.lapDiffY
       );
-
+    }
+      //Disables sticker when offscreen
       if(stickers.children.entries[i].active && stickers.children.entries[i].y > config.height
       + stickers.children.entries[i].height + 50)
         stickers.children.entries[i].disableBody(true, true);
@@ -526,6 +536,7 @@ update: function()
   if(countdownCheck == null)
     countdownCheck = countdownSeconds;
 
+  //Stops game if all laptops are patched
   if(countdownTimer.paused) {
     if(gameDelay == null)
     {
@@ -557,7 +568,11 @@ update: function()
               callback: ()=> {
                 gameOver = false;
                 var menuScene = this.scene.get('mainMenu');
-                this.anims.remove();
+                for(var i in laptops.children.entries)
+                {
+                  if(laptops.children.entries[i].texture.key == 'laptop_1')
+                    this.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
+                }
                 finish.stop();
                 menuScene.scene.restart();
                 this.scene.stop();
@@ -645,7 +660,11 @@ update: function()
                 callback: ()=> {
                   gameOver = false;
                   var menuScene = this.scene.get('mainMenu');
-                  this.anims.remove();
+                  for(var i in laptops.children.entries)
+                  {
+                    if(laptops.children.entries[i].texture.key == 'laptop_1')
+                      this.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
+                  }
                   finish.stop();
                   menuScene.scene.restart();
                   this.scene.stop();
@@ -694,7 +713,7 @@ class MainMenu extends Phaser.Scene
 
       title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
 
-      //Button to start game
+      //Button to launch mode select
       var graphics = this.add.graphics();
       var rect = new Phaser.Geom.Rectangle(0, 0, 200, 100);
       rect.setPosition((config.width/2)-(rect.width/2), (config.height/2)-50);
@@ -713,6 +732,8 @@ class MainMenu extends Phaser.Scene
           var rect2 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
           rect2.setPosition((config.width/2)-(rect2.width + 20), (config.height/2)-50);
           graphics.fillRectShape(rect2);
+
+          //Button to start bounce mode
           const bounceButton = master.add.text(rect2.x + 10, rect2.y + 10, 'Bounce mode',
             {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
             .setInteractive()
@@ -721,7 +742,7 @@ class MainMenu extends Phaser.Scene
                 {
                   bounceButton.setStyle({ fill: '#aa0'});
                   master.sound.play('gong');
-                  master.scene.start('mainGame', { laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
+                  master.scene.start('mainGame', { stickersAtOnce: 2, laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
                   master.scene.stop();
                 }
               })
@@ -731,6 +752,8 @@ class MainMenu extends Phaser.Scene
               var rect3 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
               rect3.setPosition((config.width/2) + 20, (config.height/2)-50);
               graphics.fillRectShape(rect3);
+
+              //Button to start chuck mode
               const chuckButton = master.add.text(rect3.x + 10, rect3.y + 10, 'Chuck mode',
                 {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
                 .setInteractive()
@@ -822,10 +845,12 @@ class BounceModeInstructions extends Phaser.Scene
 
   create ()
   {
+    //Title
     var title = this.add.text(0, 0, 'Bounce Mode',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
       title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
 
+    //Description
     this.add.text((config.width/2) - 390, (config.height/2)+105,
       'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
@@ -833,6 +858,7 @@ class BounceModeInstructions extends Phaser.Scene
       var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
       previewPic.setScale(0.5);
 
+    //Button to Start Game
     const playButton = this.add.text(rect.x + 10, rect.y+10, 'Play',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
@@ -841,7 +867,7 @@ class BounceModeInstructions extends Phaser.Scene
           {
             playButton.setStyle({ fill: '#aa0'});
             this.sound.play('gong');
-            this.scene.start('mainGame', { laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
+            this.scene.start('mainGame', { stickersAtOnce: 2, laptopsAtOnce: 8, countdownSeconds: 15, modeSelect: 0});
             this.scene.stop();
           }
         })
@@ -863,10 +889,12 @@ class ChuckModeInstructions extends Phaser.Scene
   {
     var graphics = this.add.graphics();
 
+    //Title
     var title = this.add.text(0, 0, 'Chuck Mode',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
       title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
 
+    //Description
     this.add.text((config.width/2) - 350, (config.height/2)+105,
       'Catch the incoming flying laptops by sticking them with a mission patch within two minutes',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
@@ -875,13 +903,14 @@ class ChuckModeInstructions extends Phaser.Scene
       'Move the cursor around the screen and click to throw a sticker',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
 
+    var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
+    previewPic.setScale(0.5);
+
+    //Button to start game
     var rect = new Phaser.Geom.Rectangle((config.width/2)-25, (config.height/2)+185, 65, 50);
     rect.setPosition((config.width/2)-25, (config.height/2)+185);
     graphics.fillStyle('#cf9830');
     graphics.fillRectShape(rect);
-
-    var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
-    previewPic.setScale(0.5);
 
     const playButton = this.add.text(rect.x + 10, rect.y+10, 'Play',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
@@ -891,7 +920,7 @@ class ChuckModeInstructions extends Phaser.Scene
           {
             playButton.setStyle({ fill: '#aa0'});
             this.sound.play('gong');
-            this.scene.start('mainGame', { laptopsAtOnce: 100, countdownSeconds: 120, modeSelect: 1});
+            this.scene.start('mainGame', { stickersAtOnce: 5, laptopsAtOnce: 60, countdownSeconds: 120, modeSelect: 1});
             this.scene.stop();
           }
         })
