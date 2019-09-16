@@ -125,7 +125,7 @@ create: function()
       //Will animate if a certain laptop type is assigned
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
-        laptop.height = laptop.height/2;
+        laptop.body.setSize(157, 101);
         master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
           frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
         laptop.anims.play('open/close_' + laptop.data.values.laptopID);
@@ -174,9 +174,12 @@ create: function()
 
       laptop.data.values.laptopID = laptops.children.entries.length - 1;
 
+      laptop.body.debugShowVelocity = false;
+
       if(laptop.texture.key == 'laptop_1') {
         laptop.setFrame('0001.png');
-        laptop.height = laptop.height/2;
+        laptop.body.setSize(157, 101);
+
         master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
           frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
         laptop.anims.play('open/close_' + laptop.data.values.laptopID);
@@ -201,8 +204,6 @@ create: function()
         laptSetDelay = 500;
       else if(laptSetDelay >= (countdownSeconds * 1000))
         laptSetDelay = (countdownSeconds * 1000) - 1;
-
-      console.log(laptSetDelay)
 
       //Random delay before chucking
       var timer;
@@ -956,7 +957,7 @@ var config =
         default: 'arcade',
         arcade: {
             gravity: { y: 700 },
-            debug: false
+            debug: true
         }
     }
 };
