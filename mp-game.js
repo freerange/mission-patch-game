@@ -326,7 +326,7 @@ create: function()
   }
 
   function setUIText(x, y, text) {
-    return master.add.text(x, y, text, { fontFamily: "Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
+    return master.add.text(x, y, text, { fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
   }
 
   //UI Text
@@ -537,7 +537,7 @@ update: function()
           stickerText.setText('');
           tar.disableBody(true, true);
           var finish = master.sound.add('results');
-          // finish.play();
+          finish.play();
           // particle2.emitters.list[0].on = true;
 
           var finishText = master.add.text(0, 0, resultsText,
@@ -634,14 +634,14 @@ class MainMenu extends Phaser.Scene
   create ()
   {
       //Title
-      var title = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
+      var title = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '42px', fontStyle: 'bold'});
       title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
 
       var master = this;
 
       title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
 
-      function launchButton(x, y, width, height, source, title, text1, text2, stickers, laptops, seconds, mode) {
+      function launchButton(x, y, width, height, source, stickers, laptops, seconds, mode, title, text1, text2) {
         var rect = new Phaser.Geom.Rectangle(0, 0, width, height);
         rect.setPosition(x, y);
         graphics.fillStyle('#000');
@@ -687,10 +687,10 @@ class MainMenu extends Phaser.Scene
           graphics.fillRectShape(rect2);
 
           //Buttons to start modes
-          var bounceButton = launchButton((config.width/2)-(rect2.width + 20), (config.height/2)-50, 165, 50, 'assets/bounce-mode-example.png', 'Bounce mode',
-            'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out', '', 3, 8, 30, 0);
-          var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-50, 165, 50, 'assets/chuck-mode-example.png', 'Chuck mode',
-            'Catch the incoming flying laptops by sticking them with a mission patch within two minutes', 'Move the cursor around the screen and click to throw a sticker', 5, 60, 120, 1);
+          var bounceButton = launchButton((config.width/2)-(rect2.width + 20), (config.height/2)-50, 165, 50, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce mode',
+            'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out');
+          var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-50, 165, 50, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck mode',
+            'Catch the incoming flying laptops by sticking them with a mission patch within two minutes', 'Move the cursor around the screen and click to throw a sticker');
         }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
@@ -701,11 +701,6 @@ class MainMenu extends Phaser.Scene
 
 class PauseMenu extends Phaser.Scene
 {
-  preload ()
-  {
-    // this.load.image('button', 'assets/button.png');
-  }
-
   create ()
   {
     //Resume Button
@@ -829,7 +824,7 @@ var config =
         default: 'arcade',
         arcade: {
             gravity: { y: 700 },
-            debug: true
+            debug: false
         }
     }
 };
