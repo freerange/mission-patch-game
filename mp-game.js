@@ -6,7 +6,7 @@ var mainGame = new Phaser.Class(function()
   var stickersAtOnce;
   var laptopsAtOnce;
 
-  var laptopsLeft;
+  var laptopsCaught;
   var stickersLeft;
   var modeSelect;
 
@@ -76,6 +76,8 @@ create: function()
   //Resets variable on repeat (will delete once bug is figured out)
   gameDelay = null;
 
+  laptopsCaught = 0;
+
   stickersLeft = (modeSelect == 0) ? 20 : -1;
 
   //Game Background
@@ -109,7 +111,7 @@ create: function()
     start: 1, end: 4, zeroPad: 4, suffix: '.png'
   });
 
-  function animateLaptop (key) {
+  function animateLaptop (laptop, key) {
     //Will animate if a certain laptop type is assigned
     if(laptop.texture.key == key) {
       laptop.setFrame('0001.png');
@@ -126,11 +128,11 @@ create: function()
           callbackScope: this,
           loop: true
       });
+    }
   }
 
   function foo (x, y, laptopMode, delayActive) {
-    var laptop = laptops.create(Phaser.Math.Between(0, config.width),
-      Phaser.Math.Between(0, config.height), 'laptop_' + Phaser.Math.Between(0, 1));
+    var laptop = laptops.create(x, y, 'laptop_' + Phaser.Math.Between(0, 1));
 
     laptop.setData({ laptopMode: laptopMode, hasSticker: false, delayActive: delayActive,
       laptopID: -1, currentTimer: null });
@@ -143,7 +145,7 @@ create: function()
   function createMode0Laptop (laptop, bounce, mode) {
     var laptop = foo(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), mode, false);
 
-    animateLaptop('laptop_1');
+    animateLaptop(laptop, 'laptop_1');
 
     var velX = (laptop.x > (config.width/2)) ? -1 : 1;
     var velY = (laptop.y > (config.height/2)) ? -1 : 1;
@@ -159,6 +161,8 @@ create: function()
   }
 
   function chooseLaptopStartPosition () {
+    var posX, posY;
+
     //Locks Edge Position
     if(randomBoolean()) {
       posX = randomBoolean() ? config.width + 100 : -100;
@@ -171,35 +175,19 @@ create: function()
     return { x: posX, y: posY };
   }
 
-  function createMode1Laptop (laptop, bounce, mode) {
-    var pos = chooseLaptopStartPosition();
-    //Sets up laptop
-    laptop = foo(pos.x, pos.y, mode, true);
-
-    animateLaptop('laptop_1');
-  }
-
-    laptop.disableBody(true, true);
-
-    var msPerLaptop = (countdownSeconds * 1000)/laptopsAtOnce;
-
-    var laptSetDelay = (msPerLaptop * laptSpread) +
-      Phaser.Math.Between(-(msPerLaptop/2), (msPerLaptop/2));
-
-    laptSetDelay = Phaser.Math.Clamp(laptSetDelay, 500, (countdownSeconds * 1000) - 1);
-
+  function throwLaptop (laptop, pos, delay) {
     //Random delay before chucking
     var timer;
     master.time.addEvent(
       {
-        delay: laptSetDelay - 750,                // ms
+        delay: delay - 750,                // ms
         callback: ()=> {
           var x, y;
 
           if(pos.y > config.height) {
             y = pos.y - 100;
             x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
-          } else  {
+          } else {
             y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
             x = (pos.x > (config.width/2)) ? config.width - 100 : 50;
           }
@@ -213,17 +201,18 @@ create: function()
               delay: 750,
               callback: ()=> {
                 readyText.destroy();
+
                 master.sound.add('laptThrow', {
                   volume: Phaser.Math.FloatBetween(0.2, 0.4),
                   rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
                 }).play();
-                laptop.enableBody(true, posX, posY, true, true);
+                laptop.enableBody(true, pos.x, pos.y, true, true);
                 laptop.data.values.delayActive = false;
+
                 var velX = (laptop.x > (config.width/2)) ? -1 : 1;
                 var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
                 laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
                   Phaser.Math.Between(400, 600) * velY);
-                laptop.setBounce(bounce);
                 laptop.setScale(1.25);
               },
               callbackScope: this,
@@ -236,6 +225,25 @@ create: function()
       });
   }
 
+  function createMode1Laptop (laptop, bounce, mode) {
+    var pos = chooseLaptopStartPosition();
+    //Sets up laptop
+    laptop = foo(pos.x, pos.y, mode, true);
+
+    animateLaptop(laptop, 'laptop_1');
+
+    laptop.disableBody(true, true);
+
+    var msPerLaptop = (countdownSeconds * 1000)/laptopsAtOnce;
+
+    var laptSetDelay = (msPerLaptop * laptSpread) +
+      Phaser.Math.Between(-(msPerLaptop/2), (msPerLaptop/2));
+
+    laptSetDelay = Phaser.Math.Clamp(laptSetDelay, 500, (countdownSeconds * 1000) - 1);
+
+    throwLaptop(laptop, pos, laptSetDelay);
+  }
+
 
   function createLaptop(laptop, bounce, mode)
   {
@@ -244,7 +252,6 @@ create: function()
     {
       createMode0Laptop(laptop, bounce, mode);
     }
-
     //Mode 1 = Chuck mode
     else if(mode == 1)
     {
@@ -265,8 +272,6 @@ create: function()
     createLaptop(laptop, Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
     laptSpread++;
   }
-
-  laptopsLeft = laptops.children.entries.length;
 
   //Sets timer depending on countdown seconds
   countdownTimer = this.time.addEvent(
@@ -306,7 +311,7 @@ create: function()
       rate: 1.0 + Phaser.Math.FloatBetween(-0.15, 0.15)
     }).play();
 
-    if(lapt.texture.key == 'laptop_1')
+    if(lapt.data.values.currentTimer != null)
       lapt.data.values.currentTimer.remove();
 
     stick.data.values.currentLaptop = index;
@@ -322,36 +327,35 @@ create: function()
     particle1.emitters.list[0].startFollow(lapt);
   }
 
+  function setUIText(x, y, text) {
+    return master.add.text(x, y, text, { fontFamily: "Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
+  }
+
   //UI Text
-  scoreText = this.add.text(16, 16, (laptopsAtOnce - laptopsLeft)
-    + ' out of ' + laptopsAtOnce + ' Patched',
-      { fontFamily: "Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
-  timerText = this.add.text(config.width - 190, 16, 'Timer: '
-    + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())),
-      { fontFamily: "Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
-  stickerText = (modeSelect == 0) ? this.add.text(config.width - 240, 540, 'Stickers Left: '
-    + stickersLeft,
-      { fontFamily: "Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' })
-    : this.add.text(0, 0, '');
+  scoreText = setUIText(16, 16, laptopsCaught + ' out of ' + laptopsAtOnce + ' Patched');
+  timerText = setUIText(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
+  stickerText = (modeSelect == 0) ? setUIText(config.width - 240, 540, 'Stickers Left: ' + stickersLeft) : this.add.text(0, 0, '');
+
+  function laptopSuccessfullyHit (laptop, sticker, sensetivity) {
+    sensetivity = Phaser.Math.Clamp(sensetivity, 0.0, 1.0);
+
+    var stickerShrunk = sticker.scale <= 0.1 && sticker.data.values.patchSticking;
+    var stickerHittingLaptop = Math.abs(sticker.x - laptop.x) < (laptop.width * sensetivity) && Math.abs(sticker.y - laptop.y) < (laptop.height * sensetivity);
+    var stickerLaptopNotStuck = !sticker.data.values.stickerOnLaptop && !laptop.data.values.hasSticker;
+    var correctLaptopFrame = laptop.frame.name == '__BASE' || laptop.frame.name == '0001.png';
+
+    return stickerShrunk && stickerHittingLaptop && stickerLaptopNotStuck && correctLaptopFrame;
+  }
 
   //Overlap check for whether sticker clearly hit the laptop
   function hitLaptop (lapt, stick)
   {
     for(var i in stickers.children.entries)
     {
-      //Determines size of laptop hitbox
-      //1 = Full hitbox; 0 = No hitbox; 0.5 = Half hitbox
-      //var laptopSensetivity = 0.5;
-
       //Will only check when sticker is at minimum size
-      if(stick.scale <= 0.1 && stick.data.values.patchSticking
-      && Math.abs(stick.x - lapt.x) < (lapt.width * laptopSensetivity)
-      && Math.abs(stick.y - lapt.y) < (lapt.height * laptopSensetivity)
-      && !stick.data.values.stickerOnLaptop && !lapt.data.values.hasSticker
-      && (lapt.texture.key == 'laptop_0' || (lapt.texture.key == 'laptop_1'
-      && lapt.frame.name == '0001.png')))
+      if(laptopSuccessfullyHit(lapt, stick, 0.5))
       {
-            laptopsLeft--;
+            laptopsCaught++;
 
             //Prevents overlapping laptops from counting if the sticker is already taken
             lapt.data.values.hasSticker = true;
@@ -361,24 +365,25 @@ create: function()
             stickToLaptop(lapt, stick, lapt.data.values.laptopID);
 
             //Makes laptops stop and fall in bounce mode
-            if(lapt.data.values.laptopMode == 0)
-            {
+            if(lapt.data.values.laptopMode == 0) {
               lapt.disableBody(true, false);
               lapt.enableBody(true, lapt.x, lapt.y, true, true);
 
               lapt.setCollideWorldBounds(false);
             }
-            scoreText.setText((laptopsAtOnce - laptopsLeft)
-                + ' out of ' + laptopsAtOnce + ' Patched');
+            scoreText.setText(laptopsCaught + ' out of ' + laptopsAtOnce + ' Patched');
       }
     }
   }
 
+  function followMouse (sprite, mouse) {
+    sprite.x = mouse.x - (sprite.width/2);
+    sprite.y = mouse.y - (sprite.height/2);
+  }
+
   //Follow center of reticle
-  this.input.on('pointermove', function (pointer)
-  {
-      tar.x = pointer.x - (tar.width/2);
-      tar.y = pointer.y - (tar.height/2);
+  this.input.on('pointermove', function (pointer) {
+      followMouse(tar, pointer);
   });
 
   //Shoots Sticker
@@ -387,10 +392,8 @@ create: function()
     if(pointer.leftButtonDown())
     {
       //Instantly updates position for mobile devices
-      if(tar.x != pointer.x - (tar.width/2) || tar.y != pointer.y - (tar.height/2))
-      {
-        tar.x = pointer.x - (tar.width/2);
-        tar.y = pointer.y - (tar.height/2);
+      if(tar.x != pointer.x - (tar.width/2) || tar.y != pointer.y - (tar.height/2)) {
+        followMouse(tar, pointer);
       }
       if(!gameOver || (modeSelect == 0 && stickersLeft > 0))
       {
@@ -408,20 +411,15 @@ create: function()
               master.sound.add('throw', {
                 volume: 0.8
               }).play();
-              stickers.children.entries[i].enableBody(true, tar.x +
-                ((stickers.children.entries[i].width * 0.1)/2),
-                tar.y + ((stickers.children.entries[i].height * 0.1)/2), true, true);
+              stickers.children.entries[i].enableBody(true, tar.x + ((stickers.children.entries[i].width * 0.1)/2), tar.y + ((stickers.children.entries[i].height * 0.1)/2), true, true);
               stickers.children.entries[i].data.values.patchSticking = true;
-
               stickers.children.entries[i].scale = 0.8;
               stickers.children.entries[i].setVelocity(0, -175);
-
 
               break;
           }
         }
       }
-    }
   });
 
   //Pauses Game
@@ -438,7 +436,7 @@ create: function()
 update: function()
 {
   //Dynamic background based on amount of laptops patched
-  var laptopsCaught = Math.floor((laptopsAtOnce - laptopsLeft)/(laptopsAtOnce/25));
+  var laptopsCaught = Math.floor(laptopsCaught/(laptopsAtOnce/25));
   if(currentFrame == null)
     currentFrame = laptopsCaught;
 
@@ -457,45 +455,37 @@ update: function()
   for(var i in stickers.children.entries)
   {
     //Gives moving from camera effect
-    if(stickers.children.entries[i].scale > 0.1 && stickers.children.entries[i].active
-      && stickers.children.entries[i].data.values.patchSticking)
+    if(stickers.children.entries[i].scale > 0.1 && stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
     {
         stickers.children.entries[i].scale -= 0.035;
-        stickers.children.entries[i].setScale(stickers.children.entries[i].scale,
-          stickers.children.entries[i].scale);
+        stickers.children.entries[i].setScale(stickers.children.entries[i].scale, stickers.children.entries[i].scale);
     }
     //Will drop when shrunk to a certain size
-    else if(stickers.children.entries[i].scale <= 0.1 && stickers.children.entries[i].active
-      && stickers.children.entries[i].data.values.patchSticking)
+    else if(stickers.children.entries[i].scale <= 0.1 && stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
     {
         this.sound.add('smack', {
           volume: 0.8
         }).play();
         stickers.children.entries[i].disableBody(true, false);
-        stickers.children.entries[i].enableBody(true, stickers.children.entries[i].x,
-          stickers.children.entries[i].y, true, true);
+        stickers.children.entries[i].enableBody(true, stickers.children.entries[i].x, stickers.children.entries[i].y, true, true);
         stickers.children.entries[i].data.values.patchSticking = false;
     }
 
     //Keeps position relative to laptop
     if(stickers.children.entries[i].data.values.currentLaptop != -1) {
       stickers.children.entries[i].setPosition(
-        laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x
-        + stickers.children.entries[i].data.values.lapDiffX,
-        laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y
-        + stickers.children.entries[i].data.values.lapDiffY
+        laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x + stickers.children.entries[i].data.values.lapDiffX,
+        laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y + stickers.children.entries[i].data.values.lapDiffY
       );
     }
       //Disables sticker when offscreen
-      if(stickers.children.entries[i].active && stickers.children.entries[i].y > config.height
-      + stickers.children.entries[i].height + 50)
+      if(stickers.children.entries[i].active && stickers.children.entries[i].y > config.height + stickers.children.entries[i].height + 50)
         stickers.children.entries[i].disableBody(true, true);
   }
 
   for(var j in laptops.children.entries)
   {
-    if(laptops.children.entries[j].active && laptops.children.entries[j].y > config.height
-      + laptops.children.entries[j].height + 50)
+    if(laptops.children.entries[j].active && laptops.children.entries[j].y > config.height + laptops.children.entries[j].height + 50)
     {
       //For optimisation reasons, laptop disables itself when it leaves the screen
       if(laptops.children.entries[j].data.values.hasSticker && particle1.emitters.list[0].on)
@@ -630,7 +620,7 @@ update: function()
               // particle2.emitters.list[0].on = true;
 
               //Dialog will change depending on how many laptops you have patched
-              if(laptopsAtOnce - laptopsLeft == 0)
+              if(laptopsCaught >= laptopsAtOnce)
               {
                 var finishText = this.add.text(0, 0, 'No laptops were patched',
                 { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
@@ -640,9 +630,9 @@ update: function()
                 // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
                 // particle2.emitters.list[0].startFollow(finishText);
               }
-              else if(laptopsAtOnce - laptopsLeft == 1)
+              else if(laptopsCaught == 1)
               {
-                var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptop',
+                var finishText = this.add.text(0, 0, 'You got ' + laptopsCaught + ' laptop',
                   { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
                 finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
                 // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
@@ -651,7 +641,7 @@ update: function()
 
               else
               {
-                var finishText = this.add.text(0, 0, 'You got ' + (laptopsAtOnce - laptopsLeft) + ' laptops',
+                var finishText = this.add.text(0, 0, 'You got ' + laptopsCaught + ' laptops',
                   { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
                 finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
                 // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
