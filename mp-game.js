@@ -648,7 +648,7 @@ class MainMenu extends Phaser.Scene
         graphics.fillRectShape(rect);
 
         const button = master.add.text(rect.x + 10, rect.y + 10, title,
-          {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
+          {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px'})
           .setInteractive()
           .on('pointerdown', (pointer)=> {
               if(pointer.leftButtonDown())
@@ -675,7 +675,7 @@ class MainMenu extends Phaser.Scene
 
       //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
       const startButton = this.add.text(rect.x + 70, rect.y + 35, 'Start',
-      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
+      {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .on('pointerdown', (pointer)=> {
         if(pointer.leftButtonDown())
@@ -720,7 +720,7 @@ class PauseMenu extends Phaser.Scene
 
     //Interactable resume text for continuing ongoing game
     const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume',
-    {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
+    {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .on('pointerdown', (pointer)=> {
       if(pointer.leftButtonDown())
@@ -735,7 +735,7 @@ class PauseMenu extends Phaser.Scene
 
     //Interactable quit text for going back to the main menu
     const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit',
-    {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
+    {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .on('pointerdown', (pointer)=> {
       if(pointer.leftButtonDown())
@@ -798,7 +798,7 @@ class Instructions extends Phaser.Scene
     graphics.fillRectShape(rect);
 
     const playButton = this.add.text(rect.x + 10, rect.y+10, 'Play',
-      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
+      {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px'})
       .setInteractive()
       .on('pointerdown', (pointer)=> {
           if(pointer.leftButtonDown())
