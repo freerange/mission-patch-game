@@ -631,21 +631,40 @@ update: function()
 
 class MainMenu extends Phaser.Scene
 {
-  preload ()
-  {
-    //This is a test sound; will change later
-    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
-  }
   create ()
   {
       //Title
-      var title = this.add.text(0, 0, 'Mission Patch Game',
-        {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
-        title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
+      var title = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
+      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
 
       var master = this;
 
       title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
+
+      function launchButton(x, y, width, height, source, title, text1, text2, stickers, laptops, seconds, mode) {
+        var rect = new Phaser.Geom.Rectangle(0, 0, width, height);
+        rect.setPosition(x, y);
+        graphics.fillStyle('#000');
+        graphics.fillRectShape(rect);
+
+        const button = master.add.text(rect.x + 10, rect.y + 10, title,
+          {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
+          .setInteractive()
+          .on('pointerdown', (pointer)=> {
+              if(pointer.leftButtonDown())
+              {
+                button.setStyle({ fill: '#aa0'});
+                master.scene.start('info', { instructionSource: source, titleName: title, text1: text1, text2: text2,
+                  stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
+                // master.scene.start('mainGame', { stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode});
+                master.scene.stop();
+              }
+            })
+            .on('pointerover', () => button.setStyle({ fill: '#ff0'}) )
+            .on('pointerout', () => button.setStyle({ fill: '#fff' }) );
+
+        return { rect: rect, text: button };
+      }
 
       //Button to launch mode select
       var graphics = this.add.graphics();
@@ -667,42 +686,11 @@ class MainMenu extends Phaser.Scene
           rect2.setPosition((config.width/2)-(rect2.width + 20), (config.height/2)-50);
           graphics.fillRectShape(rect2);
 
-          //Button to start bounce mode
-          const bounceButton = master.add.text(rect2.x + 10, rect2.y + 10, 'Bounce mode',
-            {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
-            .setInteractive()
-            .on('pointerdown', (pointer)=> {
-                if(pointer.leftButtonDown())
-                {
-                  bounceButton.setStyle({ fill: '#aa0'});
-                  master.sound.play('gong');
-                  master.scene.start('mainGame', { stickersAtOnce: 3, laptopsAtOnce: 8, countdownSeconds: 30, modeSelect: 0});
-                  master.scene.stop();
-                }
-              })
-              .on('pointerover', () => bounceButton.setStyle({ fill: '#ff0'}) )
-              .on('pointerout', () => bounceButton.setStyle({ fill: '#fff' }) );
-
-              var rect3 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
-              rect3.setPosition((config.width/2) + 20, (config.height/2)-50);
-              graphics.fillRectShape(rect3);
-
-              //Button to start chuck mode
-              const chuckButton = master.add.text(rect3.x + 10, rect3.y + 10, 'Chuck mode',
-                {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
-                .setInteractive()
-                .on('pointerdown', (pointer)=> {
-                    if(pointer.leftButtonDown())
-                    {
-                      chuckButton.setStyle({ fill: '#aa0'});
-                      // master.sound.play('gong');
-                      master.scene.start('chuckMode');
-                      master.scene.stop();
-                    }
-                  })
-                  .on('pointerover', () => chuckButton.setStyle({ fill: '#ff0'}) )
-                  .on('pointerout', () => chuckButton.setStyle({ fill: '#fff' }) );
-
+          //Buttons to start modes
+          var bounceButton = launchButton((config.width/2)-(rect2.width + 20), (config.height/2)-50, 165, 50, 'assets/bounce-mode-example.png', 'Bounce mode',
+            'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out', '', 3, 8, 30, 0);
+          var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-50, 165, 50, 'assets/chuck-mode-example.png', 'Chuck mode',
+            'Catch the incoming flying laptops by sticking them with a mission patch within two minutes', 'Move the cursor around the screen and click to throw a sticker', 5, 60, 120, 1);
         }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
@@ -768,55 +756,25 @@ class PauseMenu extends Phaser.Scene
   }
 }
 
-class BounceModeInstructions extends Phaser.Scene
+class Instructions extends Phaser.Scene
 {
+  init (data)
+  {
+    this.instructionSource = data.instructionSource;
+    this.titleName = data.titleName;
+    this.text1 = data.text1;
+    this.text2 = data.text2;
+    this.stickersAtOnce = data.stickersAtOnce;
+    this.laptopsAtOnce = data.laptopsAtOnce;
+    this.countdownSeconds = data.countdownSeconds;
+    this.modeSelect = data.modeSelect;
+  }
+
   preload ()
   {
     this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
 
-    this.load.image('preview', 'assets/bounce-mode-example.png');
-  }
-
-  create ()
-  {
-    //Title
-    var title = this.add.text(0, 0, 'Bounce Mode',
-      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
-      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
-
-    //Description
-    this.add.text((config.width/2) - 390, (config.height/2)+105,
-      'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out',
-      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
-
-      var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
-      previewPic.setScale(0.5);
-
-    //Button to Start Game
-    const playButton = this.add.text(rect.x + 10, rect.y+10, 'Play',
-      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '24px'})
-      .setInteractive()
-      .on('pointerdown', (pointer)=> {
-          if(pointer.leftButtonDown())
-          {
-            playButton.setStyle({ fill: '#aa0'});
-            this.sound.play('gong');
-            this.scene.start('mainGame', { stickersAtOnce: 3, laptopsAtOnce: 8, countdownSeconds: 30, modeSelect: 0});
-            this.scene.stop();
-          }
-        })
-        .on('pointerover', () => playButton.setStyle({ fill: '#ff0'}) )
-        .on('pointerout', () => playButton.setStyle({ fill: '#fff' }) );
-  }
-}
-
-class ChuckModeInstructions extends Phaser.Scene
-{
-  preload ()
-  {
-    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
-
-    this.load.image('preview', 'assets/chuck-mode-example.png');
+    this.load.image('preview', this.instructionSource);
   }
 
   create ()
@@ -824,18 +782,16 @@ class ChuckModeInstructions extends Phaser.Scene
     var graphics = this.add.graphics();
 
     //Title
-    var title = this.add.text(0, 0, 'Chuck Mode',
+    var title = this.add.text(0, 0, this.titleName,
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
       title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
 
     //Description
-    this.add.text((config.width/2) - 350, (config.height/2)+105,
-      'Catch the incoming flying laptops by sticking them with a mission patch within two minutes',
-      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+    this.add.text((config.width/2) - 390, (config.height/2)+105,
+      this.text1, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
 
-    this.add.text((config.width/2) - 350, (config.height/2)+135,
-      'Move the cursor around the screen and click to throw a sticker',
-      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+    this.add.text((config.width/2) - 390, (config.height/2)+135,
+      this.text2, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
 
     var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
     previewPic.setScale(0.5);
@@ -854,7 +810,7 @@ class ChuckModeInstructions extends Phaser.Scene
           {
             playButton.setStyle({ fill: '#aa0'});
             this.sound.play('gong');
-            this.scene.start('mainGame', { stickersAtOnce: 5, laptopsAtOnce: 60, countdownSeconds: 120, modeSelect: 1});
+            this.scene.start('mainGame', { stickersAtOnce: this.stickersAtOnce, laptopsAtOnce: this.laptopsAtOnce, countdownSeconds: this.countdownSeconds, modeSelect: this.modeSelect});
             this.scene.stop();
           }
         })
@@ -884,7 +840,6 @@ var game = new Phaser.Game(config);
 game.scene.add('mainMenu', MainMenu);
 game.scene.add('mainGame', mainGame);
 game.scene.add('pauseMenu', PauseMenu);
-game.scene.add('chuckMode', ChuckModeInstructions);
-game.scene.add('bounceMode', BounceModeInstructions);
+game.scene.add('info', Instructions);
 
 game.scene.start('mainMenu');
