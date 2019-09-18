@@ -129,7 +129,7 @@ create: function()
     }
   }
 
-  function foo (x, y, laptopMode, delayActive) {
+  function generateLaptop (x, y, laptopMode, delayActive) {
     var laptop = laptops.create(x, y, 'laptop_' + Phaser.Math.Between(0, 1));
 
     laptop.setData({ laptopMode: laptopMode, hasSticker: false, delayActive: delayActive,
@@ -141,7 +141,7 @@ create: function()
   }
 
   function createMode0Laptop (laptop, bounce, mode) {
-    var laptop = foo(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), mode, false);
+    var laptop = generateLaptop(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), mode, false);
 
     animateLaptop(laptop, 'laptop_1');
 
@@ -226,7 +226,7 @@ create: function()
   function createMode1Laptop (laptop, bounce, mode) {
     var pos = chooseLaptopStartPosition();
     //Sets up laptop
-    laptop = foo(pos.x, pos.y, mode, true);
+    laptop = generateLaptop(pos.x, pos.y, mode, true);
 
     animateLaptop(laptop, 'laptop_1');
 
