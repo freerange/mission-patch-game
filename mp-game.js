@@ -6,7 +6,7 @@ var mainGame = new Phaser.Class(function()
   var stickersAtOnce;
   var laptopsAtOnce;
 
-  var laptopsCaught;
+  var howManyLaptopsHaveStickers;
   var stickersLeft;
   var modeSelect;
 
@@ -24,8 +24,6 @@ var mainGame = new Phaser.Class(function()
   var gameOver = false;
 
   var particle1, particle2;
-
-  var howManyLaptopsHaveStickers;
 
 return {
 Extends: Phaser.Scene,
@@ -76,7 +74,7 @@ create: function()
   //Resets variable on repeat (will delete once bug is figured out)
   gameDelay = null;
 
-  laptopsCaught = 0;
+  howManyLaptopsHaveStickers = 0;
 
   stickersLeft = (modeSelect == 0) ? 20 : -1;
 
@@ -332,7 +330,7 @@ create: function()
   }
 
   //UI Text
-  scoreText = setUIText(16, 16, laptopsCaught + ' out of ' + laptopsAtOnce + ' Patched');
+  scoreText = setUIText(16, 16, howManyLaptopsHaveStickers + ' out of ' + laptopsAtOnce + ' Patched');
   timerText = setUIText(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
   stickerText = (modeSelect == 0) ? setUIText(config.width - 240, 540, 'Stickers Left: ' + stickersLeft) : this.add.text(0, 0, '');
 
@@ -355,7 +353,7 @@ create: function()
       //Will only check when sticker is at minimum size
       if(laptopSuccessfullyHit(lapt, stick, 0.5))
       {
-            laptopsCaught++;
+            howManyLaptopsHaveStickers++;
 
             //Prevents overlapping laptops from counting if the sticker is already taken
             lapt.data.values.hasSticker = true;
@@ -371,7 +369,7 @@ create: function()
 
               lapt.setCollideWorldBounds(false);
             }
-            scoreText.setText(laptopsCaught + ' out of ' + laptopsAtOnce + ' Patched');
+            scoreText.setText(howManyLaptopsHaveStickers + ' out of ' + laptopsAtOnce + ' Patched');
       }
     }
   }
@@ -420,6 +418,7 @@ create: function()
           }
         }
       }
+    }
   });
 
   //Pauses Game
@@ -435,40 +434,41 @@ create: function()
 
 update: function()
 {
+  master = this;
+
   //Dynamic background based on amount of laptops patched
-  var laptopsCaught = Math.floor(laptopsCaught/(laptopsAtOnce/25));
+  var laptopsPerFrame = Math.floor(howManyLaptopsHaveStickers/(laptopsAtOnce/25));
   if(currentFrame == null)
-    currentFrame = laptopsCaught;
+    currentFrame = laptopsPerFrame;
 
-  if(laptopsCaught != currentFrame) {
-    if(laptopsCaught == 0)
+  if(laptopsPerFrame != currentFrame) {
+    if(laptopsPerFrame == 0)
       background.setFrame('0001.png');
-    else if(laptopsCaught < 10)
-      background.setFrame('000' + laptopsCaught + '.png');
+    else if(laptopsPerFrame < 10)
+      background.setFrame('000' + laptopsPerFrame + '.png');
     else
-      background.setFrame('00' + laptopsCaught + '.png');
-    currentFrame = laptopsCaught;
+      background.setFrame('00' + laptopsPerFrame + '.png');
+    currentFrame = laptopsPerFrame;
   }
-
-
 
   for(var i in stickers.children.entries)
   {
     //Gives moving from camera effect
-    if(stickers.children.entries[i].scale > 0.1 && stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
+    if(stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
     {
-        stickers.children.entries[i].scale -= 0.035;
-        stickers.children.entries[i].setScale(stickers.children.entries[i].scale, stickers.children.entries[i].scale);
-    }
-    //Will drop when shrunk to a certain size
-    else if(stickers.children.entries[i].scale <= 0.1 && stickers.children.entries[i].active && stickers.children.entries[i].data.values.patchSticking)
-    {
-        this.sound.add('smack', {
-          volume: 0.8
-        }).play();
-        stickers.children.entries[i].disableBody(true, false);
-        stickers.children.entries[i].enableBody(true, stickers.children.entries[i].x, stickers.children.entries[i].y, true, true);
-        stickers.children.entries[i].data.values.patchSticking = false;
+      if(stickers.children.entries[i].scale > 0.1)
+      {
+          stickers.children.entries[i].scale -= 0.035;
+          stickers.children.entries[i].setScale(stickers.children.entries[i].scale, stickers.children.entries[i].scale);
+      }
+      //Will drop when shrunk to a certain size
+      else
+      {
+          this.sound.add('smack', { volume: 0.8 }).play();
+          stickers.children.entries[i].disableBody(true, false);
+          stickers.children.entries[i].enableBody(true, stickers.children.entries[i].x, stickers.children.entries[i].y, true, true);
+          stickers.children.entries[i].data.values.patchSticking = false;
+      }
     }
 
     //Keeps position relative to laptop
@@ -478,9 +478,10 @@ update: function()
         laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y + stickers.children.entries[i].data.values.lapDiffY
       );
     }
-      //Disables sticker when offscreen
-      if(stickers.children.entries[i].active && stickers.children.entries[i].y > config.height + stickers.children.entries[i].height + 50)
-        stickers.children.entries[i].disableBody(true, true);
+    //Disables sticker when offscreen
+    if(stickers.children.entries[i].active && stickers.children.entries[i].y > config.height + stickers.children.entries[i].height + 50) {
+      stickers.children.entries[i].disableBody(true, true);
+    }
   }
 
   for(var j in laptops.children.entries)
@@ -488,17 +489,16 @@ update: function()
     if(laptops.children.entries[j].active && laptops.children.entries[j].y > config.height + laptops.children.entries[j].height + 50)
     {
       //For optimisation reasons, laptop disables itself when it leaves the screen
-      if(laptops.children.entries[j].data.values.hasSticker && particle1.emitters.list[0].on)
+      if(laptops.children.entries[j].data.values.hasSticker && particle1.emitters.list[0].on) {
         particle1.emitters.list[0].on = false;
-
-      if(laptops.children.entries[j].texture.key == 'laptop_1')
+      }
+      if(laptops.children.entries[j].data.values.currentTimer != null) {
         laptops.children.entries[j].data.values.currentTimer.remove();
+      }
 
-      if(!laptops.children.entries[j].data.values.hasSticker)
-        this.sound.add('crash', {
-          volume: Phaser.Math.FloatBetween(0.6, 0.7),
-          rate: 1.0 + Phaser.Math.FloatBetween(-0.04, 0.04)
-        }).play();
+      if(!laptops.children.entries[j].data.values.hasSticker) {
+        this.sound.add('crash', { volume: Phaser.Math.FloatBetween(0.6, 0.7), rate: 1.0 + Phaser.Math.FloatBetween(-0.04, 0.04) }).play();
+      }
       laptops.children.entries[j].disableBody(true, true);
 
       //Sticker resets when accompanying laptop leaves the screen
@@ -523,6 +523,56 @@ update: function()
       laptops.children.entries[j].setCollideWorldBounds(false);
   }
 
+  function gameOverSequence(endText, resultsText)
+  {
+    master.sound.play('timesUp');
+    timerText.setText(endText);
+    gameOver = true;
+    gameDelay = master.time.addEvent(
+      {
+        delay: 2000,                // ms
+        callback: ()=> {
+          scoreText.setText('');
+          timerText.setText('');
+          stickerText.setText('');
+          tar.disableBody(true, true);
+          var finish = master.sound.add('results');
+          // finish.play();
+          // particle2.emitters.list[0].on = true;
+
+          var finishText = master.add.text(0, 0, resultsText,
+          { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
+          fontStyle: 'bold', fill: '#000' });
+          finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)),
+            (config.height/2) - 50);
+
+          // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+          // particle2.emitters.list[0].startFollow(finishText);
+          master.time.addEvent(
+            {
+            delay: 5000,
+            callback: ()=> {
+              gameOver = false;
+              var menuScene = master.scene.get('mainMenu');
+              for(var i in laptops.children.entries)
+              {
+                if(laptops.children.entries[i].texture.key == 'laptop_1')
+                  master.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
+              }
+              stickersLeft = 20;
+              finish.stop();
+              menuScene.scene.restart();
+              master.scene.stop();
+            },
+            callbackScope: this,
+            loop: false
+            });
+        },
+        callbackScope: this,
+        loop: false
+      });
+  }
+
 
   if(countdownCheck == null)
     countdownCheck = countdownSeconds;
@@ -531,59 +581,8 @@ update: function()
   if(countdownTimer.paused) {
     if(gameDelay == null)
     {
-      this.sound.play('timesUp');
-      timerText.setText('Finish!');
-      gameOver = true;
-      gameDelay = this.time.addEvent(
-        {
-          delay: 2000,                // ms
-          callback: ()=> {
-            scoreText.setText('');
-            timerText.setText('');
-            stickerText.setText('');
-            tar.disableBody(true, true);
-            var finish = this.sound.add('results');
-            // finish.play();
-            // particle2.emitters.list[0].on = true;
-
-            var finishText = this.add.text(0, 0, 'All laptops are Patched',
-            { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
-            fontStyle: 'bold', fill: '#000' });
-            finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)),
-              (config.height/2) - 50);
-
-            // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-            // particle2.emitters.list[0].startFollow(finishText);
-            this.time.addEvent(
-              {
-              delay: 5000,
-              callback: ()=> {
-                gameOver = false;
-                var menuScene = this.scene.get('mainMenu');
-                for(var i in laptops.children.entries)
-                {
-                  if(laptops.children.entries[i].texture.key == 'laptop_1')
-                    this.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
-                }
-                stickersLeft = 20;
-                finish.stop();
-                menuScene.scene.restart();
-                this.scene.stop();
-              },
-              callbackScope: this,
-              loop: false
-              });
-          },
-          callbackScope: this,
-          loop: false
-        });
+      gameOverSequence('Finish!', 'All laptops are Patched');
     }
-  }
-
-  howManyLaptopsHaveStickers = 0;
-  for(var i in laptops.children.entries) {
-    if(laptops.children.entries[i].data.values.hasSticker)
-      howManyLaptopsHaveStickers++;
   }
 
   if(howManyLaptopsHaveStickers == laptopsAtOnce)
@@ -594,94 +593,34 @@ update: function()
   else
   {
     //Will indicate when last laptop is being chucked
-    if(modeSelect == 1 && laptops.children.entries.findIndex((lapt) =>
-    { return lapt.data.values.delayActive }) == -1 && laptops.countActive(true) > 0)
+    if(modeSelect == 1 && laptops.children.entries.findIndex((lapt) => { return lapt.data.values.delayActive }) == -1 && laptops.countActive(true) > 0) {
       timerText.setText('Last one!');
-
+    }
     //Will initiate game over sequence when timer runs out
-    else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 || (modeSelect == 0 && stickersLeft == 0))
+    else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 || stickersLeft == 0)
     {
       if(gameDelay == null && (stickers.countActive(true) == 0 || (stickers.countActive(true) > 0
       && stickers.children.entries.findIndex((stick) => { return stick.scale > 0.1 }) == -1)))
       {
-        this.sound.play('timesUp');
-        timerText.setText('Time\'s up');
-        gameOver = true;
-        gameDelay = this.time.addEvent(
-          {
-            delay: 2000,                // ms
-            callback: ()=> {
-              scoreText.setText('');
-              timerText.setText('');
-              stickerText.setText('');
-              tar.disableBody(true, true);
-              var finish = this.sound.add('results');
-              // finish.play();
-              // particle2.emitters.list[0].on = true;
-
-              //Dialog will change depending on how many laptops you have patched
-              if(laptopsCaught >= laptopsAtOnce)
-              {
-                var finishText = this.add.text(0, 0, 'No laptops were patched',
-                { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
-                fontStyle: 'bold', fill: '#000' });
-                finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)),
-                  (config.height/2) - 50);
-                // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-                // particle2.emitters.list[0].startFollow(finishText);
-              }
-              else if(laptopsCaught == 1)
-              {
-                var finishText = this.add.text(0, 0, 'You got ' + laptopsCaught + ' laptop',
-                  { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
-                finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
-                // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-                // particle2.emitters.list[0].startFollow(finishText);
-              }
-
-              else
-              {
-                var finishText = this.add.text(0, 0, 'You got ' + laptopsCaught + ' laptops',
-                  { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px', fontStyle: 'bold', fill: '#000' });
-                finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
-                // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-                // particle2.emitters.list[0].startFollow(finishText);
-              }
-
-              this.time.addEvent(
-                {
-                delay: 5000,
-                callback: ()=> {
-                  gameOver = false;
-                  var menuScene = this.scene.get('mainMenu');
-                  for(var i in laptops.children.entries)
-                  {
-                    if(laptops.children.entries[i].texture.key == 'laptop_1')
-                      this.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
-                  }
-                  stickersLeft = 20;
-                  finish.stop();
-                  menuScene.scene.restart();
-                  this.scene.stop();
-                },
-                callbackScope: this,
-                loop: false
-                });
-            },
-            callbackScope: this,
-            loop: false
-          });
+        if(howManyLaptopsHaveStickers == 0) {
+          gameOverSequence('Time\'s up', 'No laptops were patched');
+        }
+        else if (howManyLaptopsHaveStickers == 1) {
+          gameOverSequence('Time\'s up', 'You got 1 laptop');
+        }
+        else {
+          gameOverSequence('Time\'s up', 'You got ' + howManyLaptopsHaveStickers + ' laptops');
+        }
       }
     }
 
     //Will occur if there are no laptops left to chuck and timer hasn't run out yet
     else if(modeSelect == 1 && laptops.children.entries.findIndex((lapt) =>
-    { return lapt.data.values.delayActive }) == -1 && laptops.countActive(true) === 0)
+    { return lapt.data.values.delayActive }) == -1 && laptops.countActive(true) === 0) {
       timerText.setText('No More');
-
+    }
     //Countdown check will be compared against the floor of countdown seconds to see if it has changed; prevents unnecesary updates to second timer
-    else if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0
-    && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds()))
+    else if(countdownSeconds - countdownTimer.getElapsedSeconds() > 0 && countdownCheck != countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds()))
     {
       timerText.setText('Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
       countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
