@@ -659,7 +659,7 @@ class MainMenu extends Phaser.Scene
           .on('pointerdown', (pointer)=> {
               if(pointer.leftButtonDown())
               {
-                button.setStyle({ fill: '#aa0'});
+                button.setStyle({ fill: '#404'});
                 master.scene.start('info', { instructionSource: source, titleName: title, text1: text1, text2: text2,
                   stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
                 // master.scene.start('mainGame', { stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode});
@@ -705,58 +705,64 @@ class PauseMenu extends Phaser.Scene
   preload ()
   {
     this.load.svg('note', 'assets/post_it.svg', {
-      width: 50,
-      height: 100
+      width: 100,
+      height: 200
     });
   }
 
   create ()
   {
     //Resume Button
-    var graphics = this.add.graphics();
-    var rect = new Phaser.Geom.Rectangle((config.width/2) - 103, (config.height/2) + 150, 95, 30);
-    graphics.fillStyle('#cf9830');
-    graphics.fillRectShape(rect);
+    // var graphics = this.add.graphics();
+
+    // var rect = new Phaser.Geom.Rectangle((config.width/2) - 103, (config.height/2) + 150, 95, 30);
+    // graphics.fillStyle('#cf9830');
+    // graphics.fillRectShape(rect);
+    var rect = this.add.sprite((config.width/2) - 133, (config.height/2), 'note').setOrigin(0, 0);
 
     //Quit Button
-    var rect2 = new Phaser.Geom.Rectangle((config.width/2) + 97, (config.height/2) + 150, 50, 30);
-    graphics.fillStyle('#cf9830');
-    graphics.fillRectShape(rect2);
+    // var rect2 = new Phaser.Geom.Rectangle((config.width/2) + 97, (config.height/2) + 150, 50, 30);
+    // graphics.fillStyle('#cf9830');
+    // graphics.fillRectShape(rect2);
+    var rect2 = this.add.sprite((config.width/2) + 58, (config.height/2), 'note').setOrigin(0, 0);
 
     //Text for "paused"
     this.add.text((config.width/2) - 50, config.height/2, 'Paused',
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold', fill: '#000'});
 
     //Interactable resume text for continuing ongoing game
-    const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume',
-    {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
+    const resumeButton = this.add.text(0, 0, 'Resume', {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000'})
     .setInteractive()
     .on('pointerdown', (pointer)=> {
       if(pointer.leftButtonDown())
       {
-        resumeButton.setStyle({ fill: '#aa0'});
+        resumeButton.setStyle({ fill: '#404'});
         this.scene.resume('mainGame');
         this.scene.stop();
       }
     })
-    .on('pointerover', () => resumeButton.setStyle({ fill: '#ff0'}) )
-    .on('pointerout', () => resumeButton.setStyle({ fill: '#fff' }) );
+    .on('pointerover', () => resumeButton.setStyle({ fill: '#808'}) )
+    .on('pointerout', () => resumeButton.setStyle({ fill: '#000' }) );
+
+    resumeButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(resumeButton.width/2))), Math.floor(rect.y + (rect.height/2)));
 
     //Interactable quit text for going back to the main menu
-    const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit',
-    {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
+    const quitButton = this.add.text(0, 0, 'Quit',
+    {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000'})
     .setInteractive()
     .on('pointerdown', (pointer)=> {
       if(pointer.leftButtonDown())
       {
-        quitButton.setStyle({ fill: '#aa0'});
+        quitButton.setStyle({ fill: '#404'});
         this.scene.start('mainMenu');
         this.scene.stop('mainGame');
         this.scene.stop();
       }
     })
-    .on('pointerover', () => quitButton.setStyle({ fill: '#ff0'}) )
-    .on('pointerout', () => quitButton.setStyle({ fill: '#fff' }) );
+    .on('pointerover', () => quitButton.setStyle({ fill: '#808'}) )
+    .on('pointerout', () => quitButton.setStyle({ fill: '#000' }) );
+
+    quitButton.setPosition(Math.floor(rect2.x + ((rect2.width/2)-(quitButton.width/2))), Math.floor(rect2.y + (rect2.height/2)))
   }
 }
 
@@ -813,7 +819,7 @@ class Instructions extends Phaser.Scene
       .on('pointerdown', (pointer)=> {
           if(pointer.leftButtonDown())
           {
-            playButton.setStyle({ fill: '#aa0'});
+            playButton.setStyle({ fill: '#404'});
             this.sound.play('gong');
             this.scene.start('mainGame', { stickersAtOnce: this.stickersAtOnce, laptopsAtOnce: this.laptopsAtOnce, countdownSeconds: this.countdownSeconds, modeSelect: this.modeSelect});
             this.scene.stop();
