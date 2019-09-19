@@ -654,8 +654,7 @@ class MainMenu extends Phaser.Scene
         rect.setScale(scaleX, scaleY);
         rect.setSize(100 * scaleX, 200 * scaleY);
 
-        const button = master.add.text(rect.x + (rect.width/2), rect.y + (rect.height/2), title,
-          {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+        const button = master.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
           .setInteractive()
           .on('pointerdown', (pointer)=> {
               if(pointer.leftButtonDown())
@@ -670,7 +669,7 @@ class MainMenu extends Phaser.Scene
             .on('pointerover', () => button.setStyle({ fill: '#808'}) )
             .on('pointerout', () => button.setStyle({ fill: '#000' }) );
 
-        button.setPosition(rect.x + ((rect.width/2)-(button.width/2)), rect.y + (rect.height/2));
+        button.setPosition(Math.floor(rect.x + ((rect.width/2)-(button.width/2))), Math.floor(rect.y + (rect.height/2)));
 
         return { rect: rect, text: button };
       }
@@ -678,35 +677,39 @@ class MainMenu extends Phaser.Scene
       //Button to launch mode select
       var rect = this.add.sprite((config.width/2) - 50, (config.height/2) - 100, 'note').setOrigin(0, 0);
       //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
-      const startButton = this.add.text(rect.x + (rect.width/2), rect.y + (rect.height/2), 'Start',
-      {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+      const startButton = this.add.text(0, 0, 'Start', {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
       .setInteractive()
       .on('pointerdown', (pointer)=> {
         if(pointer.leftButtonDown())
         {
           startButton.destroy();
           rect.destroy();
-          // var rect2 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
-          // rect2.setPosition((config.width/2)-(rect2.width + 20), (config.height/2)-50);
-          // graphics.fillRectShape(rect2);
 
           //Buttons to start modes
-          var bounceButton = launchButton((config.width/2)- 220, (config.height/2)-50, 1.6, 1.45, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce mode',
+          var bounceButton = launchButton((config.width/2)- 220, (config.height/2)-150, 2.0, 1.75, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce mode',
             'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out');
-          var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-50, 1.6, 1.45, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck mode',
+          var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-150, 2.0, 1.75, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck mode',
             'Catch the incoming flying laptops by sticking them with a mission patch within two minutes', 'Move the cursor around the screen and click to throw a sticker');
         }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#808'}) )
       .on('pointerout', () => startButton.setStyle({ fill: '#000' }) );
 
-      startButton.setPosition(rect.x + ((rect.width/2)-(startButton.width/2)), rect.y + (rect.height/2));
+      startButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(startButton.width/2))), Math.floor(rect.y + (rect.height/2)));
   }
 
 }
 
 class PauseMenu extends Phaser.Scene
 {
+  preload ()
+  {
+    this.load.svg('note', 'assets/post_it.svg', {
+      width: 50,
+      height: 100
+    });
+  }
+
   create ()
   {
     //Resume Button
@@ -726,7 +729,7 @@ class PauseMenu extends Phaser.Scene
 
     //Interactable resume text for continuing ongoing game
     const resumeButton = this.add.text((config.width/2)-100, (config.height/2) + 150, 'Resume',
-    {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
+    {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .on('pointerdown', (pointer)=> {
       if(pointer.leftButtonDown())
@@ -741,7 +744,7 @@ class PauseMenu extends Phaser.Scene
 
     //Interactable quit text for going back to the main menu
     const quitButton = this.add.text((config.width/2) + 100, (config.height/2) + 150, 'Quit',
-    {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
+    {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#fff'})
     .setInteractive()
     .on('pointerdown', (pointer)=> {
       if(pointer.leftButtonDown())
@@ -776,6 +779,10 @@ class Instructions extends Phaser.Scene
     this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
 
     this.load.image('preview', this.instructionSource);
+    this.load.svg('note', 'assets/post_it.svg', {
+      width: 100,
+      height: 200
+    });
   }
 
   create ()
@@ -798,13 +805,10 @@ class Instructions extends Phaser.Scene
     previewPic.setScale(0.5);
 
     //Button to start game
-    var rect = new Phaser.Geom.Rectangle((config.width/2)-25, (config.height/2)+185, 65, 50);
-    rect.setPosition((config.width/2)-25, (config.height/2)+185);
-    graphics.fillStyle('#cf9830');
-    graphics.fillRectShape(rect);
+    var rect = this.add.sprite((config.width/2) - 50, (config.height/2)+115, 'note').setOrigin(0, 0);
 
-    const playButton = this.add.text(rect.x + 10, rect.y+10, 'Play',
-      {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px'})
+    const playButton = this.add.text(0, 0, 'Play',
+      {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
       .setInteractive()
       .on('pointerdown', (pointer)=> {
           if(pointer.leftButtonDown())
@@ -815,8 +819,10 @@ class Instructions extends Phaser.Scene
             this.scene.stop();
           }
         })
-        .on('pointerover', () => playButton.setStyle({ fill: '#ff0'}) )
-        .on('pointerout', () => playButton.setStyle({ fill: '#fff' }) );
+        .on('pointerover', () => playButton.setStyle({ fill: '#808'}) )
+        .on('pointerout', () => playButton.setStyle({ fill: '#000' }) );
+
+    playButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(playButton.width/2))), Math.floor(rect.y + (rect.height/2)))
   }
 }
 
