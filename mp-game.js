@@ -631,6 +631,14 @@ update: function()
 
 class MainMenu extends Phaser.Scene
 {
+  preload ()
+  {
+    this.load.svg('note', 'assets/post_it.svg', {
+      width: 100,
+      height: 200
+    });
+  }
+
   create ()
   {
       //Title
@@ -641,14 +649,13 @@ class MainMenu extends Phaser.Scene
 
       title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
 
-      function launchButton(x, y, width, height, source, stickers, laptops, seconds, mode, title, text1, text2) {
-        var rect = new Phaser.Geom.Rectangle(0, 0, width, height);
-        rect.setPosition(x, y);
-        graphics.fillStyle('#000');
-        graphics.fillRectShape(rect);
+      function launchButton(x, y, scaleX, scaleY, source, stickers, laptops, seconds, mode, title, text1, text2) {
+        var rect = master.add.sprite(x, y, 'note').setOrigin(0, 0);
+        rect.setScale(scaleX, scaleY);
+        rect.setSize(100 * scaleX, 200 * scaleY);
 
-        const button = master.add.text(rect.x + 10, rect.y + 10, title,
-          {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px'})
+        const button = master.add.text(rect.x + (rect.width/2), rect.y + (rect.height/2), title,
+          {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
           .setInteractive()
           .on('pointerdown', (pointer)=> {
               if(pointer.leftButtonDown())
@@ -660,41 +667,40 @@ class MainMenu extends Phaser.Scene
                 master.scene.stop();
               }
             })
-            .on('pointerover', () => button.setStyle({ fill: '#ff0'}) )
-            .on('pointerout', () => button.setStyle({ fill: '#fff' }) );
+            .on('pointerover', () => button.setStyle({ fill: '#808'}) )
+            .on('pointerout', () => button.setStyle({ fill: '#000' }) );
+
+        button.setPosition(rect.x + ((rect.width/2)-(button.width/2)), rect.y + (rect.height/2));
 
         return { rect: rect, text: button };
       }
 
       //Button to launch mode select
-      var graphics = this.add.graphics();
-      var rect = new Phaser.Geom.Rectangle(0, 0, 200, 100);
-      rect.setPosition((config.width/2)-(rect.width/2), (config.height/2)-50);
-      graphics.fillStyle('#000');
-      graphics.fillRectShape(rect);
-
+      var rect = this.add.sprite((config.width/2) - 50, (config.height/2) - 100, 'note').setOrigin(0, 0);
       //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
-      const startButton = this.add.text(rect.x + 70, rect.y + 35, 'Start',
-      {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px'})
+      const startButton = this.add.text(rect.x + (rect.width/2), rect.y + (rect.height/2), 'Start',
+      {fontFamily: "Shadows Into Light, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
       .setInteractive()
       .on('pointerdown', (pointer)=> {
         if(pointer.leftButtonDown())
         {
           startButton.destroy();
-          graphics.clear();
-          var rect2 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
-          rect2.setPosition((config.width/2)-(rect2.width + 20), (config.height/2)-50);
-          graphics.fillRectShape(rect2);
+          rect.destroy();
+          // var rect2 = new Phaser.Geom.Rectangle(0, 0, 165, 50);
+          // rect2.setPosition((config.width/2)-(rect2.width + 20), (config.height/2)-50);
+          // graphics.fillRectShape(rect2);
 
           //Buttons to start modes
-          var bounceButton = launchButton((config.width/2)-(rect2.width + 20), (config.height/2)-50, 165, 50, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce mode',
+          var bounceButton = launchButton((config.width/2)- 220, (config.height/2)-50, 1.6, 1.45, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce mode',
             'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out');
-          var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-50, 165, 50, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck mode',
+          var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-50, 1.6, 1.45, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck mode',
             'Catch the incoming flying laptops by sticking them with a mission patch within two minutes', 'Move the cursor around the screen and click to throw a sticker');
         }
       })
-      .on('pointerover', () => startButton.setStyle({ fill: '#ff0'}) )
-      .on('pointerout', () => startButton.setStyle({ fill: '#fff' }) );
+      .on('pointerover', () => startButton.setStyle({ fill: '#808'}) )
+      .on('pointerout', () => startButton.setStyle({ fill: '#000' }) );
+
+      startButton.setPosition(rect.x + ((rect.width/2)-(startButton.width/2)), rect.y + (rect.height/2));
   }
 
 }
