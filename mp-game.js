@@ -633,6 +633,8 @@ class MainMenu extends Phaser.Scene
 {
   preload ()
   {
+    this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
+
     this.load.svg('note', 'assets/post_it.svg', {
       width: 100,
       height: 200
@@ -641,8 +643,11 @@ class MainMenu extends Phaser.Scene
 
   create ()
   {
+      var background = this.add.sprite(0, 0, 'office', '0025.png').setOrigin(0, 0);
+      background.setTint(0x999999);
+
       //Title
-      var title = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '42px', fontStyle: 'bold'});
+      var title = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '60px', fontStyle: 'bold'});
       title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
 
       var master = this;
@@ -713,17 +718,9 @@ class PauseMenu extends Phaser.Scene
   create ()
   {
     //Resume Button
-    // var graphics = this.add.graphics();
-
-    // var rect = new Phaser.Geom.Rectangle((config.width/2) - 103, (config.height/2) + 150, 95, 30);
-    // graphics.fillStyle('#cf9830');
-    // graphics.fillRectShape(rect);
     var rect = this.add.sprite((config.width/2) - 133, (config.height/2), 'note').setOrigin(0, 0);
 
     //Quit Button
-    // var rect2 = new Phaser.Geom.Rectangle((config.width/2) + 97, (config.height/2) + 150, 50, 30);
-    // graphics.fillStyle('#cf9830');
-    // graphics.fillRectShape(rect2);
     var rect2 = this.add.sprite((config.width/2) + 58, (config.height/2), 'note').setOrigin(0, 0);
 
     //Text for "paused"
@@ -837,7 +834,6 @@ var config =
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    backgroundColor: '#00f',
     physics: {
         default: 'arcade',
         arcade: {
