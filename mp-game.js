@@ -647,12 +647,12 @@ class MainMenu extends Phaser.Scene
       background.setTint(0x999999);
 
       //Title
-      var title = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '60px', fontStyle: 'bold'});
-      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
+      var title1 = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '60px', fontStyle: 'bold'});
+      title1.setPosition((config.width/2) - Math.floor(title1.width/2), (config.height/2) - 180);
 
       var master = this;
 
-      title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
+      title1.setPosition(Math.floor((config.width/2) - (title1.width/2)), (config.height/2) - 180);
 
       function launchButton(x, y, scaleX, scaleY, source, stickers, laptops, seconds, mode, title, text1, text2) {
         var rect = master.add.sprite(x, y, 'note').setOrigin(0, 0);
@@ -665,10 +665,12 @@ class MainMenu extends Phaser.Scene
               if(pointer.leftButtonDown())
               {
                 button.setStyle({ fill: '#404'});
-                master.scene.start('info', { instructionSource: source, titleName: title, text1: text1, text2: text2,
+                title1.destroy();
+                rect.destroy();
+                button.destroy();
+                master.scene.pause();
+                master.scene.launch('info', { instructionSource: source, titleName: title, text1: text1, text2: text2,
                   stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
-                // master.scene.start('mainGame', { stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode});
-                master.scene.stop();
               }
             })
             .on('pointerover', () => button.setStyle({ fill: '#808'}) )
@@ -790,8 +792,6 @@ class Instructions extends Phaser.Scene
 
   create ()
   {
-    var graphics = this.add.graphics();
-
     //Title
     var title = this.add.text(0, 0, this.titleName,
       {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
@@ -799,10 +799,10 @@ class Instructions extends Phaser.Scene
 
     //Description
     this.add.text((config.width/2) - 390, (config.height/2)+105,
-      this.text1, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+      this.text1, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px', fill: '#000' });
 
     this.add.text((config.width/2) - 390, (config.height/2)+135,
-      this.text2, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
+      this.text2, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px', fill: '#000' });
 
     var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
     previewPic.setScale(0.5);
@@ -819,6 +819,7 @@ class Instructions extends Phaser.Scene
             playButton.setStyle({ fill: '#404'});
             this.sound.play('gong');
             this.scene.start('mainGame', { stickersAtOnce: this.stickersAtOnce, laptopsAtOnce: this.laptopsAtOnce, countdownSeconds: this.countdownSeconds, modeSelect: this.modeSelect});
+            this.scene.stop('mainMenu');
             this.scene.stop();
           }
         })
@@ -847,8 +848,8 @@ var game = new Phaser.Game(config);
 
 //List of scenes for game
 game.scene.add('mainMenu', MainMenu);
+game.scene.add('info', Instructions);
 game.scene.add('mainGame', mainGame);
 game.scene.add('pauseMenu', PauseMenu);
-game.scene.add('info', Instructions);
 
 game.scene.start('mainMenu');
