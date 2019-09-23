@@ -654,10 +654,12 @@ class MainMenu extends Phaser.Scene
 
       title1.setPosition(Math.floor((config.width/2) - (title1.width/2)), (config.height/2) - 180);
 
+      var rects = [];
+
       function launchButton(x, y, scaleX, scaleY, source, stickers, laptops, seconds, mode, title, text1, text2) {
-        var rect = master.add.sprite(x, y, 'note').setOrigin(0, 0);
-        rect.setScale(scaleX, scaleY);
-        rect.setSize(100 * scaleX, 200 * scaleY);
+        rects.push(master.add.sprite(x, y, 'note').setOrigin(0, 0));
+        rects[rects.length-1].setScale(scaleX, scaleY);
+        rects[rects.length-1].setSize(100 * scaleX, 200 * scaleY);
 
         const button = master.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
           .setInteractive()
@@ -666,8 +668,11 @@ class MainMenu extends Phaser.Scene
               {
                 button.setStyle({ fill: '#404'});
                 title1.destroy();
-                rect.destroy();
-                button.destroy();
+                for( var i in rects) {
+                  rects[i].destroy();
+                }
+                rects = [];
+                // button.destroy();
                 master.scene.pause();
                 master.scene.launch('info', { instructionSource: source, titleName: title, text1: text1, text2: text2,
                   stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
@@ -676,7 +681,7 @@ class MainMenu extends Phaser.Scene
             .on('pointerover', () => button.setStyle({ fill: '#808'}) )
             .on('pointerout', () => button.setStyle({ fill: '#000' }) );
 
-        button.setPosition(Math.floor(rect.x + ((rect.width/2)-(button.width/2))), Math.floor(rect.y + (rect.height/2)));
+        button.setPosition(Math.floor(rects[rects.length-1].x + ((rects[rects.length-1].width/2)-(button.width/2))), Math.floor(rects[rects.length-1].y + (rects[rects.length-1].height/2)));
 
         return { rect: rect, text: button };
       }
