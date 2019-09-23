@@ -150,7 +150,7 @@ create: function()
     laptop.setVelocity(Phaser.Math.Between(400, 600) * velX,
       Phaser.Math.Between(400, 600) * velY);
     laptop.setBounce(bounce);
-    laptop.setScale(0.625);
+    laptop.setScale(0.625 + Phaser.Math.FloatBetween(-0.125, 0.125));
     laptop.setCollideWorldBounds(true);
   }
 
@@ -211,7 +211,7 @@ create: function()
                 var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
                 laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
                   Phaser.Math.Between(400, 600) * velY);
-                laptop.setScale(1.25);
+                laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
               },
               callbackScope: this,
               loop: false
@@ -656,7 +656,7 @@ class MainMenu extends Phaser.Scene
 
       var rects = [];
 
-      function launchButton(x, y, scaleX, scaleY, source, stickers, laptops, seconds, mode, title, text1, text2) {
+      function launchButton(x, y, scaleX, scaleY, source, stickers, laptops, seconds, mode, title, description) {
         rects.push(master.add.sprite(x, y, 'note').setOrigin(0, 0));
         rects[rects.length-1].setScale(scaleX, scaleY);
         rects[rects.length-1].setSize(100 * scaleX, 200 * scaleY);
@@ -674,7 +674,7 @@ class MainMenu extends Phaser.Scene
                 rects = [];
                 // button.destroy();
                 master.scene.pause();
-                master.scene.launch('info', { instructionSource: source, titleName: title, text1: text1, text2: text2,
+                master.scene.launch('info', { instructionSource: source, titleName: title, description: description,
                   stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
               }
             })
@@ -699,9 +699,9 @@ class MainMenu extends Phaser.Scene
 
           //Buttons to start modes
           var bounceButton = launchButton((config.width/2)- 220, (config.height/2)-150, 2.0, 1.75, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce mode',
-            'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out');
+            'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
           var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-150, 2.0, 1.75, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck mode',
-            'Catch the incoming flying laptops by sticking them with a mission patch within two minutes', 'Move the cursor around the screen and click to throw a sticker');
+            'Catch the incoming flying laptops by sticking them \nwith a mission patch within two minutes. Move \nthe cursor around the screen and click to throw \na sticker.');
         }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#808'}) )
@@ -776,8 +776,7 @@ class Instructions extends Phaser.Scene
   {
     this.instructionSource = data.instructionSource;
     this.titleName = data.titleName;
-    this.text1 = data.text1;
-    this.text2 = data.text2;
+    this.description = data.description;
     this.stickersAtOnce = data.stickersAtOnce;
     this.laptopsAtOnce = data.laptopsAtOnce;
     this.countdownSeconds = data.countdownSeconds;
@@ -793,24 +792,28 @@ class Instructions extends Phaser.Scene
       width: 100,
       height: 200
     });
+    this.load.svg('pad', 'assets/note_pad.svg', {
+      scale: 1.8
+    });
   }
 
   create ()
   {
+    var notepad = this.add.sprite(0, 0, 'pad').setOrigin(0, 0);
+    notepad.setPosition((config.width/2) - (notepad.width/2), ((config.height/8)*3) - (notepad.height/2));
     //Title
     var title = this.add.text(0, 0, this.titleName,
-      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
-      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
+      {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '30px', fill: '#000', fontStyle: 'bold'});
+      title.setPosition(notepad.x + ((notepad.width/2) - Math.floor(title.width/2)), Math.floor(notepad.y + 5));
 
     //Description
-    this.add.text((config.width/2) - 390, (config.height/2)+105,
-      this.text1, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px', fill: '#000' });
+    var desc = this.add.text(notepad.x + 10, notepad.y + ((notepad.height/10)*3) - 10,
+      this.description, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '18px', fill: '#000' });
 
-    this.add.text((config.width/2) - 390, (config.height/2)+135,
-      this.text2, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px', fill: '#000' });
+    desc.setLineSpacing(2.5);
 
-    var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
-    previewPic.setScale(0.5);
+    // var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
+    // previewPic.setScale(0.5);
 
     //Button to start game
     var rect = this.add.sprite((config.width/2) - 50, (config.height/2)+115, 'note').setOrigin(0, 0);
@@ -831,7 +834,7 @@ class Instructions extends Phaser.Scene
         .on('pointerover', () => playButton.setStyle({ fill: '#808'}) )
         .on('pointerout', () => playButton.setStyle({ fill: '#000' }) );
 
-    playButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(playButton.width/2))), Math.floor(rect.y + (rect.height/2)))
+    playButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(playButton.width/2))), Math.floor(rect.y + (rect.height/2)));
   }
 }
 
