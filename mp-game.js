@@ -43,11 +43,11 @@ preload: function()
   this.load.image('target', 'assets/cursor.png');
   this.load.image('sky', 'assets/sky.png');
 
-  this.load.image('patch_0', 'assets/patch.png');
-  this.load.image('patch_1', 'assets/patch-2.png');
-  this.load.image('patch_2', 'assets/patch-3.png');
-  this.load.image('patch_3', 'assets/patch-4.png');
-  this.load.image('patch_4', 'assets/patch-5.png');
+  this.load.image('patch_1', 'assets/patch.png');
+  this.load.image('patch_2', 'assets/patch-2.png');
+  this.load.image('patch_3', 'assets/patch-3.png');
+  this.load.image('patch_4', 'assets/patch-4.png');
+  this.load.image('patch_5', 'assets/patch-5.png');
 
   //Spritesheet assets
   this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
@@ -78,7 +78,7 @@ create: function()
 
   //Resets variable on repeat (will delete once bug is figured out)
   gameDelay = null;
-  var stickersAvailable = 4;
+
 
   howManyLaptopsHaveStickers = 0;
 
@@ -292,15 +292,19 @@ create: function()
 
   tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
 
-  var stickerOrder = Phaser.Utils.Array.Shuffle(Phaser.Utils.Array.NumberArray(0, stickersAvailable));
-  // var stickerOrder = [0, 1, 2, 3, 4].shuffle();
-  // var stickerOrder = shuffle([0, 1, 2, 3, 4]);
-
+  var stickersAvailable = 5;
+  var stickerIndexes = []
+  for(var i = 0; i < stickersAtOnce; i++) {
+    stickerIndexes[i] = Phaser.Math.Between(1, stickersAvailable);
+    while (stickerIndexes[i] == stickerIndexes[i-1]) {
+      stickerIndexes[i] = Phaser.Math.Between(1, stickersAvailable);
+    }
+  }
 
   //Stickers are being prepped
   for(var i = 0; i < stickersAtOnce; i++)
   {
-    stickers.create(0, 0, 'patch_' + stickerOrder[i]);
+    stickers.create(0, 0, 'patch_' + stickerIndexes[i]);
     stickers.children.entries[i].setData({ patchSticking: false, currentLaptop: -1,
       lapDiffX: 0, lapDiffY: 0, stickerOnLaptop: false });
     stickers.children.entries[i].scale = 0.8;
