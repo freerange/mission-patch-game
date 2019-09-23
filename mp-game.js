@@ -40,6 +40,9 @@ preload: function()
 {
   //Loads all assets
   this.load.image('laptop_0', 'assets/laptop.png');
+  this.load.image('laptop_2', 'assets/coloured_mp_laptop/blue/0001.png');
+  // this.load.image('laptop_3', 'assets/coloured_mp_laptop/red/0001.png');
+  this.load.image('laptop_4', 'assets/coloured_mp_laptop/green/0001.png');
   this.load.image('target', 'assets/cursor.png');
   this.load.image('sky', 'assets/sky.png');
 
@@ -51,7 +54,8 @@ preload: function()
 
   //Spritesheet assets
   this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
-  this.load.multiatlas('laptop_1', 'assets/spritesheets/laptop/Laptop.json', 'assets/spritesheets/laptop');
+  this.load.spritesheet('laptop_1', 'assets/spritesheets/laptop/spritesheet.png', { frameWidth: 252, frameHeight: 202 });
+  this.load.spritesheet('laptop_3', 'assets/spritesheets/laptop-red/spritesheet.png', { frameWidth: 252, frameHeight: 202 });
 
   //Particle Assets
   this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
@@ -111,32 +115,32 @@ create: function()
   //Always starts at 1
   var laptSpread = 1;
 
-  var laptopFrames = this.anims.generateFrameNames('laptop_1', {
-    start: 1, end: 4, zeroPad: 4, suffix: '.png'
-  });
+  // var laptopFrames = this.anims.generateFrameNames('laptop_1', {
+  //   start: 1, end: 4, zeroPad: 4, suffix: '.png'
+  // });
 
   function animateLaptop (laptop, key) {
     //Will animate if a certain laptop type is assigned
     if(laptop.texture.key == key) {
-      laptop.setFrame('0001.png');
-      laptop.body.setSize(157, 101);
-      master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
-        frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
-      laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-      laptop.data.values.currentTimer = master.time.addEvent(
-      {
-          delay: 1500,
-          callback: ()=> {
-            laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-          },
-          callbackScope: this,
-          loop: true
-      });
+      laptop.setFrame(0);
+      // laptop.body.setSize(157, 101);
+      // master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
+      //   frames: { start: 0, end: 3 }, duration: 350, repeat: 0, yoyo: true });
+      // laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+      // laptop.data.values.currentTimer = master.time.addEvent(
+      // {
+      //     delay: 1500,
+      //     callback: ()=> {
+      //       laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+      //     },
+      //     callbackScope: this,
+      //     loop: true
+      // });
     }
   }
 
   function generateLaptop (x, y, laptopMode, delayActive) {
-    var laptop = laptops.create(x, y, 'laptop_' + Phaser.Math.Between(0, 1));
+    var laptop = laptops.create(x, y, 'laptop_' + Phaser.Math.Between(0, 4));
 
     laptop.setData({ laptopMode: laptopMode, hasSticker: false, delayActive: delayActive,
       laptopID: -1, currentTimer: null });
@@ -150,6 +154,7 @@ create: function()
     var laptop = generateLaptop(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), mode, false);
 
     animateLaptop(laptop, 'laptop_1');
+    animateLaptop(laptop, 'laptop_3');
 
     var velX = (laptop.x > (config.width/2)) ? -1 : 1;
     var velY = (laptop.y > (config.height/2)) ? -1 : 1;
@@ -235,6 +240,7 @@ create: function()
     laptop = generateLaptop(pos.x, pos.y, mode, true);
 
     animateLaptop(laptop, 'laptop_1');
+    animateLaptop(laptop, 'laptop_3');
 
     laptop.disableBody(true, true);
 
@@ -354,7 +360,7 @@ create: function()
     var stickerShrunk = sticker.scale <= 0.1 && sticker.data.values.patchSticking;
     var stickerHittingLaptop = Math.abs(sticker.x - laptop.x) < (laptop.width * sensetivity) && Math.abs(sticker.y - laptop.y) < (laptop.height * sensetivity);
     var stickerLaptopNotStuck = !sticker.data.values.stickerOnLaptop && !laptop.data.values.hasSticker;
-    var correctLaptopFrame = laptop.frame.name == '__BASE' || laptop.frame.name == '0001.png';
+    var correctLaptopFrame = laptop.frame.name == '__BASE' || laptop.frame.name == '0';
 
     return stickerShrunk && stickerHittingLaptop && stickerLaptopNotStuck && correctLaptopFrame;
   }
