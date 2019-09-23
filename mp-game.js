@@ -654,36 +654,35 @@ class MainMenu extends Phaser.Scene
 
       title1.setPosition(Math.floor((config.width/2) - (title1.width/2)), (config.height/2) - 180);
 
-      var rects = [];
+      var postItNotes = [];
 
-      function launchButton(x, y, scaleX, scaleY, source, stickers, laptops, seconds, mode, title, description) {
-        rects.push(master.add.sprite(x, y, 'note').setOrigin(0, 0));
-        rects[rects.length-1].setScale(scaleX, scaleY);
-        rects[rects.length-1].setSize(100 * scaleX, 200 * scaleY);
+      function launchButton(x, y, source, stickers, laptops, seconds, mode, title, description) {
+        var postItNote = master.add.sprite(x, y, 'note');
+        postItNotes.push(postItNote);
+        postItNote.setOrigin(0, 0);
 
-        const button = master.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
-          .setInteractive()
-          .on('pointerdown', (pointer)=> {
-              if(pointer.leftButtonDown())
-              {
-                button.setStyle({ fill: '#404'});
-                title1.destroy();
-                for( var i in rects) {
-                  rects[i].destroy();
-                }
-                rects = [];
-                // button.destroy();
-                master.scene.pause();
-                master.scene.launch('info', { instructionSource: source, titleName: title, description: description,
-                  stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
+        const gameModeText = master.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+        .setInteractive()
+        .on('pointerdown', (pointer)=> {
+            if(pointer.leftButtonDown())
+            {
+              gameModeText.setStyle({ fill: '#404'});
+              title1.destroy();
+              for( var i in postItNotes) {
+                postItNotes[i].destroy();
               }
-            })
-            .on('pointerover', () => button.setStyle({ fill: '#808'}) )
-            .on('pointerout', () => button.setStyle({ fill: '#000' }) );
+              postItNotes = [];
+              // gameModeText.destroy();
+              master.scene.pause();
+              master.scene.launch('info', { instructionSource: source, titleName: title, description: description,
+                stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
+            }
+        })
+        .on('pointerover', () => gameModeText.setStyle({ fill: '#808'}) )
+        .on('pointerout', () => gameModeText.setStyle({ fill: '#000' }) );
 
-        button.setPosition(Math.floor(rects[rects.length-1].x + ((rects[rects.length-1].width/2)-(button.width/2))), Math.floor(rects[rects.length-1].y + (rects[rects.length-1].height/2)));
-
-        return { rect: rect, text: button };
+        gameModeText.setAlign('center');
+        gameModeText.setPosition(Math.floor(postItNote.x + ((postItNote.width/2)-(gameModeText.width/2))), Math.floor(postItNote.y + (postItNote.height/2) - (gameModeText.height/2)));
       }
 
       //Button to launch mode select
@@ -698,9 +697,9 @@ class MainMenu extends Phaser.Scene
           rect.destroy();
 
           //Buttons to start modes
-          var bounceButton = launchButton((config.width/2)- 220, (config.height/2)-150, 2.0, 1.75, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce mode',
+          var bounceButton = launchButton((config.width/2)- 170, (config.height/2)-100, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce\nmode',
             'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
-          var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-150, 2.0, 1.75, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck mode',
+          var chuckButton = launchButton((config.width/2) + 70, (config.height/2)-100, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck\nmode',
             'Catch the incoming flying laptops by sticking them \nwith a mission patch within two minutes. Move \nthe cursor around the screen and click to throw \na sticker.');
         }
       })
@@ -816,7 +815,8 @@ class Instructions extends Phaser.Scene
     // previewPic.setScale(0.5);
 
     //Button to start game
-    var rect = this.add.sprite((config.width/2) - 50, (config.height/2)+115, 'note').setOrigin(0, 0);
+    var playPostItNote = this.add.sprite(0, 0, 'note').setOrigin(0, 0);
+    playPostItNote.setPosition((config.width/2) - (playPostItNote.width/2), (config.height/2)+75);
 
     const playButton = this.add.text(0, 0, 'Play',
       {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
@@ -834,7 +834,7 @@ class Instructions extends Phaser.Scene
         .on('pointerover', () => playButton.setStyle({ fill: '#808'}) )
         .on('pointerout', () => playButton.setStyle({ fill: '#000' }) );
 
-    playButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(playButton.width/2))), Math.floor(rect.y + (rect.height/2)));
+    playButton.setPosition(Math.floor(playPostItNote.x + ((playPostItNote.width/2)-(playButton.width/2))), Math.floor(playPostItNote.y + (playPostItNote.height/2)));
   }
 }
 
