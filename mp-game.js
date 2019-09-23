@@ -674,7 +674,7 @@ class MainMenu extends Phaser.Scene
               postItNotes = [];
               // gameModeText.destroy();
               master.scene.pause();
-              master.scene.launch('info', { instructionSource: source, titleName: title, description: description,
+              master.scene.launch('info', { instructionSource: source, titleName: title.replace("\n", " "), description: description,
                 stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
             }
         })
