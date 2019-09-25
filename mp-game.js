@@ -127,18 +127,18 @@ create: function()
 
       laptop.anims.play('open/close_' + laptop.data.values.laptopID);
       laptop.once('animationcomplete', ()=> {
-        var animTimer = master.time.addEvent(
+        master.time.addEvent(
         {
             delay: delay,
             callback: ()=> {
               laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-              master.time.addEvent(
+              var animTimer = master.time.addEvent(
               {
                   delay: delay + duration,
                   loop: true,
                   callback: ()=> {
                     laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-                    if(countdownSeconds <= 0 || stickersLeft == 0) {
+                    if(countdownSeconds <= 0 || stickersLeft == 0 || laptop.data.values.hasSticker) {
                       animTimer.remove();
                     }
                   }
