@@ -40,9 +40,9 @@ preload: function()
 {
   //Loads all assets
   this.load.image('laptop_0', 'assets/laptop.png');
-  this.load.image('laptop_2', 'assets/coloured_mp_laptop/blue/0001.png');
+  this.load.image('laptop_2', 'assets/laptop-blue.png');
   // this.load.image('laptop_3', 'assets/coloured_mp_laptop/red/0001.png');
-  this.load.image('laptop_4', 'assets/coloured_mp_laptop/green/0001.png');
+  this.load.image('laptop_4', 'assets/laptop-green.png');
   this.load.image('target', 'assets/cursor.png');
   this.load.image('sky', 'assets/sky.png');
 
@@ -115,28 +115,32 @@ create: function()
   //Always starts at 1
   var laptSpread = 1;
 
-  // var laptopFrames = this.anims.generateFrameNames('laptop_1', {
-  //   start: 1, end: 4, zeroPad: 4, suffix: '.png'
-  // });
 
-  function animateLaptop (laptop, key) {
+
+  function animateLaptop (laptop, key, duration) {
     //Will animate if a certain laptop type is assigned
     if(laptop.texture.key == key) {
       laptop.setFrame(0);
-      // laptop.body.setSize(157, 101);
-      // master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
-      //   frames: { start: 0, end: 3 }, duration: 350, repeat: 0, yoyo: true });
-      // laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-      // laptop.data.values.currentTimer = master.time.addEvent(
-      // {
-      //     delay: 1500,
-      //     callback: ()=> {
-      //       laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-      //     },
-      //     callbackScope: this,
-      //     loop: true
-      // });
+      laptop.body.setSize(157, 101);
+      var laptopFrames = master.anims.generateFrameNames(key, { start: 0, end: 3 });
+      master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
+        frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
+      laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+      laptop.data.values.currentTimer = master.time.addEvent(
+      {
+          delay: 1500,
+          callback: ()=> {
+            laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+          },
+          callbackScope: this,
+          loop: true
+      });
     }
+  }
+
+  function foo (laptop) {
+    animateLaptop(laptop, 'laptop_1', 350);
+    animateLaptop(laptop, 'laptop_3', 500);
   }
 
   function generateLaptop (x, y, laptopMode, delayActive) {
@@ -153,8 +157,7 @@ create: function()
   function createMode0Laptop (laptop, bounce, mode) {
     var laptop = generateLaptop(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), mode, false);
 
-    animateLaptop(laptop, 'laptop_1');
-    animateLaptop(laptop, 'laptop_3');
+    foo(laptop);
 
     var velX = (laptop.x > (config.width/2)) ? -1 : 1;
     var velY = (laptop.y > (config.height/2)) ? -1 : 1;
@@ -239,8 +242,7 @@ create: function()
     //Sets up laptop
     laptop = generateLaptop(pos.x, pos.y, mode, true);
 
-    animateLaptop(laptop, 'laptop_1');
-    animateLaptop(laptop, 'laptop_3');
+    foo(laptop);
 
     laptop.disableBody(true, true);
 
