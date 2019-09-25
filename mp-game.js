@@ -383,6 +383,9 @@ create: function()
             //Checks for first overlapping laptop
             stickToLaptop(lapt, stick, lapt.data.values.laptopID);
 
+            if(lapt.frame.name != '__BASE')
+              master.anims.remove('open/close_' + lapt.data.values.laptopID);
+
             //Makes laptops stop and fall in bounce mode
             if(lapt.data.values.laptopMode == 0) {
               lapt.disableBody(true, false);
@@ -574,7 +577,7 @@ update: function()
               var menuScene = master.scene.get('mainMenu');
               for(var i in laptops.children.entries)
               {
-                if(laptops.children.entries[i].texture.key == 'laptop_1')
+                if(laptops.children.entries[i].frame.name != '__BASE')
                   master.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
               }
               stickersLeft = 20;
@@ -711,7 +714,7 @@ class MainMenu extends Phaser.Scene
           rect.destroy();
 
           //Buttons to start modes
-          var bounceButton = launchButton((config.width/2)- 170, (config.height/2)-100, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce\nmode',
+          var bounceButton = launchButton((config.width/2)- 170, (config.height/2)-100, 'assets/bounce-mode-example.png', 3, 10, 30, 0, 'Bounce\nmode',
             'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
           var chuckButton = launchButton((config.width/2) + 70, (config.height/2)-100, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck\nmode',
             'Catch the incoming flying laptops by sticking them \nwith a mission patch within two minutes. Move \nthe cursor around the screen and click to throw \na sticker.');
