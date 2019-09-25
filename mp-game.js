@@ -124,13 +124,13 @@ create: function()
       laptop.body.setSize(157, 101);
       var laptopFrames = master.anims.generateFrameNames(key, { start: 0, end: 3 });
       master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID, frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
-      var startingDelay = Phaser.Math.Between(0, 500);
 
-      laptop.data.values.currentTimer = master.time.addEvent(
+      master.time.addEvent(
       {
-          delay: startingDelay,
+          delay: Phaser.Math.Between(0, 750),
           callback: ()=> {
             laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+
             laptop.once('animationcomplete', ()=> {
               master.time.addEvent(
               {
@@ -138,6 +138,7 @@ create: function()
                   callback: ()=> {
                     laptop.anims.play('open/close_' + laptop.data.values.laptopID);
                     delay = delay + duration;
+
                     master.time.addEvent(
                     {
                         delay: delay,
@@ -147,11 +148,13 @@ create: function()
                         callbackScope: this,
                         loop: true
                     });
+
                   },
                   callbackScope: this,
                   loop: false
               });
             });
+            
           },
           callbackScope: this,
           loop: false
@@ -159,7 +162,7 @@ create: function()
     }
   }
 
-  function animateAllAvailableLaptops (laptop) {
+  function isLaptopTypeAnimated (laptop) {
     animateLaptop(laptop, 'laptop_1', 350, 750);
     animateLaptop(laptop, 'laptop_2', 750, 1000);
     animateLaptop(laptop, 'laptop_3', 500, 250);
@@ -168,9 +171,7 @@ create: function()
 
   function generateLaptop (x, y, laptopMode, delayActive) {
     var laptop = laptops.create(x, y, 'laptop_' + Phaser.Math.Between(0, 4));
-
-    laptop.setData({ laptopMode: laptopMode, hasSticker: false, delayActive: delayActive, laptopID: -1, currentTimer: null });
-
+    laptop.setData({ laptopMode: laptopMode, hasSticker: false, delayActive: delayActive, laptopID: -1 });
     laptop.data.values.laptopID = laptops.children.entries.length - 1;
 
     return laptop;
@@ -178,7 +179,7 @@ create: function()
 
   function createMode0Laptop (laptop, bounce, mode) {
     var laptop = generateLaptop(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), mode, false);
-    animateAllAvailableLaptops(laptop);
+    isLaptopTypeAnimated(laptop);
 
     var velX = (laptop.x > (config.width/2)) ? -1 : 1;
     var velY = (laptop.y > (config.height/2)) ? -1 : 1;
@@ -235,6 +236,7 @@ create: function()
               callback: ()=> {
                 readyText.destroy();
 
+                isLaptopTypeAnimated(laptop);
                 master.sound.add('laptThrow', {
                   volume: Phaser.Math.FloatBetween(0.2, 0.4),
                   rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
@@ -244,8 +246,7 @@ create: function()
 
                 var velX = (laptop.x > (config.width/2)) ? -1 : 1;
                 var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-                laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
-                  Phaser.Math.Between(400, 600) * velY);
+                laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(400, 600) * velY);
                 laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
               },
               callbackScope: this,
@@ -262,9 +263,10 @@ create: function()
     //Sets up laptop
     var pos = chooseLaptopStartPosition();
     laptop = generateLaptop(pos.x, pos.y, mode, true);
-    animateAllAvailableLaptops(laptop);
 
     laptop.disableBody(true, true);
+
+
 
     var msPerLaptop = (countdownSeconds * 1000)/laptopsAtOnce;
     var laptSetDelay = (msPerLaptop * laptSpread) + Phaser.Math.Between(-(msPerLaptop/2), (msPerLaptop/2));
@@ -347,9 +349,6 @@ create: function()
       volume: 0.6,
       rate: 1.0 + Phaser.Math.FloatBetween(-0.15, 0.15)
     }).play();
-
-    if(lapt.data.values.currentTimer != null)
-      lapt.data.values.currentTimer.remove();
 
     stick.data.values.currentLaptop = index;
     stick.data.values.lapDiffX = stick.x - lapt.x;
@@ -530,9 +529,6 @@ update: function()
       //For optimisation reasons, laptop disables itself when it leaves the screen
       if(laptops.children.entries[j].data.values.hasSticker && particle1.emitters.list[0].on) {
         particle1.emitters.list[0].on = false;
-      }
-      if(laptops.children.entries[j].data.values.currentTimer != null) {
-        laptops.children.entries[j].data.values.currentTimer.remove();
       }
 
       if(!laptops.children.entries[j].data.values.hasSticker) {
