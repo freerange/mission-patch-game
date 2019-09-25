@@ -40,12 +40,10 @@ preload: function()
 {
   //Loads all assets
   this.load.image('laptop_0', 'assets/laptop.png');
-  // this.load.image('laptop_2', 'assets/laptop-blue.png');
-  // this.load.image('laptop_3', 'assets/coloured_mp_laptop/red/0001.png');
-  // this.load.image('laptop_4', 'assets/laptop-green.png');
   this.load.image('target', 'assets/cursor.png');
   this.load.image('sky', 'assets/sky.png');
 
+  //Patch Designs
   this.load.image('patch_1', 'assets/patch.png');
   this.load.image('patch_2', 'assets/patch-2.png');
   this.load.image('patch_3', 'assets/patch-3.png');
@@ -128,23 +126,32 @@ create: function()
       master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
         frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
       laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-      laptop.data.values.currentTimer = master.time.addEvent(
-      {
-          delay: delay,
-          callback: ()=> {
-            laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-          },
-          callbackScope: this,
-          loop: true
+      laptop.once('animationcomplete', ()=> {
+        laptop.data.values.currentTimer = master.time.addEvent(
+        {
+            delay: delay,
+            callback: ()=> {
+              laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+              master.time.addEvent(
+              {
+                  delay: duration,
+                  callback: ()=> {},
+                  callbackScope: this,
+                  loop: false
+              });
+            },
+            callbackScope: this,
+            loop: true
+        });
       });
     }
   }
 
   function animateAllAvailableLaptops (laptop) {
-    animateLaptop(laptop, 'laptop_1', 350, 1500);
-    animateLaptop(laptop, 'laptop_2', 1000, 3000);
-    animateLaptop(laptop, 'laptop_3', 500, 2000);
-    animateLaptop(laptop, 'laptop_4', 100, 2500);
+    animateLaptop(laptop, 'laptop_1', 350, 500);
+    animateLaptop(laptop, 'laptop_2', 1000, 1000);
+    animateLaptop(laptop, 'laptop_3', 500, 500);
+    animateLaptop(laptop, 'laptop_4', 150, 400);
   }
 
   function generateLaptop (x, y, laptopMode, delayActive) {
