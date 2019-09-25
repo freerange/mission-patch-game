@@ -127,7 +127,7 @@ create: function()
 
       laptop.anims.play('open/close_' + laptop.data.values.laptopID);
       laptop.once('animationcomplete', ()=> {
-        master.time.addEvent(
+        var animTimer = master.time.addEvent(
         {
             delay: delay,
             callback: ()=> {
@@ -138,6 +138,9 @@ create: function()
                   loop: true,
                   callback: ()=> {
                     laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+                    if(countdownSeconds <= 0 || stickersLeft == 0) {
+                      animTimer.remove();
+                    }
                   }
               });
             }
