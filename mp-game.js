@@ -504,9 +504,19 @@ update: function()
         laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x + stickers.children.entries[i].data.values.lapDiffX,
         laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y + stickers.children.entries[i].data.values.lapDiffY
       );
+
+      if(laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].frame.name != '__BASE'
+      && laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].frame.name != '0') {
+        stickers.children.entries[i].setAlpha(0);
+      } else {
+        stickers.children.entries[i].setAlpha(1);
+      }
     }
+
+
     //Disables sticker when offscreen
     if(stickers.children.entries[i].active && stickers.children.entries[i].y > config.height + stickers.children.entries[i].height + 50) {
+      stickers.children.entries[i].setAlpha(1);
       stickers.children.entries[i].disableBody(true, true);
     }
   }
@@ -536,6 +546,7 @@ update: function()
         stickers.children.entries[stickerIndex].data.values.lapDiffY = 0;
         stickers.children.entries[stickerIndex].data.values.stickerOnLaptop = false;
         stickers.children.entries[stickerIndex].body.setAllowGravity(true);
+        stickers.children.entries[stickerIndex].setAlpha(1);
         stickers.children.entries[stickerIndex].disableBody(true, true);
       }
     }
