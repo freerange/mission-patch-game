@@ -126,22 +126,19 @@ create: function()
       master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID, frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
 
       laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-
       laptop.once('animationcomplete', ()=> {
         master.time.addEvent(
         {
             delay: delay,
             callback: ()=> {
               laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-              delay = delay + duration;
-
               master.time.addEvent(
               {
-                  delay: delay,
+                  delay: delay + duration,
+                  loop: true,
                   callback: ()=> {
                     laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-                  },
-                  loop: true
+                  }
               });
             }
         });
@@ -150,10 +147,16 @@ create: function()
   }
 
   function isLaptopTypeAnimated (laptop) {
-    animateLaptop(laptop, 'laptop_1', 350, 750);
-    animateLaptop(laptop, 'laptop_2', 750, 1000);
-    animateLaptop(laptop, 'laptop_3', 500, 250);
-    animateLaptop(laptop, 'laptop_4', 150, 500);
+    master.time.addEvent(
+    {
+        delay: Phaser.Math.Between(0, 750),
+        callback: ()=> {
+          animateLaptop(laptop, 'laptop_1', 350, 750);
+          animateLaptop(laptop, 'laptop_2', 750, 1000);
+          animateLaptop(laptop, 'laptop_3', 500, 500);
+          animateLaptop(laptop, 'laptop_4', 150, 500);
+        }
+    });
   }
 
   function generateLaptop (x, y, laptopMode, delayActive) {
@@ -200,52 +203,45 @@ create: function()
     //Random delay before chucking
     var timer;
     master.time.addEvent(
-      {
-        delay: delay - 750,                // ms
-        callback: ()=> {
-          var x, y;
+    {
+      delay: delay - 750,                // ms
+      callback: ()=> {
+        var x, y;
 
-          if(pos.y > config.height) {
-            y = pos.y - 100;
-            x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
-          } else {
-            y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
-            x = (pos.x > (config.width/2)) ? config.width - 100 : 50;
-          }
-
-          var readyText = master.add.text(x, y, 'Ready?',
-            { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
-            fontStyle: 'bold', fill: '#2E2ED1' });
-
-          timer = master.time.addEvent(
-            {
-              delay: 750,
-              callback: ()=> {
-                readyText.destroy();
-
-                master.time.addEvent(
-                {
-                    delay: Phaser.Math.Between(0, 1000),
-                    callback: ()=> {
-                      isLaptopTypeAnimated(laptop);
-                    }
-                });
-                master.sound.add('laptThrow', {
-                  volume: Phaser.Math.FloatBetween(0.2, 0.4),
-                  rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
-                }).play();
-                laptop.enableBody(true, pos.x, pos.y, true, true);
-                laptop.data.values.delayActive = false;
-
-                var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-                var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-                laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(400, 600) * velY);
-                laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
-              }
-            }
-          )
+        if(pos.y > config.height) {
+          y = pos.y - 100;
+          x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
+        } else {
+          y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
+          x = (pos.x > (config.width/2)) ? config.width - 100 : 50;
         }
-      });
+
+        var readyText = master.add.text(x, y, 'Ready?',
+          { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
+          fontStyle: 'bold', fill: '#2E2ED1' });
+
+        timer = master.time.addEvent(
+        {
+          delay: 750,
+          callback: ()=> {
+            readyText.destroy();
+            isLaptopTypeAnimated(laptop);
+
+            master.sound.add('laptThrow', {
+              volume: Phaser.Math.FloatBetween(0.2, 0.4),
+              rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
+            }).play();
+            laptop.enableBody(true, pos.x, pos.y, true, true);
+            laptop.data.values.delayActive = false;
+
+            var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+            var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
+            laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(400, 600) * velY);
+            laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
+          }
+        });
+      }
+    });
   }
 
   function createMode1Laptop (laptop, bounce, mode) {
@@ -356,6 +352,8 @@ create: function()
   scoreText = setUIText(16, 16, howManyLaptopsHaveStickers + ' out of ' + laptopsAtOnce + ' Patched');
   timerText = setUIText(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
   stickerText = (modeSelect == 0) ? setUIText(config.width - 240, 540, 'Stickers Left: ' + stickersLeft) : this.add.text(0, 0, '');
+
+  stickerText.setPosition(config.width - (stickerText.width+20), config.height - (stickerText.height+20))
 
   function laptopSuccessfullyHit (laptop, sticker, sensetivity) {
     sensetivity = Phaser.Math.Clamp(sensetivity, 0.0, 1.0);
