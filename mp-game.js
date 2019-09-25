@@ -125,39 +125,26 @@ create: function()
       var laptopFrames = master.anims.generateFrameNames(key, { start: 0, end: 3 });
       master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID, frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
 
-      master.time.addEvent(
-      {
-          delay: Phaser.Math.Between(0, 750),
-          callback: ()=> {
-            laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+      laptop.anims.play('open/close_' + laptop.data.values.laptopID);
 
-            laptop.once('animationcomplete', ()=> {
+      laptop.once('animationcomplete', ()=> {
+        master.time.addEvent(
+        {
+            delay: delay,
+            callback: ()=> {
+              laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+              delay = delay + duration;
+
               master.time.addEvent(
               {
                   delay: delay,
                   callback: ()=> {
                     laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-                    delay = delay + duration;
-
-                    master.time.addEvent(
-                    {
-                        delay: delay,
-                        callback: ()=> {
-                          laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-                        },
-                        callbackScope: this,
-                        loop: true
-                    });
-
                   },
-                  callbackScope: this,
-                  loop: false
+                  loop: true
               });
-            });
-            
-          },
-          callbackScope: this,
-          loop: false
+            }
+        });
       });
     }
   }
@@ -236,7 +223,13 @@ create: function()
               callback: ()=> {
                 readyText.destroy();
 
-                isLaptopTypeAnimated(laptop);
+                master.time.addEvent(
+                {
+                    delay: Phaser.Math.Between(0, 1000),
+                    callback: ()=> {
+                      isLaptopTypeAnimated(laptop);
+                    }
+                });
                 master.sound.add('laptThrow', {
                   volume: Phaser.Math.FloatBetween(0.2, 0.4),
                   rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
@@ -248,14 +241,10 @@ create: function()
                 var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
                 laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(400, 600) * velY);
                 laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
-              },
-              callbackScope: this,
-              loop: false
+              }
             }
           )
-        },
-        callbackScope: this,
-        loop: false
+        }
       });
   }
 
@@ -306,13 +295,9 @@ create: function()
 
   //Sets timer depending on countdown seconds
   countdownTimer = this.time.addEvent(
-    {
-      delay: countdownSeconds * 1000,                // ms
-      callback: ()=> {
-      },
-      callbackScope: this,
-      loop: false
-    });
+  {
+    delay: countdownSeconds * 1000
+  });
 
   // var tab = this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
   // tab.disableBody(true, true);
@@ -598,13 +583,9 @@ update: function()
               finish.stop();
               menuScene.scene.restart();
               master.scene.stop();
-            },
-            callbackScope: this,
-            loop: false
+            }
             });
-        },
-        callbackScope: this,
-        loop: false
+        }
       });
   }
 
