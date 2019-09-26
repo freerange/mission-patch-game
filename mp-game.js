@@ -8,7 +8,7 @@ class MainMenu extends Phaser.Scene
     font1.load().then(function () {});
     font2.load().then(function () {});
 
-    this.load.image('office', 'assets/spritesheets/office/Office-4.png');
+    this.load.image('title-office', 'assets/spritesheets/office/Office-4.png');
 
     this.load.svg('note', 'assets/post_it.svg', {
       width: 100,
@@ -18,7 +18,7 @@ class MainMenu extends Phaser.Scene
 
   create ()
   {
-      var background = this.add.sprite(0, 0, 'office').setOrigin(0, 0);
+      var background = this.add.sprite(0, 0, 'title-office').setOrigin(0, 0);
       background.setTint(0x999999);
 
       //Title
@@ -154,6 +154,8 @@ var mainGame = new Phaser.Class(function()
 {
   var master;
 
+  var background;
+
   var tar;
   var stickersAtOnce;
   var laptopsAtOnce;
@@ -221,7 +223,7 @@ preload: function()
   this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
   this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
   this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
-  this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav')
+  this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav');
 
   //Done to prevent sound stacking when inactive
   this.sound.pauseOnBlur = false;
