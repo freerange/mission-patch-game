@@ -8,12 +8,53 @@ class MainMenu extends Phaser.Scene
     font1.load().then(function () {});
     font2.load().then(function () {});
 
+    //Loads all assets
     this.load.image('title-office', 'assets/spritesheets/office/Office-4.png');
+    this.load.image('laptop_0', 'assets/laptop.png');
+    this.load.image('target', 'assets/cursor.png');
+    // this.load.image('table', 'assets/table.png');
+    this.load.image('sky', 'assets/sky.png');
 
+    //Patch Designs
+    this.load.image('patch_1', 'assets/patch.png');
+    this.load.image('patch_2', 'assets/patch-2.png');
+    this.load.image('patch_3', 'assets/patch-3.png');
+    this.load.image('patch_4', 'assets/patch-4.png');
+    this.load.image('patch_5', 'assets/patch-5.png');
+
+    //Vector Graphics Images
     this.load.svg('note', 'assets/post_it.svg', {
       width: 100,
       height: 200
     });
+    this.load.svg('pad', 'assets/note_pad.svg', {
+      scale: 1.8
+    });
+
+    //Spritesheet assets
+    this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
+    this.load.spritesheet('laptop_1', 'assets/spritesheets/laptop.png', { frameWidth: 252, frameHeight: 202 });
+    this.load.spritesheet('laptop_2', 'assets/spritesheets/laptop-blue.png', { frameWidth: 252, frameHeight: 202 });
+    this.load.spritesheet('laptop_3', 'assets/spritesheets/laptop-red.png', { frameWidth: 252, frameHeight: 202 });
+    this.load.spritesheet('laptop_4', 'assets/spritesheets/laptop-green.png', { frameWidth: 252, frameHeight: 202 });
+
+    //Particle Assets
+    this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
+    this.load.text('blast', 'assets/particles/Blast.json');
+    this.load.text('explosion', 'assets/particles/Explosion.json');
+
+    //Sound assets taken and edited from freesound.com
+    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
+    this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
+    this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
+    this.load.audio('smack', 'sounds/37186__volivieri__newspapers-large-hard(edited).wav');
+    this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
+    this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
+    this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
+    this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav');
+
+    //Done to prevent sound stacking when inactive
+    this.sound.pauseOnBlur = false;
   }
 
   create ()
@@ -98,19 +139,6 @@ class Instructions extends Phaser.Scene
     this.modeSelect = data.modeSelect;
   }
 
-  preload ()
-  {
-    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
-
-    this.load.svg('note', 'assets/post_it.svg', {
-      width: 100,
-      height: 200
-    });
-    this.load.svg('pad', 'assets/note_pad.svg', {
-      scale: 1.8
-    });
-  }
-
   create ()
   {
     var notepad = this.add.sprite(0, 0, 'pad').setOrigin(0, 0);
@@ -188,47 +216,6 @@ init: function(data)
   laptopsAtOnce = data.laptopsAtOnce;
   countdownSeconds = data.countdownSeconds;
   modeSelect = data.modeSelect;
-},
-
-preload: function()
-{
-  //Loads all assets
-  this.load.image('laptop_0', 'assets/laptop.png');
-  this.load.image('target', 'assets/cursor.png');
-  this.load.image('sky', 'assets/sky.png');
-
-  //Patch Designs
-  this.load.image('patch_1', 'assets/patch.png');
-  this.load.image('patch_2', 'assets/patch-2.png');
-  this.load.image('patch_3', 'assets/patch-3.png');
-  this.load.image('patch_4', 'assets/patch-4.png');
-  this.load.image('patch_5', 'assets/patch-5.png');
-
-  //Spritesheet assets
-  this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
-  this.load.spritesheet('laptop_1', 'assets/spritesheets/laptop.png', { frameWidth: 252, frameHeight: 202 });
-  this.load.spritesheet('laptop_2', 'assets/spritesheets/laptop-blue.png', { frameWidth: 252, frameHeight: 202 });
-  this.load.spritesheet('laptop_3', 'assets/spritesheets/laptop-red.png', { frameWidth: 252, frameHeight: 202 });
-  this.load.spritesheet('laptop_4', 'assets/spritesheets/laptop-green.png', { frameWidth: 252, frameHeight: 202 });
-
-  //Particle Assets
-  this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
-  this.load.text('blast', 'assets/particles/Blast.json');
-  this.load.text('explosion', 'assets/particles/Explosion.json');
-
-  //Sound assets taken and edited from freesound.com
-  this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
-  this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
-  this.load.audio('smack', 'sounds/37186__volivieri__newspapers-large-hard(edited).wav');
-  this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
-  this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
-  this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
-  this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav');
-
-  //Done to prevent sound stacking when inactive
-  this.sound.pauseOnBlur = false;
-
-  // this.load.image('table', 'assets/table.png');
 },
 
 create: function()
@@ -815,14 +802,6 @@ update: function()
 
 class PauseMenu extends Phaser.Scene
 {
-  preload ()
-  {
-    this.load.svg('note', 'assets/post_it.svg', {
-      width: 100,
-      height: 200
-    });
-  }
-
   create ()
   {
     //Resume Button
