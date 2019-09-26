@@ -210,7 +210,6 @@ var mainGame = new Phaser.Class(function()
   var gameOver = false;
 
   var particle1, particle2;
-  // var emote;
 
 return {
 Extends: Phaser.Scene,
@@ -238,11 +237,6 @@ create: function()
   background = this.add.sprite(0, 0, 'office', '0001.png').setOrigin(0, 0);
   background.setScale(config.width/800, config.height/600);
 
-  // emote = this.add.sprite(0, 0, 'emoji', 0).setOrigin(0, 0);
-  // emote.setScale(0.35);
-  // emote.setSize(emote.width * emote.scaleX, emote.height * emote.scaleY);
-  // emote.setPosition(20, config.height - (emote.height + 20));
-
   //Game Particles
   particle1 = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
   particle1.emitters.list[0].on = false;
@@ -265,13 +259,6 @@ create: function()
 
   //Always starts at 1
   var laptSpread = 1;
-
-  for(var i = 0; i < 10; i++) {
-    var emote = emotes.create(0, 0, 'emoji', 0);
-    emote.setScale(0.35);
-    emote.setPosition(20 + ((emote.width * emote.scaleX) * i), config.height - ((emote.height * emote.scaleY) + 20));
-    emote.disableBody(true, false);
-  }
 
   function animateLaptop (laptop, key, duration, delay) {
     //Will animate if a certain laptop type is assigned
@@ -512,7 +499,14 @@ create: function()
   timerText = setUIText(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
   stickerText = (modeSelect == 0) ? setUIText(config.width - 240, 540, 'Stickers Left: ' + stickersLeft) : this.add.text(0, 0, '');
 
-  stickerText.setPosition(config.width - (stickerText.width+20), config.height - (stickerText.height+20))
+  stickerText.setPosition(config.width - (stickerText.width+20), config.height - (stickerText.height+20));
+
+  for(var i = 0; i < 10; i++) {
+    var emote = emotes.create(0, 0, 'emoji', 0);
+    emote.setScale(0.35);
+    emote.setPosition(40 + ((emote.width * emote.scaleX) * i), config.height - ((emote.height * emote.scaleY) + 20));
+    emote.disableBody(true, false);
+  }
 
   function laptopSuccessfullyHit (laptop, sticker, sensetivity) {
     sensetivity = Phaser.Math.Clamp(sensetivity, 0.0, 1.0);
