@@ -91,7 +91,7 @@ class MainMenu extends Phaser.Scene
               // gameModeText.destroy();
               master.scene.pause();
               master.scene.launch('info', { titleName: title.replace("\n", " "), description: description,
-                stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
+                stickersAtOnce: stickers, totalLaptopsToGet: laptops, countdownSeconds: seconds, modeSelect: mode });
             }
         })
         .on('pointerover', () => gameModeText.setStyle({ fill: '#808'}) )
@@ -134,7 +134,7 @@ class Instructions extends Phaser.Scene
     this.titleName = data.titleName;
     this.description = data.description;
     this.stickersAtOnce = data.stickersAtOnce;
-    this.laptopsAtOnce = data.laptopsAtOnce;
+    this.totalLaptopsToGet = data.totalLaptopsToGet;
     this.countdownSeconds = data.countdownSeconds;
     this.modeSelect = data.modeSelect;
   }
@@ -166,7 +166,7 @@ class Instructions extends Phaser.Scene
           {
             playButton.setStyle({ fill: '#404'});
             this.sound.play('gong');
-            this.scene.start('mainGame', { stickersAtOnce: this.stickersAtOnce, laptopsAtOnce: this.laptopsAtOnce, countdownSeconds: this.countdownSeconds, modeSelect: this.modeSelect});
+            this.scene.start('mainGame', { stickersAtOnce: this.stickersAtOnce, totalLaptopsToGet: this.totalLaptopsToGet, countdownSeconds: this.countdownSeconds, modeSelect: this.modeSelect});
             this.scene.stop('mainMenu');
             this.scene.stop();
           }
@@ -184,9 +184,13 @@ var mainGame = new Phaser.Class(function()
 
   var background;
 
+  var laptops;
+  var stickers;
+  var emotes;
+
   var tar;
   var stickersAtOnce;
-  var laptopsAtOnce;
+  var totalLaptopsToGet;
 
   var howManyLaptopsHaveStickers;
   var stickersLeft;
@@ -206,7 +210,7 @@ var mainGame = new Phaser.Class(function()
   var gameOver = false;
 
   var particle1, particle2;
-  var emote;
+  // var emote;
 
 return {
 Extends: Phaser.Scene,
@@ -214,7 +218,7 @@ Extends: Phaser.Scene,
 init: function(data)
 {
   stickersAtOnce = data.stickersAtOnce;
-  laptopsAtOnce = data.laptopsAtOnce;
+  totalLaptopsToGet = data.totalLaptopsToGet;
   countdownSeconds = data.countdownSeconds;
   modeSelect = data.modeSelect;
 },
@@ -234,14 +238,13 @@ create: function()
   background = this.add.sprite(0, 0, 'office', '0001.png').setOrigin(0, 0);
   background.setScale(config.width/800, config.height/600);
 
-  emote = this.add.sprite(0, 0, 'emoji', 0).setOrigin(0, 0);
-  emote.setScale(0.35);
-  emote.setSize(emote.width * emote.scaleX, emote.height * emote.scaleY)
-  emote.setPosition(20, config.height - (emote.height + 20));
+  // emote = this.add.sprite(0, 0, 'emoji', 0).setOrigin(0, 0);
+  // emote.setScale(0.35);
+  // emote.setSize(emote.width * emote.scaleX, emote.height * emote.scaleY);
+  // emote.setPosition(20, config.height - (emote.height + 20));
 
   //Game Particles
-  particle1 = this.add.particles('shapes',  new Function('return '
-    + this.cache.text.get('blast'))());
+  particle1 = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
   particle1.emitters.list[0].on = false;
 
   // particle2 = this.add.particles('shapes',  new Function('return '
@@ -251,6 +254,7 @@ create: function()
   //Launch Groups
   laptops = this.physics.add.group();
   stickers = this.physics.add.group();
+  emotes = this.physics.add.group();
 
   //Collisions
   var lapColl = this.physics.add.collider(laptops, laptops);
@@ -262,7 +266,12 @@ create: function()
   //Always starts at 1
   var laptSpread = 1;
 
-
+  for(var i = 0; i < 10; i++) {
+    var emote = emotes.create(0, 0, 'emoji', 0);
+    emote.setScale(0.35);
+    emote.setPosition(20 + ((emote.width * emote.scaleX) * i), config.height - ((emote.height * emote.scaleY) + 20));
+    emote.disableBody(true, false);
+  }
 
   function animateLaptop (laptop, key, duration, delay) {
     //Will animate if a certain laptop type is assigned
@@ -403,7 +412,7 @@ create: function()
 
 
 
-    var msPerLaptop = (countdownSeconds * 1000)/laptopsAtOnce;
+    var msPerLaptop = (countdownSeconds * 1000)/totalLaptopsToGet;
     var laptSetDelay = (msPerLaptop * laptSpread) + Phaser.Math.Between(-(msPerLaptop/2), (msPerLaptop/2));
     laptSetDelay = Phaser.Math.Clamp(laptSetDelay, 500, (countdownSeconds * 1000) - 1);
 
@@ -432,7 +441,7 @@ create: function()
     lapColl.destroy();
 
   //Creates each laptop for game
-  for(var i = 0; i < laptopsAtOnce; i++)
+  for(var i = 0; i < totalLaptopsToGet; i++)
   {
     var laptop;
     createLaptop(laptop, Phaser.Math.FloatBetween(0.95, 1.02), modeSelect);
@@ -499,7 +508,7 @@ create: function()
   }
 
   //UI Text
-  scoreText = setUIText(16, 16, howManyLaptopsHaveStickers + ' out of ' + laptopsAtOnce + ' Patched');
+  scoreText = setUIText(16, 16, howManyLaptopsHaveStickers + ' out of ' + totalLaptopsToGet + ' Patched');
   timerText = setUIText(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
   stickerText = (modeSelect == 0) ? setUIText(config.width - 240, 540, 'Stickers Left: ' + stickersLeft) : this.add.text(0, 0, '');
 
@@ -543,7 +552,7 @@ create: function()
 
               lapt.setCollideWorldBounds(false);
             }
-            scoreText.setText(howManyLaptopsHaveStickers + ' out of ' + laptopsAtOnce + ' Patched');
+            scoreText.setText(howManyLaptopsHaveStickers + ' out of ' + totalLaptopsToGet + ' Patched');
       }
     }
   }
@@ -611,7 +620,7 @@ update: function()
   master = this;
 
   function foo (value) {
-    return Math.floor(howManyLaptopsHaveStickers/(laptopsAtOnce/value))
+    return Math.floor(howManyLaptopsHaveStickers/(totalLaptopsToGet/value))
   }
 
   //Dynamic background based on amount of laptops patched
@@ -630,8 +639,10 @@ update: function()
   }
 
   var laptopsPerEmote = foo(10);
-  if(laptopsPerEmote >= 1) {
-    emote.setFrame(1);
+  for(var i in emotes.children.entries) {
+    if(laptopsPerEmote >= (Number(i) + 1) && emotes.children.entries[i].frame.name == 0) {
+      emotes.children.entries[i].setFrame(1);
+    }
   }
 
   for(var i in stickers.children.entries)
@@ -772,7 +783,7 @@ update: function()
     }
   }
 
-  if(howManyLaptopsHaveStickers == laptopsAtOnce)
+  if(howManyLaptopsHaveStickers == totalLaptopsToGet)
   {
     if(!countdownTimer.paused)
       countdownTimer.paused = true;
