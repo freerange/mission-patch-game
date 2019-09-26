@@ -206,6 +206,7 @@ var mainGame = new Phaser.Class(function()
   var gameOver = false;
 
   var particle1, particle2;
+  var emote;
 
 return {
 Extends: Phaser.Scene,
@@ -233,7 +234,10 @@ create: function()
   background = this.add.sprite(0, 0, 'office', '0001.png').setOrigin(0, 0);
   background.setScale(config.width/800, config.height/600);
 
-  var emote = this.add.sprite(0, 0, 'emoji', 'sad.png').setOrigin(0, 0);
+  emote = this.add.sprite(0, 0, 'emoji', 0).setOrigin(0, 0);
+  emote.setScale(0.35);
+  emote.setSize(emote.width * emote.scaleX, emote.height * emote.scaleY)
+  emote.setPosition(20, config.height - (emote.height + 20));
 
   //Game Particles
   particle1 = this.add.particles('shapes',  new Function('return '
@@ -606,8 +610,12 @@ update: function()
 {
   master = this;
 
+  function foo (value) {
+    return Math.floor(howManyLaptopsHaveStickers/(laptopsAtOnce/value))
+  }
+
   //Dynamic background based on amount of laptops patched
-  var laptopsPerFrame = Math.floor(howManyLaptopsHaveStickers/(laptopsAtOnce/25));
+  var laptopsPerFrame = foo(25);
   if(currentFrame == null)
     currentFrame = laptopsPerFrame;
 
@@ -619,6 +627,11 @@ update: function()
     else
       background.setFrame('00' + laptopsPerFrame + '.png');
     currentFrame = laptopsPerFrame;
+  }
+
+  var laptopsPerEmote = foo(10);
+  if(laptopsPerEmote >= 1) {
+    emote.setFrame(1);
   }
 
   for(var i in stickers.children.entries)
