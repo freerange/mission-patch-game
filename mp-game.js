@@ -1,6 +1,188 @@
+class MainMenu extends Phaser.Scene
+{
+  preload ()
+  {
+    //Game waits for web fonts to load before starting
+    let font1 = new FontFaceObserver('Indie Flower');
+    let font2 = new FontFaceObserver('Saira Stencil One');
+    font1.load().then(function () {});
+    font2.load().then(function () {});
+
+    //Loads all assets
+    this.load.image('title-office', 'assets/spritesheets/office/Office-4.png');
+    this.load.image('laptop_0', 'assets/laptop.png');
+    this.load.image('target', 'assets/cursor.png');
+    // this.load.image('table', 'assets/table.png');
+    this.load.image('sky', 'assets/sky.png');
+
+    //Patch Designs
+    this.load.image('patch_1', 'assets/patch.png');
+    this.load.image('patch_2', 'assets/patch-2.png');
+    this.load.image('patch_3', 'assets/patch-3.png');
+    this.load.image('patch_4', 'assets/patch-4.png');
+    this.load.image('patch_5', 'assets/patch-5.png');
+
+    //Vector Graphics Images
+    this.load.svg('note', 'assets/post_it.svg', {
+      width: 100,
+      height: 200
+    });
+    this.load.svg('pad', 'assets/note_pad.svg', {
+      scale: 1.8
+    });
+
+    //Spritesheet assets
+    this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
+    this.load.spritesheet('laptop_1', 'assets/spritesheets/laptop.png', { frameWidth: 252, frameHeight: 202 });
+    this.load.spritesheet('laptop_2', 'assets/spritesheets/laptop-blue.png', { frameWidth: 252, frameHeight: 202 });
+    this.load.spritesheet('laptop_3', 'assets/spritesheets/laptop-red.png', { frameWidth: 252, frameHeight: 202 });
+    this.load.spritesheet('laptop_4', 'assets/spritesheets/laptop-green.png', { frameWidth: 252, frameHeight: 202 });
+
+    //Particle Assets
+    this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
+    this.load.text('blast', 'assets/particles/Blast.json');
+    this.load.text('explosion', 'assets/particles/Explosion.json');
+
+    //Sound assets taken and edited from freesound.com
+    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
+    this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
+    this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
+    this.load.audio('smack', 'sounds/37186__volivieri__newspapers-large-hard(edited).wav');
+    this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
+    this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
+    this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
+    this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav');
+
+    //Done to prevent sound stacking when inactive
+    this.sound.pauseOnBlur = false;
+  }
+
+  create ()
+  {
+      var background = this.add.sprite(0, 0, 'title-office').setOrigin(0, 0);
+      background.setTint(0x999999);
+
+      //Title
+      var title1 = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '60px', fontStyle: 'bold'});
+      title1.setPosition((config.width/2) - Math.floor(title1.width/2), (config.height/2) - 180);
+
+      var master = this;
+
+      title1.setPosition(Math.floor((config.width/2) - (title1.width/2)), (config.height/2) - 180);
+
+      var postItNotes = [];
+
+      function launchButton(x, y, stickers, laptops, seconds, mode, title, description) {
+        var postItNote = master.add.sprite(x, y, 'note');
+        postItNotes.push(postItNote);
+        postItNote.setOrigin(0, 0);
+
+        const gameModeText = master.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+        .setInteractive()
+        .on('pointerdown', (pointer)=> {
+            if(pointer.leftButtonDown())
+            {
+              gameModeText.setStyle({ fill: '#404'});
+              title1.destroy();
+              for( var i in postItNotes) {
+                postItNotes[i].destroy();
+              }
+              postItNotes = [];
+              // gameModeText.destroy();
+              master.scene.pause();
+              master.scene.launch('info', { titleName: title.replace("\n", " "), description: description,
+                stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
+            }
+        })
+        .on('pointerover', () => gameModeText.setStyle({ fill: '#808'}) )
+        .on('pointerout', () => gameModeText.setStyle({ fill: '#000' }) );
+
+        gameModeText.setAlign('center');
+        gameModeText.setPosition(Math.floor(postItNote.x + ((postItNote.width/2)-(gameModeText.width/2))), Math.floor(postItNote.y + (postItNote.height/2) - (gameModeText.height/2)));
+      }
+
+      //Button to launch mode select
+      var rect = this.add.sprite((config.width/2) - 50, (config.height/2) - 100, 'note').setOrigin(0, 0);
+      //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
+      const startButton = this.add.text(0, 0, 'Start', {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+      .setInteractive()
+      .on('pointerdown', (pointer)=> {
+        if(pointer.leftButtonDown())
+        {
+          startButton.destroy();
+          rect.destroy();
+
+          //Buttons to start modes
+          var bounceButton = launchButton((config.width/2)- 170, (config.height/2)-100, 3, 10, 30, 0, 'Bounce\nmode',
+            'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
+          var chuckButton = launchButton((config.width/2) + 70, (config.height/2)-100, 5, 100, 120, 1, 'Chuck\nmode',
+            'Catch the incoming flying laptops by sticking them \nwith a mission patch within two minutes. Move \nthe cursor around the screen and click to throw \na sticker.');
+        }
+      })
+      .on('pointerover', () => startButton.setStyle({ fill: '#808'}) )
+      .on('pointerout', () => startButton.setStyle({ fill: '#000' }) );
+
+      startButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(startButton.width/2))), Math.floor(rect.y + (rect.height/2)));
+  }
+
+}
+
+class Instructions extends Phaser.Scene
+{
+  init (data)
+  {
+    this.titleName = data.titleName;
+    this.description = data.description;
+    this.stickersAtOnce = data.stickersAtOnce;
+    this.laptopsAtOnce = data.laptopsAtOnce;
+    this.countdownSeconds = data.countdownSeconds;
+    this.modeSelect = data.modeSelect;
+  }
+
+  create ()
+  {
+    var notepad = this.add.sprite(0, 0, 'pad').setOrigin(0, 0);
+    notepad.setPosition((config.width/2) - (notepad.width/2), ((config.height/8)*3) - (notepad.height/2));
+    //Title
+    var title = this.add.text(0, 0, this.titleName,
+      {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '30px', fill: '#000', fontStyle: 'bold'});
+      title.setPosition(notepad.x + ((notepad.width/2) - Math.floor(title.width/2)), Math.floor(notepad.y + 5));
+
+    //Description
+    var desc = this.add.text(notepad.x + 10, notepad.y + ((notepad.height/10)*3) - 10,
+      this.description, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '18px', fill: '#000' });
+
+    desc.setLineSpacing(2.5);
+
+    //Button to start game
+    var playPostItNote = this.add.sprite(0, 0, 'note').setOrigin(0, 0);
+    playPostItNote.setPosition((config.width/2) - (playPostItNote.width/2), (config.height/2)+75);
+
+    const playButton = this.add.text(0, 0, 'Play',
+      {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+      .setInteractive()
+      .on('pointerdown', (pointer)=> {
+          if(pointer.leftButtonDown())
+          {
+            playButton.setStyle({ fill: '#404'});
+            this.sound.play('gong');
+            this.scene.start('mainGame', { stickersAtOnce: this.stickersAtOnce, laptopsAtOnce: this.laptopsAtOnce, countdownSeconds: this.countdownSeconds, modeSelect: this.modeSelect});
+            this.scene.stop('mainMenu');
+            this.scene.stop();
+          }
+        })
+        .on('pointerover', () => playButton.setStyle({ fill: '#808'}) )
+        .on('pointerout', () => playButton.setStyle({ fill: '#000' }) );
+
+    playButton.setPosition(Math.floor(playPostItNote.x + ((playPostItNote.width/2)-(playButton.width/2))), Math.floor(playPostItNote.y + (playPostItNote.height/2)));
+  }
+}
+
 var mainGame = new Phaser.Class(function()
 {
   var master;
+
+  var background;
 
   var tar;
   var stickersAtOnce;
@@ -36,43 +218,12 @@ init: function(data)
   modeSelect = data.modeSelect;
 },
 
-preload: function()
-{
-  //Loads all assets
-  this.load.image('laptop_0', 'assets/laptop.png');
-  this.load.image('target', 'assets/cursor.png');
-  this.load.image('sky', 'assets/sky.png');
-  this.load.image('patch', 'assets/patch.png');
-
-  //Spritesheet assets
-  this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
-  this.load.multiatlas('laptop_1', 'assets/spritesheets/laptop/Laptop.json', 'assets/spritesheets/laptop');
-
-  //Particle Assets
-  this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
-  this.load.text('blast', 'assets/particles/Blast.json');
-  this.load.text('explosion', 'assets/particles/Explosion.json');
-
-  //Sound assets taken and edited from freesound.com
-  this.load.audio('throw', 'sounds/322224__liamg-sfx__arrow-nock.wav');
-  this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
-  this.load.audio('smack', 'sounds/37186__volivieri__newspapers-large-hard(edited).wav');
-  this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
-  this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
-  this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
-  this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav')
-
-  //Done to prevent sound stacking when inactive
-  this.sound.pauseOnBlur = false;
-
-  // this.load.image('table', 'assets/table.png');
-},
-
 create: function()
 {
 
   //Resets variable on repeat (will delete once bug is figured out)
   gameDelay = null;
+
 
   howManyLaptopsHaveStickers = 0;
 
@@ -105,36 +256,56 @@ create: function()
   //Always starts at 1
   var laptSpread = 1;
 
-  var laptopFrames = this.anims.generateFrameNames('laptop_1', {
-    start: 1, end: 4, zeroPad: 4, suffix: '.png'
-  });
 
-  function animateLaptop (laptop, key) {
+
+  function animateLaptop (laptop, key, duration, delay) {
     //Will animate if a certain laptop type is assigned
     if(laptop.texture.key == key) {
-      laptop.setFrame('0001.png');
+      laptop.setFrame(0);
       laptop.body.setSize(157, 101);
-      master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID,
-        frames: laptopFrames, duration: 350, repeat: 0, yoyo: true });
+      var laptopFrames = master.anims.generateFrameNames(key, { start: 0, end: 3 });
+      master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID, frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
+
       laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-      laptop.data.values.currentTimer = master.time.addEvent(
-      {
-          delay: 1500,
-          callback: ()=> {
-            laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-          },
-          callbackScope: this,
-          loop: true
+      laptop.once('animationcomplete', ()=> {
+        master.time.addEvent(
+        {
+            delay: delay,
+            callback: ()=> {
+              laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+              var animTimer = master.time.addEvent(
+              {
+                  delay: delay + duration,
+                  loop: true,
+                  callback: ()=> {
+                    laptop.anims.play('open/close_' + laptop.data.values.laptopID);
+                    if(countdownSeconds <= 0 || stickersLeft == 0 || laptop.data.values.hasSticker) {
+                      animTimer.remove();
+                    }
+                  }
+              });
+            }
+        });
       });
     }
   }
 
+  function isLaptopTypeAnimated (laptop) {
+    master.time.addEvent(
+    {
+        delay: Phaser.Math.Between(0, 750),
+        callback: ()=> {
+          animateLaptop(laptop, 'laptop_1', 350, 750);
+          animateLaptop(laptop, 'laptop_2', 750, 1000);
+          animateLaptop(laptop, 'laptop_3', 500, 500);
+          animateLaptop(laptop, 'laptop_4', 150, 500);
+        }
+    });
+  }
+
   function generateLaptop (x, y, laptopMode, delayActive) {
-    var laptop = laptops.create(x, y, 'laptop_' + Phaser.Math.Between(0, 1));
-
-    laptop.setData({ laptopMode: laptopMode, hasSticker: false, delayActive: delayActive,
-      laptopID: -1, currentTimer: null });
-
+    var laptop = laptops.create(x, y, 'laptop_' + Phaser.Math.Between(0, 4));
+    laptop.setData({ laptopMode: laptopMode, hasSticker: false, delayActive: delayActive, laptopID: -1 });
     laptop.data.values.laptopID = laptops.children.entries.length - 1;
 
     return laptop;
@@ -142,15 +313,14 @@ create: function()
 
   function createMode0Laptop (laptop, bounce, mode) {
     var laptop = generateLaptop(Phaser.Math.Between(0, config.width), Phaser.Math.Between(0, config.height), mode, false);
-
-    animateLaptop(laptop, 'laptop_1');
+    isLaptopTypeAnimated(laptop);
 
     var velX = (laptop.x > (config.width/2)) ? -1 : 1;
     var velY = (laptop.y > (config.height/2)) ? -1 : 1;
     laptop.setVelocity(Phaser.Math.Between(400, 600) * velX,
       Phaser.Math.Between(400, 600) * velY);
     laptop.setBounce(bounce);
-    laptop.setScale(0.625);
+    laptop.setScale(0.625 + Phaser.Math.FloatBetween(-0.125, 0.125));
     laptop.setCollideWorldBounds(true);
   }
 
@@ -177,66 +347,58 @@ create: function()
     //Random delay before chucking
     var timer;
     master.time.addEvent(
-      {
-        delay: delay - 750,                // ms
-        callback: ()=> {
-          var x, y;
+    {
+      delay: delay - 750,                // ms
+      callback: ()=> {
+        var x, y;
 
-          if(pos.y > config.height) {
-            y = pos.y - 100;
-            x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
-          } else {
-            y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
-            x = (pos.x > (config.width/2)) ? config.width - 100 : 50;
+        if(pos.y > config.height) {
+          y = pos.y - 100;
+          x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
+        } else {
+          y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
+          x = (pos.x > (config.width/2)) ? config.width - 100 : 50;
+        }
+
+        var readyText = master.add.text(x, y, 'Ready?',
+          { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
+          fontStyle: 'bold', fill: '#2E2ED1' });
+
+        timer = master.time.addEvent(
+        {
+          delay: 750,
+          callback: ()=> {
+            readyText.destroy();
+            isLaptopTypeAnimated(laptop);
+
+            master.sound.add('laptThrow', {
+              volume: Phaser.Math.FloatBetween(0.2, 0.4),
+              rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
+            }).play();
+            laptop.enableBody(true, pos.x, pos.y, true, true);
+            laptop.data.values.delayActive = false;
+
+            var velX = (laptop.x > (config.width/2)) ? -1 : 1;
+            var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
+            laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(400, 600) * velY);
+            laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
           }
-
-          var readyText = master.add.text(x, y, 'Ready?',
-            { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
-            fontStyle: 'bold', fill: '#2E2ED1' });
-
-          timer = master.time.addEvent(
-            {
-              delay: 750,
-              callback: ()=> {
-                readyText.destroy();
-
-                master.sound.add('laptThrow', {
-                  volume: Phaser.Math.FloatBetween(0.2, 0.4),
-                  rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
-                }).play();
-                laptop.enableBody(true, pos.x, pos.y, true, true);
-                laptop.data.values.delayActive = false;
-
-                var velX = (laptop.x > (config.width/2)) ? -1 : 1;
-                var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-                laptop.setVelocity(Phaser.Math.Between(300, 600) * velX,
-                  Phaser.Math.Between(400, 600) * velY);
-                laptop.setScale(1.25);
-              },
-              callbackScope: this,
-              loop: false
-            }
-          )
-        },
-        callbackScope: this,
-        loop: false
-      });
+        });
+      }
+    });
   }
 
   function createMode1Laptop (laptop, bounce, mode) {
-    var pos = chooseLaptopStartPosition();
     //Sets up laptop
+    var pos = chooseLaptopStartPosition();
     laptop = generateLaptop(pos.x, pos.y, mode, true);
-
-    animateLaptop(laptop, 'laptop_1');
 
     laptop.disableBody(true, true);
 
+
+
     var msPerLaptop = (countdownSeconds * 1000)/laptopsAtOnce;
-
-    var laptSetDelay = (msPerLaptop * laptSpread) +
-      Phaser.Math.Between(-(msPerLaptop/2), (msPerLaptop/2));
-
+    var laptSetDelay = (msPerLaptop * laptSpread) + Phaser.Math.Between(-(msPerLaptop/2), (msPerLaptop/2));
     laptSetDelay = Phaser.Math.Clamp(laptSetDelay, 500, (countdownSeconds * 1000) - 1);
 
     throwLaptop(laptop, pos, laptSetDelay);
@@ -273,24 +435,28 @@ create: function()
 
   //Sets timer depending on countdown seconds
   countdownTimer = this.time.addEvent(
-    {
-      delay: countdownSeconds * 1000,                // ms
-      callback: ()=> {
-      },
-      callbackScope: this,
-      loop: false
-    });
+  {
+    delay: countdownSeconds * 1000
+  });
 
   // var tab = this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
   // tab.disableBody(true, true);
 
   tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
 
+  var stickersAvailable = 5;
+  var stickerIndexes = []
+  for(var i = 0; i < stickersAtOnce; i++) {
+    stickerIndexes[i] = Phaser.Math.Between(1, stickersAvailable);
+    while (stickerIndexes[i] == stickerIndexes[i-1]) {
+      stickerIndexes[i] = Phaser.Math.Between(1, stickersAvailable);
+    }
+  }
+
   //Stickers are being prepped
   for(var i = 0; i < stickersAtOnce; i++)
   {
-
-    stickers.create(0, 0, 'patch');
+    stickers.create(0, 0, 'patch_' + stickerIndexes[i]);
     stickers.children.entries[i].setData({ patchSticking: false, currentLaptop: -1,
       lapDiffX: 0, lapDiffY: 0, stickerOnLaptop: false });
     stickers.children.entries[i].scale = 0.8;
@@ -308,9 +474,6 @@ create: function()
       volume: 0.6,
       rate: 1.0 + Phaser.Math.FloatBetween(-0.15, 0.15)
     }).play();
-
-    if(lapt.data.values.currentTimer != null)
-      lapt.data.values.currentTimer.remove();
 
     stick.data.values.currentLaptop = index;
     stick.data.values.lapDiffX = stick.x - lapt.x;
@@ -334,13 +497,15 @@ create: function()
   timerText = setUIText(config.width - 190, 16, 'Timer: ' + (countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds())));
   stickerText = (modeSelect == 0) ? setUIText(config.width - 240, 540, 'Stickers Left: ' + stickersLeft) : this.add.text(0, 0, '');
 
+  stickerText.setPosition(config.width - (stickerText.width+20), config.height - (stickerText.height+20))
+
   function laptopSuccessfullyHit (laptop, sticker, sensetivity) {
     sensetivity = Phaser.Math.Clamp(sensetivity, 0.0, 1.0);
 
     var stickerShrunk = sticker.scale <= 0.1 && sticker.data.values.patchSticking;
     var stickerHittingLaptop = Math.abs(sticker.x - laptop.x) < (laptop.width * sensetivity) && Math.abs(sticker.y - laptop.y) < (laptop.height * sensetivity);
     var stickerLaptopNotStuck = !sticker.data.values.stickerOnLaptop && !laptop.data.values.hasSticker;
-    var correctLaptopFrame = laptop.frame.name == '__BASE' || laptop.frame.name == '0001.png';
+    var correctLaptopFrame = laptop.frame.name == '__BASE' || laptop.frame.name == '0';
 
     return stickerShrunk && stickerHittingLaptop && stickerLaptopNotStuck && correctLaptopFrame;
   }
@@ -361,6 +526,9 @@ create: function()
 
             //Checks for first overlapping laptop
             stickToLaptop(lapt, stick, lapt.data.values.laptopID);
+
+            if(lapt.frame.name != '__BASE')
+              master.anims.remove('open/close_' + lapt.data.values.laptopID);
 
             //Makes laptops stop and fall in bounce mode
             if(lapt.data.values.laptopMode == 0) {
@@ -477,9 +645,19 @@ update: function()
         laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].x + stickers.children.entries[i].data.values.lapDiffX,
         laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].y + stickers.children.entries[i].data.values.lapDiffY
       );
+
+      if(laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].frame.name != '__BASE'
+      && laptops.children.entries[stickers.children.entries[i].data.values.currentLaptop].frame.name != '0') {
+        stickers.children.entries[i].setAlpha(0);
+      } else {
+        stickers.children.entries[i].setAlpha(1);
+      }
     }
+
+
     //Disables sticker when offscreen
     if(stickers.children.entries[i].active && stickers.children.entries[i].y > config.height + stickers.children.entries[i].height + 50) {
+      stickers.children.entries[i].setAlpha(1);
       stickers.children.entries[i].disableBody(true, true);
     }
   }
@@ -491,9 +669,6 @@ update: function()
       //For optimisation reasons, laptop disables itself when it leaves the screen
       if(laptops.children.entries[j].data.values.hasSticker && particle1.emitters.list[0].on) {
         particle1.emitters.list[0].on = false;
-      }
-      if(laptops.children.entries[j].data.values.currentTimer != null) {
-        laptops.children.entries[j].data.values.currentTimer.remove();
       }
 
       if(!laptops.children.entries[j].data.values.hasSticker) {
@@ -512,6 +687,7 @@ update: function()
         stickers.children.entries[stickerIndex].data.values.lapDiffY = 0;
         stickers.children.entries[stickerIndex].data.values.stickerOnLaptop = false;
         stickers.children.entries[stickerIndex].body.setAllowGravity(true);
+        stickers.children.entries[stickerIndex].setAlpha(1);
         stickers.children.entries[stickerIndex].disableBody(true, true);
       }
     }
@@ -556,20 +732,16 @@ update: function()
               var menuScene = master.scene.get('mainMenu');
               for(var i in laptops.children.entries)
               {
-                if(laptops.children.entries[i].texture.key == 'laptop_1')
+                if(laptops.children.entries[i].frame.name != '__BASE')
                   master.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
               }
               stickersLeft = 20;
               finish.stop();
               menuScene.scene.restart();
               master.scene.stop();
-            },
-            callbackScope: this,
-            loop: false
+            }
             });
-        },
-        callbackScope: this,
-        loop: false
+        }
       });
   }
 
@@ -626,104 +798,16 @@ update: function()
       countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
     }
   }
-}
-}}());
-
-class MainMenu extends Phaser.Scene
-{
-  preload ()
-  {
-    this.load.svg('note', 'assets/post_it.svg', {
-      width: 100,
-      height: 200
-    });
-  }
-
-  create ()
-  {
-      //Title
-      var title = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '42px', fontStyle: 'bold'});
-      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 180);
-
-      var master = this;
-
-      title.setPosition(Math.floor((config.width/2) - (title.width/2)), (config.height/2) - 180);
-
-      function launchButton(x, y, scaleX, scaleY, source, stickers, laptops, seconds, mode, title, text1, text2) {
-        var rect = master.add.sprite(x, y, 'note').setOrigin(0, 0);
-        rect.setScale(scaleX, scaleY);
-        rect.setSize(100 * scaleX, 200 * scaleY);
-
-        const button = master.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
-          .setInteractive()
-          .on('pointerdown', (pointer)=> {
-              if(pointer.leftButtonDown())
-              {
-                button.setStyle({ fill: '#404'});
-                master.scene.start('info', { instructionSource: source, titleName: title, text1: text1, text2: text2,
-                  stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
-                // master.scene.start('mainGame', { stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode});
-                master.scene.stop();
-              }
-            })
-            .on('pointerover', () => button.setStyle({ fill: '#808'}) )
-            .on('pointerout', () => button.setStyle({ fill: '#000' }) );
-
-        button.setPosition(Math.floor(rect.x + ((rect.width/2)-(button.width/2))), Math.floor(rect.y + (rect.height/2)));
-
-        return { rect: rect, text: button };
-      }
-
-      //Button to launch mode select
-      var rect = this.add.sprite((config.width/2) - 50, (config.height/2) - 100, 'note').setOrigin(0, 0);
-      //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
-      const startButton = this.add.text(0, 0, 'Start', {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
-      .setInteractive()
-      .on('pointerdown', (pointer)=> {
-        if(pointer.leftButtonDown())
-        {
-          startButton.destroy();
-          rect.destroy();
-
-          //Buttons to start modes
-          var bounceButton = launchButton((config.width/2)- 220, (config.height/2)-150, 2.0, 1.75, 'assets/bounce-mode-example.png', 3, 8, 30, 0, 'Bounce mode',
-            'Stop the laptops from bouncing around by sticking them with a mission patch before time runs out');
-          var chuckButton = launchButton((config.width/2) + 20, (config.height/2)-150, 2.0, 1.75, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck mode',
-            'Catch the incoming flying laptops by sticking them with a mission patch within two minutes', 'Move the cursor around the screen and click to throw a sticker');
-        }
-      })
-      .on('pointerover', () => startButton.setStyle({ fill: '#808'}) )
-      .on('pointerout', () => startButton.setStyle({ fill: '#000' }) );
-
-      startButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(startButton.width/2))), Math.floor(rect.y + (rect.height/2)));
-  }
-
-}
+}}}());
 
 class PauseMenu extends Phaser.Scene
 {
-  preload ()
-  {
-    this.load.svg('note', 'assets/post_it.svg', {
-      width: 100,
-      height: 200
-    });
-  }
-
   create ()
   {
     //Resume Button
-    // var graphics = this.add.graphics();
-
-    // var rect = new Phaser.Geom.Rectangle((config.width/2) - 103, (config.height/2) + 150, 95, 30);
-    // graphics.fillStyle('#cf9830');
-    // graphics.fillRectShape(rect);
     var rect = this.add.sprite((config.width/2) - 133, (config.height/2), 'note').setOrigin(0, 0);
 
     //Quit Button
-    // var rect2 = new Phaser.Geom.Rectangle((config.width/2) + 97, (config.height/2) + 150, 50, 30);
-    // graphics.fillStyle('#cf9830');
-    // graphics.fillRectShape(rect2);
     var rect2 = this.add.sprite((config.width/2) + 58, (config.height/2), 'note').setOrigin(0, 0);
 
     //Text for "paused"
@@ -766,78 +850,11 @@ class PauseMenu extends Phaser.Scene
   }
 }
 
-class Instructions extends Phaser.Scene
-{
-  init (data)
-  {
-    this.instructionSource = data.instructionSource;
-    this.titleName = data.titleName;
-    this.text1 = data.text1;
-    this.text2 = data.text2;
-    this.stickersAtOnce = data.stickersAtOnce;
-    this.laptopsAtOnce = data.laptopsAtOnce;
-    this.countdownSeconds = data.countdownSeconds;
-    this.modeSelect = data.modeSelect;
-  }
-
-  preload ()
-  {
-    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
-
-    this.load.image('preview', this.instructionSource);
-    this.load.svg('note', 'assets/post_it.svg', {
-      width: 100,
-      height: 200
-    });
-  }
-
-  create ()
-  {
-    var graphics = this.add.graphics();
-
-    //Title
-    var title = this.add.text(0, 0, this.titleName,
-      {fontFamily: "Arial, Carrois Gothic SC", fontSize: '30px', fontStyle: 'bold'});
-      title.setPosition((config.width/2) - Math.floor(title.width/2), (config.height/2) - 260);
-
-    //Description
-    this.add.text((config.width/2) - 390, (config.height/2)+105,
-      this.text1, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
-
-    this.add.text((config.width/2) - 390, (config.height/2)+135,
-      this.text2, {fontFamily: "Arial, Carrois Gothic SC", fontSize: '18px'});
-
-    var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
-    previewPic.setScale(0.5);
-
-    //Button to start game
-    var rect = this.add.sprite((config.width/2) - 50, (config.height/2)+115, 'note').setOrigin(0, 0);
-
-    const playButton = this.add.text(0, 0, 'Play',
-      {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
-      .setInteractive()
-      .on('pointerdown', (pointer)=> {
-          if(pointer.leftButtonDown())
-          {
-            playButton.setStyle({ fill: '#404'});
-            this.sound.play('gong');
-            this.scene.start('mainGame', { stickersAtOnce: this.stickersAtOnce, laptopsAtOnce: this.laptopsAtOnce, countdownSeconds: this.countdownSeconds, modeSelect: this.modeSelect});
-            this.scene.stop();
-          }
-        })
-        .on('pointerover', () => playButton.setStyle({ fill: '#808'}) )
-        .on('pointerout', () => playButton.setStyle({ fill: '#000' }) );
-
-    playButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(playButton.width/2))), Math.floor(rect.y + (rect.height/2)))
-  }
-}
-
 var config =
 {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    backgroundColor: '#00f',
     physics: {
         default: 'arcade',
         arcade: {
@@ -851,8 +868,8 @@ var game = new Phaser.Game(config);
 
 //List of scenes for game
 game.scene.add('mainMenu', MainMenu);
+game.scene.add('info', Instructions);
 game.scene.add('mainGame', mainGame);
 game.scene.add('pauseMenu', PauseMenu);
-game.scene.add('info', Instructions);
 
 game.scene.start('mainMenu');
