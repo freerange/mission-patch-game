@@ -9,7 +9,6 @@ class MainMenu extends Phaser.Scene
     font2.load().then(function () {});
 
     //Loads all assets
-    this.load.image('title-office', 'assets/spritesheets/office/Office-4.png');
     this.load.image('laptop_0', 'assets/laptop.png');
     this.load.image('target', 'assets/cursor.png');
     // this.load.image('table', 'assets/table.png');
@@ -33,6 +32,7 @@ class MainMenu extends Phaser.Scene
 
     //Spritesheet assets
     this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
+    this.load.spritesheet('emoji', 'assets/spritesheets/emoji.png', { frameWidth: 122, frameHeight: 122 });
     this.load.spritesheet('laptop_1', 'assets/spritesheets/laptop.png', { frameWidth: 252, frameHeight: 202 });
     this.load.spritesheet('laptop_2', 'assets/spritesheets/laptop-blue.png', { frameWidth: 252, frameHeight: 202 });
     this.load.spritesheet('laptop_3', 'assets/spritesheets/laptop-red.png', { frameWidth: 252, frameHeight: 202 });
@@ -59,7 +59,7 @@ class MainMenu extends Phaser.Scene
 
   create ()
   {
-      var background = this.add.sprite(0, 0, 'title-office').setOrigin(0, 0);
+      var background = this.add.sprite(0, 0, 'office', '0025.png').setOrigin(0, 0);
       background.setTint(0x999999);
 
       //Title
@@ -232,6 +232,8 @@ create: function()
   //Game Background
   background = this.add.sprite(0, 0, 'office', '0001.png').setOrigin(0, 0);
   background.setScale(config.width/800, config.height/600);
+
+  var emote = this.add.sprite(0, 0, 'emoji', 'sad.png').setOrigin(0, 0);
 
   //Game Particles
   particle1 = this.add.particles('shapes',  new Function('return '
@@ -820,6 +822,7 @@ class PauseMenu extends Phaser.Scene
     .on('pointerdown', (pointer)=> {
       if(pointer.leftButtonDown())
       {
+    // this.load.image('title-office', 'assets/spritesheets/office/Office-4.png'); //Not sure if I need to load this?
         resumeButton.setStyle({ fill: '#404'});
         this.scene.resume('mainGame');
         this.scene.stop();
