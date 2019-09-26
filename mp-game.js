@@ -664,6 +664,12 @@ class MainMenu extends Phaser.Scene
 {
   preload ()
   {
+    //Game waits for web fonts to load before starting
+    let font1 = new FontFaceObserver('Indie Flower');
+    let font2 = new FontFaceObserver('Saira Stencil One');
+    font1.load().then(function () {});
+    font2.load().then(function () {});
+
     this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
 
     this.load.svg('note', 'assets/post_it.svg', {
