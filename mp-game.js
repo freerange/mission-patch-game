@@ -1,3 +1,155 @@
+class MainMenu extends Phaser.Scene
+{
+  preload ()
+  {
+    //Game waits for web fonts to load before starting
+    let font1 = new FontFaceObserver('Indie Flower');
+    let font2 = new FontFaceObserver('Saira Stencil One');
+    font1.load().then(function () {});
+    font2.load().then(function () {});
+
+    this.load.image('office', 'assets/spritesheets/office/Office-4.png');
+
+    this.load.svg('note', 'assets/post_it.svg', {
+      width: 100,
+      height: 200
+    });
+  }
+
+  create ()
+  {
+      var background = this.add.sprite(0, 0, 'office').setOrigin(0, 0);
+      background.setTint(0x999999);
+
+      //Title
+      var title1 = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '60px', fontStyle: 'bold'});
+      title1.setPosition((config.width/2) - Math.floor(title1.width/2), (config.height/2) - 180);
+
+      var master = this;
+
+      title1.setPosition(Math.floor((config.width/2) - (title1.width/2)), (config.height/2) - 180);
+
+      var postItNotes = [];
+
+      function launchButton(x, y, stickers, laptops, seconds, mode, title, description) {
+        var postItNote = master.add.sprite(x, y, 'note');
+        postItNotes.push(postItNote);
+        postItNote.setOrigin(0, 0);
+
+        const gameModeText = master.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+        .setInteractive()
+        .on('pointerdown', (pointer)=> {
+            if(pointer.leftButtonDown())
+            {
+              gameModeText.setStyle({ fill: '#404'});
+              title1.destroy();
+              for( var i in postItNotes) {
+                postItNotes[i].destroy();
+              }
+              postItNotes = [];
+              // gameModeText.destroy();
+              master.scene.pause();
+              master.scene.launch('info', { titleName: title.replace("\n", " "), description: description,
+                stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
+            }
+        })
+        .on('pointerover', () => gameModeText.setStyle({ fill: '#808'}) )
+        .on('pointerout', () => gameModeText.setStyle({ fill: '#000' }) );
+
+        gameModeText.setAlign('center');
+        gameModeText.setPosition(Math.floor(postItNote.x + ((postItNote.width/2)-(gameModeText.width/2))), Math.floor(postItNote.y + (postItNote.height/2) - (gameModeText.height/2)));
+      }
+
+      //Button to launch mode select
+      var rect = this.add.sprite((config.width/2) - 50, (config.height/2) - 100, 'note').setOrigin(0, 0);
+      //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
+      const startButton = this.add.text(0, 0, 'Start', {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+      .setInteractive()
+      .on('pointerdown', (pointer)=> {
+        if(pointer.leftButtonDown())
+        {
+          startButton.destroy();
+          rect.destroy();
+
+          //Buttons to start modes
+          var bounceButton = launchButton((config.width/2)- 170, (config.height/2)-100, 3, 10, 30, 0, 'Bounce\nmode',
+            'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
+          var chuckButton = launchButton((config.width/2) + 70, (config.height/2)-100, 5, 100, 120, 1, 'Chuck\nmode',
+            'Catch the incoming flying laptops by sticking them \nwith a mission patch within two minutes. Move \nthe cursor around the screen and click to throw \na sticker.');
+        }
+      })
+      .on('pointerover', () => startButton.setStyle({ fill: '#808'}) )
+      .on('pointerout', () => startButton.setStyle({ fill: '#000' }) );
+
+      startButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(startButton.width/2))), Math.floor(rect.y + (rect.height/2)));
+  }
+
+}
+
+class Instructions extends Phaser.Scene
+{
+  init (data)
+  {
+    this.titleName = data.titleName;
+    this.description = data.description;
+    this.stickersAtOnce = data.stickersAtOnce;
+    this.laptopsAtOnce = data.laptopsAtOnce;
+    this.countdownSeconds = data.countdownSeconds;
+    this.modeSelect = data.modeSelect;
+  }
+
+  preload ()
+  {
+    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
+
+    this.load.svg('note', 'assets/post_it.svg', {
+      width: 100,
+      height: 200
+    });
+    this.load.svg('pad', 'assets/note_pad.svg', {
+      scale: 1.8
+    });
+  }
+
+  create ()
+  {
+    var notepad = this.add.sprite(0, 0, 'pad').setOrigin(0, 0);
+    notepad.setPosition((config.width/2) - (notepad.width/2), ((config.height/8)*3) - (notepad.height/2));
+    //Title
+    var title = this.add.text(0, 0, this.titleName,
+      {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '30px', fill: '#000', fontStyle: 'bold'});
+      title.setPosition(notepad.x + ((notepad.width/2) - Math.floor(title.width/2)), Math.floor(notepad.y + 5));
+
+    //Description
+    var desc = this.add.text(notepad.x + 10, notepad.y + ((notepad.height/10)*3) - 10,
+      this.description, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '18px', fill: '#000' });
+
+    desc.setLineSpacing(2.5);
+
+    //Button to start game
+    var playPostItNote = this.add.sprite(0, 0, 'note').setOrigin(0, 0);
+    playPostItNote.setPosition((config.width/2) - (playPostItNote.width/2), (config.height/2)+75);
+
+    const playButton = this.add.text(0, 0, 'Play',
+      {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+      .setInteractive()
+      .on('pointerdown', (pointer)=> {
+          if(pointer.leftButtonDown())
+          {
+            playButton.setStyle({ fill: '#404'});
+            this.sound.play('gong');
+            this.scene.start('mainGame', { stickersAtOnce: this.stickersAtOnce, laptopsAtOnce: this.laptopsAtOnce, countdownSeconds: this.countdownSeconds, modeSelect: this.modeSelect});
+            this.scene.stop('mainMenu');
+            this.scene.stop();
+          }
+        })
+        .on('pointerover', () => playButton.setStyle({ fill: '#808'}) )
+        .on('pointerout', () => playButton.setStyle({ fill: '#000' }) );
+
+    playButton.setPosition(Math.floor(playPostItNote.x + ((playPostItNote.width/2)-(playButton.width/2))), Math.floor(playPostItNote.y + (playPostItNote.height/2)));
+  }
+}
+
 var mainGame = new Phaser.Class(function()
 {
   var master;
@@ -657,96 +809,7 @@ update: function()
       countdownCheck = countdownSeconds - Math.floor(countdownTimer.getElapsedSeconds());
     }
   }
-}
-}}());
-
-class MainMenu extends Phaser.Scene
-{
-  preload ()
-  {
-    //Game waits for web fonts to load before starting
-    let font1 = new FontFaceObserver('Indie Flower');
-    let font2 = new FontFaceObserver('Saira Stencil One');
-    font1.load().then(function () {});
-    font2.load().then(function () {});
-
-    this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
-
-    this.load.svg('note', 'assets/post_it.svg', {
-      width: 100,
-      height: 200
-    });
-  }
-
-  create ()
-  {
-      var background = this.add.sprite(0, 0, 'office', '0025.png').setOrigin(0, 0);
-      background.setTint(0x999999);
-
-      //Title
-      var title1 = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '60px', fontStyle: 'bold'});
-      title1.setPosition((config.width/2) - Math.floor(title1.width/2), (config.height/2) - 180);
-
-      var master = this;
-
-      title1.setPosition(Math.floor((config.width/2) - (title1.width/2)), (config.height/2) - 180);
-
-      var postItNotes = [];
-
-      function launchButton(x, y, source, stickers, laptops, seconds, mode, title, description) {
-        var postItNote = master.add.sprite(x, y, 'note');
-        postItNotes.push(postItNote);
-        postItNote.setOrigin(0, 0);
-
-        const gameModeText = master.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
-        .setInteractive()
-        .on('pointerdown', (pointer)=> {
-            if(pointer.leftButtonDown())
-            {
-              gameModeText.setStyle({ fill: '#404'});
-              title1.destroy();
-              for( var i in postItNotes) {
-                postItNotes[i].destroy();
-              }
-              postItNotes = [];
-              // gameModeText.destroy();
-              master.scene.pause();
-              master.scene.launch('info', { instructionSource: source, titleName: title.replace("\n", " "), description: description,
-                stickersAtOnce: stickers, laptopsAtOnce: laptops, countdownSeconds: seconds, modeSelect: mode });
-            }
-        })
-        .on('pointerover', () => gameModeText.setStyle({ fill: '#808'}) )
-        .on('pointerout', () => gameModeText.setStyle({ fill: '#000' }) );
-
-        gameModeText.setAlign('center');
-        gameModeText.setPosition(Math.floor(postItNote.x + ((postItNote.width/2)-(gameModeText.width/2))), Math.floor(postItNote.y + (postItNote.height/2) - (gameModeText.height/2)));
-      }
-
-      //Button to launch mode select
-      var rect = this.add.sprite((config.width/2) - 50, (config.height/2) - 100, 'note').setOrigin(0, 0);
-      //Taken from Phaser button tutorial (snowbillr.github.io/blog//2018-07-03-buttons-in-phaser-3/)
-      const startButton = this.add.text(0, 0, 'Start', {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
-      .setInteractive()
-      .on('pointerdown', (pointer)=> {
-        if(pointer.leftButtonDown())
-        {
-          startButton.destroy();
-          rect.destroy();
-
-          //Buttons to start modes
-          var bounceButton = launchButton((config.width/2)- 170, (config.height/2)-100, 'assets/bounce-mode-example.png', 3, 10, 30, 0, 'Bounce\nmode',
-            'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
-          var chuckButton = launchButton((config.width/2) + 70, (config.height/2)-100, 'assets/chuck-mode-example.png', 5, 100, 120, 1, 'Chuck\nmode',
-            'Catch the incoming flying laptops by sticking them \nwith a mission patch within two minutes. Move \nthe cursor around the screen and click to throw \na sticker.');
-        }
-      })
-      .on('pointerover', () => startButton.setStyle({ fill: '#808'}) )
-      .on('pointerout', () => startButton.setStyle({ fill: '#000' }) );
-
-      startButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(startButton.width/2))), Math.floor(rect.y + (rect.height/2)));
-  }
-
-}
+}}}());
 
 class PauseMenu extends Phaser.Scene
 {
@@ -803,75 +866,6 @@ class PauseMenu extends Phaser.Scene
     .on('pointerout', () => quitButton.setStyle({ fill: '#000' }) );
 
     quitButton.setPosition(Math.floor(rect2.x + ((rect2.width/2)-(quitButton.width/2))), Math.floor(rect2.y + (rect2.height/2)))
-  }
-}
-
-class Instructions extends Phaser.Scene
-{
-  init (data)
-  {
-    this.instructionSource = data.instructionSource;
-    this.titleName = data.titleName;
-    this.description = data.description;
-    this.stickersAtOnce = data.stickersAtOnce;
-    this.laptopsAtOnce = data.laptopsAtOnce;
-    this.countdownSeconds = data.countdownSeconds;
-    this.modeSelect = data.modeSelect;
-  }
-
-  preload ()
-  {
-    this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
-
-    this.load.image('preview', this.instructionSource);
-    this.load.svg('note', 'assets/post_it.svg', {
-      width: 100,
-      height: 200
-    });
-    this.load.svg('pad', 'assets/note_pad.svg', {
-      scale: 1.8
-    });
-  }
-
-  create ()
-  {
-    var notepad = this.add.sprite(0, 0, 'pad').setOrigin(0, 0);
-    notepad.setPosition((config.width/2) - (notepad.width/2), ((config.height/8)*3) - (notepad.height/2));
-    //Title
-    var title = this.add.text(0, 0, this.titleName,
-      {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '30px', fill: '#000', fontStyle: 'bold'});
-      title.setPosition(notepad.x + ((notepad.width/2) - Math.floor(title.width/2)), Math.floor(notepad.y + 5));
-
-    //Description
-    var desc = this.add.text(notepad.x + 10, notepad.y + ((notepad.height/10)*3) - 10,
-      this.description, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '18px', fill: '#000' });
-
-    desc.setLineSpacing(2.5);
-
-    // var previewPic = this.add.image(config.width/2, config.height/2 - 60, 'preview');
-    // previewPic.setScale(0.5);
-
-    //Button to start game
-    var playPostItNote = this.add.sprite(0, 0, 'note').setOrigin(0, 0);
-    playPostItNote.setPosition((config.width/2) - (playPostItNote.width/2), (config.height/2)+75);
-
-    const playButton = this.add.text(0, 0, 'Play',
-      {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
-      .setInteractive()
-      .on('pointerdown', (pointer)=> {
-          if(pointer.leftButtonDown())
-          {
-            playButton.setStyle({ fill: '#404'});
-            this.sound.play('gong');
-            this.scene.start('mainGame', { stickersAtOnce: this.stickersAtOnce, laptopsAtOnce: this.laptopsAtOnce, countdownSeconds: this.countdownSeconds, modeSelect: this.modeSelect});
-            this.scene.stop('mainMenu');
-            this.scene.stop();
-          }
-        })
-        .on('pointerover', () => playButton.setStyle({ fill: '#808'}) )
-        .on('pointerout', () => playButton.setStyle({ fill: '#000' }) );
-
-    playButton.setPosition(Math.floor(playPostItNote.x + ((playPostItNote.width/2)-(playButton.width/2))), Math.floor(playPostItNote.y + (playPostItNote.height/2)));
   }
 }
 
