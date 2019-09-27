@@ -257,10 +257,7 @@ create: function()
   }
 
   //Sets timer depending on countdown seconds
-  countdownTimer = this.time.addEvent(
-  {
-    delay: countdownSeconds * 1000
-  });
+  countdownTimer = this.time.addEvent({ delay: countdownSeconds * 1000 });
 
   // var tab = this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
   // tab.disableBody(true, true);
@@ -560,8 +557,7 @@ update: function()
           var finishText = master.add.text(0, 0, resultsText,
           { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
           fontStyle: 'bold', fill: '#000' });
-          finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)),
-            (config.height/2) - 50);
+          finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
 
           // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
           // particle2.emitters.list[0].startFollow(finishText);
@@ -577,16 +573,29 @@ update: function()
                   master.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
               }
               stickersLeft = 20;
-              finish.stop();
               var numberOfSmilingEmotes = emotes.children.entries.filter((emot) => { return emot.frame.name == 1 }).length;
               if(numberOfSmilingEmotes >= 3 || modeAlreadyUnlocked) {
-                modeAlreadyUnlocked = true;
-                menuScene.scene.restart({ locked: false });
+                if(!modeAlreadyUnlocked) {
+                  finishText.setText('You\'ve unlocked bounce mode!');
+                  finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
+                  master.time.addEvent({
+                    delay: 5000,
+                    callback: () => {
+                      finish.stop();
+                      modeAlreadyUnlocked = true;
+                      menuScene.scene.restart({ locked: false });
+                      master.scene.stop();
+                    }});
+                } else {
+                  finish.stop();
+                  menuScene.scene.restart({ locked: false });
+                  master.scene.stop();
+                }
               } else {
+                finish.stop();
                 menuScene.scene.restart({ locked: true });
+                master.scene.stop();
               }
-
-              master.scene.stop();
             }
             });
         }
