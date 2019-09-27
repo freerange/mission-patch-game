@@ -85,7 +85,6 @@ create: function()
     //Will animate if a certain laptop type is assigned
     if(laptop.texture.key == key) {
       laptop.setFrame(0);
-      laptop.body.setSize(157, 101).setOffset(47, 85);
       var laptopFrames = master.anims.generateFrameNames(key, { start: 0, end: 3 });
       master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID, frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
 
@@ -130,6 +129,9 @@ create: function()
     var laptop = laptops.create(x, y, 'laptop_' + Phaser.Math.Between(0, 4));
     laptop.setData({ laptopMode: laptopMode, hasSticker: false, delayActive: delayActive, laptopID: -1 });
     laptop.data.values.laptopID = laptops.children.entries.length - 1;
+    if(laptop.frame.name != '__BASE') {
+      laptop.body.setSize(157, 101).setOffset(47, 85);
+    }
 
     return laptop;
   }
