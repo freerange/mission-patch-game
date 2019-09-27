@@ -29,6 +29,9 @@ class MainMenu extends Phaser.Scene
     this.load.svg('pad', 'assets/note_pad.svg', {
       scale: 1.8
     });
+    this.load.svg('lock', 'assets/Lock-Icon.svg', {
+      scale: 0.25
+    });
 
     //Spritesheet assets
     this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
@@ -59,8 +62,13 @@ class MainMenu extends Phaser.Scene
 
   create ()
   {
+      //Variable used to test mode locking system. Will adjust later
+      var bounceModeLocked = true;
+
       var background = this.add.sprite(0, 0, 'office', '0025.png').setOrigin(0, 0);
       background.setTint(0x999999);
+
+      var lock = this.add.sprite(0, 0, 'lock').setOrigin(0, 0);
 
       //Title
       var title1 = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '60px', fontStyle: 'bold'});
@@ -115,7 +123,7 @@ class MainMenu extends Phaser.Scene
           //Buttons to start modes
           var bounceButton = launchButton((config.width/2)- 170, (config.height/2)-100, 3, 10, 30, 0, 'Bounce\nmode',
             'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
-          var chuckButton = launchButton((config.width/2) + 70, (config.height/2)-100, 5, 100, 120, 1, 'Chuck\nmode',
+          var chuckButton = launchButton((config.width/2) + 70, (config.height/2)-100, 5, 100, 150, 1, 'Chuck\nmode',
             'Catch the incoming flying laptops by sticking them \nwith a mission patch within two minutes. Move \nthe cursor around the screen and click to throw \na sticker.');
         }
       })

@@ -576,6 +576,7 @@ update: function()
                   master.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
               }
               stickersLeft = 20;
+              // var numberOfSmilingEmotes = emotes.children.entries.filter((emot) => { return emot.frame.name == 1 }).length;
               finish.stop();
               menuScene.scene.restart();
               master.scene.stop();
