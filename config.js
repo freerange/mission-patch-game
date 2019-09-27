@@ -20,4 +20,4 @@ game.scene.add('info', Instructions);
 game.scene.add('mainGame', mainGame);
 game.scene.add('pauseMenu', PauseMenu);
 
-game.scene.start('mainMenu');
+game.scene.start('mainMenu', { locked: true });

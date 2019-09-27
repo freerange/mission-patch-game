@@ -1,5 +1,10 @@
 class MainMenu extends Phaser.Scene
 {
+  init (data)
+  {
+    this.locked = data.locked;
+  }
+
   preload ()
   {
     //Game waits for web fonts to load before starting
@@ -63,9 +68,6 @@ class MainMenu extends Phaser.Scene
 
   create ()
   {
-      //Variable used to test mode locking system. Will adjust later
-      var bounceModeLocked = true;
-
       var background = this.add.sprite(0, 0, 'office', '0025.png').setOrigin(0, 0);
       background.setTint(0x999999);
 
@@ -95,7 +97,6 @@ class MainMenu extends Phaser.Scene
                 postItNotes[i].destroy();
               }
               postItNotes = [];
-              // gameModeText.destroy();
               master.scene.pause();
               master.scene.launch('info', { titleName: title.replace("\n", " "), description: description,
                 stickersAtOnce: stickers, totalLaptopsToGet: laptops, countdownSeconds: seconds, modeSelect: mode });
@@ -127,7 +128,7 @@ class MainMenu extends Phaser.Scene
           var bounceButton = launchButton((config.width/2) + 70, (config.height/2)-100, 3, 10, 30, 0, 'Bounce\nmode',
             'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
 
-          if(bounceModeLocked) {
+          if(this.locked) {
             bounceButton.destroy();
             var lock = this.add.sprite(0, 0, 'lock').setOrigin(0, 0);
             lock.setPosition(Math.floor(postItNotes[1].x + ((postItNotes[1].width/2)-(lock.width/2))), Math.floor(postItNotes[1].y + (postItNotes[1].height/2) - (lock.height/2)));

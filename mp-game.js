@@ -28,6 +28,7 @@ var mainGame = new Phaser.Class(function()
 
   var gameDelay;
   var gameOver = false;
+  var modeAlreadyUnlocked = false;
 
   var particle1, particle2;
 
@@ -576,9 +577,15 @@ update: function()
                   master.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
               }
               stickersLeft = 20;
-              // var numberOfSmilingEmotes = emotes.children.entries.filter((emot) => { return emot.frame.name == 1 }).length;
               finish.stop();
-              menuScene.scene.restart();
+              var numberOfSmilingEmotes = emotes.children.entries.filter((emot) => { return emot.frame.name == 1 }).length;
+              if(numberOfSmilingEmotes >= 3 || modeAlreadyUnlocked) {
+                modeAlreadyUnlocked = true;
+                menuScene.scene.restart({ locked: false });
+              } else {
+                menuScene.scene.restart({ locked: true });
+              }
+
               master.scene.stop();
             }
             });
