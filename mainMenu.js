@@ -30,7 +30,8 @@ class MainMenu extends Phaser.Scene
       scale: 1.8
     });
     this.load.svg('lock', 'assets/Lock-Icon.svg', {
-      scale: 0.25
+      width: 50,
+      height: 100
     });
 
     //Spritesheet assets
@@ -67,8 +68,6 @@ class MainMenu extends Phaser.Scene
 
       var background = this.add.sprite(0, 0, 'office', '0025.png').setOrigin(0, 0);
       background.setTint(0x999999);
-
-      var lock = this.add.sprite(0, 0, 'lock').setOrigin(0, 0);
 
       //Title
       var title1 = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '60px', fontStyle: 'bold'});
@@ -107,6 +106,8 @@ class MainMenu extends Phaser.Scene
 
         gameModeText.setAlign('center');
         gameModeText.setPosition(Math.floor(postItNote.x + ((postItNote.width/2)-(gameModeText.width/2))), Math.floor(postItNote.y + (postItNote.height/2) - (gameModeText.height/2)));
+
+        return gameModeText;
       }
 
       //Button to launch mode select
@@ -121,10 +122,17 @@ class MainMenu extends Phaser.Scene
           rect.destroy();
 
           //Buttons to start modes
-          var bounceButton = launchButton((config.width/2)- 170, (config.height/2)-100, 3, 10, 30, 0, 'Bounce\nmode',
-            'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
-          var chuckButton = launchButton((config.width/2) + 70, (config.height/2)-100, 5, 100, 150, 1, 'Chuck\nmode',
+          var chuckButton = launchButton((config.width/2) - 170, (config.height/2)-100, 5, 100, 150, 1, 'Chuck\nmode',
             'Catch the incoming flying laptops by sticking them \nwith a mission patch within two minutes. Move \nthe cursor around the screen and click to throw \na sticker.');
+          var bounceButton = launchButton((config.width/2) + 70, (config.height/2)-100, 3, 10, 30, 0, 'Bounce\nmode',
+            'Stop the laptops from bouncing around by \nsticking them with a mission patch before time \nruns out.');
+
+          if(bounceModeLocked) {
+            bounceButton.destroy();
+            var lock = this.add.sprite(0, 0, 'lock').setOrigin(0, 0);
+            lock.setPosition(Math.floor(postItNotes[1].x + ((postItNotes[1].width/2)-(lock.width/2))), Math.floor(postItNotes[1].y + (postItNotes[1].height/2) - (lock.height/2)));
+
+          }
         }
       })
       .on('pointerover', () => startButton.setStyle({ fill: '#808'}) )
