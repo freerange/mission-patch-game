@@ -85,7 +85,7 @@ create: function()
     //Will animate if a certain laptop type is assigned
     if(laptop.texture.key == key) {
       laptop.setFrame(0);
-      laptop.body.setSize(157, 101);
+      laptop.body.setSize(157, 101).setOffset(47, 85);
       var laptopFrames = master.anims.generateFrameNames(key, { start: 0, end: 3 });
       master.anims.create({ key: 'open/close_' + laptop.data.values.laptopID, frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
 
