@@ -510,7 +510,7 @@ update: function()
       }
 
       if(!laptops.children.entries[j].data.values.hasSticker) {
-        this.sound.add('crash', { volume: Phaser.Math.FloatBetween(0.6, 0.7), rate: 1.0 + Phaser.Math.FloatBetween(-0.04, 0.04) }).play();
+        this.sound.add('crash', { volume: Phaser.Math.FloatBetween(0.2, 0.3), rate: 1.0 + Phaser.Math.FloatBetween(-0.04, 0.04) }).play();
       }
       laptops.children.entries[j].disableBody(true, true);
 

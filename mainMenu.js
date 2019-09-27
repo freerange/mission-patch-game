@@ -58,7 +58,7 @@ class MainMenu extends Phaser.Scene
     this.load.audio('laptThrow', 'sounds/60013__qubodup__whoosh(edited).wav');
     this.load.audio('smack', 'sounds/37186__volivieri__newspapers-large-hard(edited).wav');
     this.load.audio('hit', 'sounds/399294__komit__synth-sparkle(edited).wav');
-    this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
+    this.load.audio('crash', 'sounds/267482__lightdj__book-dropping-2(edited).wav');
     this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
     this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav');
     this.load.audio('blocked', 'sounds/327737__distillerystudio__error-02.wav');
