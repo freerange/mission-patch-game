@@ -61,6 +61,8 @@ class MainMenu extends Phaser.Scene
     this.load.audio('crash', 'sounds/221528__unfa__glass-break(edited).wav');
     this.load.audio('timesUp', 'sounds/198841__bone666138__analog-alarm-clock(edited).wav');
     this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav');
+    this.load.audio('blocked', 'sounds/327737__distillerystudio__error-02.wav');
+    this.load.audio('hover', 'sounds/320148__owlstorm__paper-sketchbook-page-flips-1(edited).wav');
 
     //Done to prevent sound stacking when inactive
     this.sound.pauseOnBlur = false;
@@ -102,7 +104,10 @@ class MainMenu extends Phaser.Scene
                 stickersAtOnce: stickers, totalLaptopsToGet: laptops, countdownSeconds: seconds, modeSelect: mode });
             }
         })
-        .on('pointerover', () => gameModeText.setStyle({ fill: '#808'}) )
+        .on('pointerover', () => {
+          master.sound.play('hover');
+          gameModeText.setStyle({ fill: '#808'});
+        })
         .on('pointerout', () => gameModeText.setStyle({ fill: '#000' }) );
 
         gameModeText.setAlign('center');
@@ -130,16 +135,22 @@ class MainMenu extends Phaser.Scene
 
           if(this.locked) {
             bounceButton.destroy();
-            var lock = this.add.sprite(0, 0, 'lock').setOrigin(0, 0);
+            var lock = this.add.sprite(0, 0, 'lock').setOrigin(0, 0)
+            .setInteractive()
+            .on('pointerdown', (pointer)=> {
+              this.sound.play('blocked');
+            });
             lock.setPosition(Math.floor(postItNotes[1].x + ((postItNotes[1].width/2)-(lock.width/2))), Math.floor(postItNotes[1].y + (postItNotes[1].height/2) - (lock.height/2)));
 
           }
         }
       })
-      .on('pointerover', () => startButton.setStyle({ fill: '#808'}) )
+      .on('pointerover', () => {
+        this.sound.play('hover');
+        startButton.setStyle({ fill: '#808'})
+      })
       .on('pointerout', () => startButton.setStyle({ fill: '#000' }) );
 
       startButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(startButton.width/2))), Math.floor(rect.y + (rect.height/2)));
   }
-
 }

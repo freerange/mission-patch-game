@@ -42,7 +42,10 @@ class Instructions extends Phaser.Scene
             this.scene.stop();
           }
         })
-        .on('pointerover', () => playButton.setStyle({ fill: '#808'}) )
+        .on('pointerover', () => {
+          this.sound.play('hover');
+          playButton.setStyle({ fill: '#808'});
+        })
         .on('pointerout', () => playButton.setStyle({ fill: '#000' }) );
 
     playButton.setPosition(Math.floor(playPostItNote.x + ((playPostItNote.width/2)-(playButton.width/2))), Math.floor(playPostItNote.y + (playPostItNote.height/2)));

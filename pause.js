@@ -24,7 +24,10 @@ class PauseMenu extends Phaser.Scene
         this.scene.stop();
       }
     })
-    .on('pointerover', () => resumeButton.setStyle({ fill: '#808'}) )
+    .on('pointerover', () => {
+      this.sound.play('hover');
+      resumeButton.setStyle({ fill: '#808'});
+    })
     .on('pointerout', () => resumeButton.setStyle({ fill: '#000' }) );
 
     resumeButton.setPosition(Math.floor(rect.x + ((rect.width/2)-(resumeButton.width/2))), Math.floor(rect.y + (rect.height/2)));
@@ -42,7 +45,10 @@ class PauseMenu extends Phaser.Scene
         this.scene.stop();
       }
     })
-    .on('pointerover', () => quitButton.setStyle({ fill: '#808'}) )
+    .on('pointerover', () => {
+      this.sound.play('hover');
+       quitButton.setStyle({ fill: '#808'});
+     })
     .on('pointerout', () => quitButton.setStyle({ fill: '#000' }) );
 
     quitButton.setPosition(Math.floor(rect2.x + ((rect2.width/2)-(quitButton.width/2))), Math.floor(rect2.y + (rect2.height/2)))

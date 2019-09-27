@@ -388,7 +388,7 @@ create: function()
       if(tar.x != pointer.x - (tar.width/2) || tar.y != pointer.y - (tar.height/2)) {
         followMouse(tar, pointer);
       }
-      if(!gameOver || (modeSelect == 0 && stickersLeft > 0))
+      if(!gameOver)
       {
         for(var i in stickers.children.entries)
         {
