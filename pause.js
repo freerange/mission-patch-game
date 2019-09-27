@@ -20,6 +20,7 @@ class PauseMenu extends Phaser.Scene
       {
     // this.load.image('title-office', 'assets/spritesheets/office/Office-4.png'); //Not sure if I need to load this?
         resumeButton.setStyle({ fill: '#404'});
+        this.sound.play('select');
         this.scene.resume('mainGame');
         this.scene.stop();
       }
@@ -40,6 +41,7 @@ class PauseMenu extends Phaser.Scene
       if(pointer.leftButtonDown())
       {
         quitButton.setStyle({ fill: '#404'});
+        this.sound.play('select');
         this.scene.start('mainMenu');
         this.scene.stop('mainGame');
         this.scene.stop();

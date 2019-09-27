@@ -431,12 +431,12 @@ update: function()
 {
   master = this;
 
-  function foo (value) {
+  function progressByFrames (value) {
     return Math.floor(howManyLaptopsHaveStickers/(totalLaptopsToGet/value))
   }
 
   //Dynamic background based on amount of laptops patched
-  var laptopsPerFrame = foo(25);
+  var laptopsPerFrame = progressByFrames(25);
   if(currentFrame == null)
     currentFrame = laptopsPerFrame;
 
@@ -450,7 +450,7 @@ update: function()
     currentFrame = laptopsPerFrame;
   }
 
-  var laptopsPerEmote = foo(10);
+  var laptopsPerEmote = progressByFrames(10);
   for(var i in emotes.children.entries) {
     if(laptopsPerEmote >= (Number(i) + 1) && emotes.children.entries[i].frame.name == 0) {
       emotes.children.entries[i].setFrame(1);

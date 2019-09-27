@@ -63,6 +63,7 @@ class MainMenu extends Phaser.Scene
     this.load.audio('results', 'sounds/182369__kingsrow__fire-crackling-01(edited).wav');
     this.load.audio('blocked', 'sounds/327737__distillerystudio__error-02.wav');
     this.load.audio('hover', 'sounds/320148__owlstorm__paper-sketchbook-page-flips-1(edited).wav');
+    this.load.audio('select', 'sounds/63318__flag2__page-turn-please-turn-over-pto-paper-turn-over(edited).wav');
 
     //Done to prevent sound stacking when inactive
     this.sound.pauseOnBlur = false;
@@ -99,6 +100,7 @@ class MainMenu extends Phaser.Scene
                 postItNotes[i].destroy();
               }
               postItNotes = [];
+              master.sound.play('select');
               master.scene.pause();
               master.scene.launch('info', { titleName: title.replace("\n", " "), description: description,
                 stickersAtOnce: stickers, totalLaptopsToGet: laptops, countdownSeconds: seconds, modeSelect: mode });
@@ -126,6 +128,7 @@ class MainMenu extends Phaser.Scene
         {
           startButton.destroy();
           rect.destroy();
+          this.sound.play('select');
 
           //Buttons to start modes
           var chuckButton = launchButton((config.width/2) - 170, (config.height/2)-100, 5, 100, 150, 1, 'Chuck\nmode',
