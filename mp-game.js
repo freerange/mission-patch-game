@@ -577,7 +577,7 @@ update: function()
               var numberOfSmilingEmotes = emotes.children.entries.filter((emot) => { return emot.frame.name == 1 }).length;
               if(numberOfSmilingEmotes >= 4 || modeAlreadyUnlocked) {
                 if(!modeAlreadyUnlocked) {
-                  finishText.setText('You\'ve unlocked bounce mode!');
+                  finishText.setText('You\'ve unlocked Bouncing Laptops!');
                   finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
                   rootScene.time.addEvent({
                     delay: 5000,
