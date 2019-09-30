@@ -181,10 +181,10 @@ create: function()
           x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
         } else {
           y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
-          x = (pos.x > (config.width/2)) ? config.width - 100 : 50;
+          x = (pos.x > (config.width/2)) ? config.width - 190 : 50;
         }
 
-        var readyText = rootScene.add.text(x, y, 'Ready?',
+        var readyText = rootScene.add.text(x, y, 'Here it comes!',
           { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
           fontStyle: 'bold', fill: '#2E2ED1' });
 
@@ -204,8 +204,8 @@ create: function()
 
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-            var velInf = (x > (config.width/2)) ? (x-((config.width-200)/2))/(config.width/2) : ((config.width/2)-(x-50))/(config.width/2);
-            laptop.setVelocity(Phaser.Math.Between(300, 600) * (velX*velInf), Phaser.Math.Between(400, 600) * velY);
+            var velInfluence = (x > (config.width/2)) ? (x-((config.width-380)/2))/(config.width/2) : ((config.width/2)-(x-50))/(config.width/2);
+            laptop.setVelocity(Phaser.Math.Between(300, 600) * (velX*velInfluence), Phaser.Math.Between(400, 600) * velY);
             laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
           }
         });
