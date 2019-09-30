@@ -224,7 +224,7 @@ create: function()
 
     var msPerLaptop = (countdownSeconds * 1000)/totalLaptopsToGet;
     var laptSetDelay = (msPerLaptop * laptSpread) + Phaser.Math.Between(-(msPerLaptop/2), (msPerLaptop/2));
-    laptSetDelay = Phaser.Math.Clamp(laptSetDelay, 500, (countdownSeconds * 1000) - 1);
+    laptSetDelay = Phaser.Math.Clamp(laptSetDelay, 500, (countdownSeconds * 1000) - 50);
 
     throwLaptop(laptop, pos, laptSetDelay);
   }

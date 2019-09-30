@@ -13,6 +13,8 @@ class Instructions extends Phaser.Scene
   create ()
   {
     var notepad = this.add.sprite(0, 0, 'pad').setOrigin(0, 0);
+    notepad.setScale(1.5, 1.1);
+    notepad.setSize(notepad.width*notepad.scaleX, notepad.height*notepad.scaleY);
     notepad.setPosition((config.width/2) - (notepad.width/2), ((config.height/8)*3) - (notepad.height/2));
     //Title
     var title = this.add.text(0, 0, this.titleName,
@@ -20,10 +22,8 @@ class Instructions extends Phaser.Scene
       title.setPosition(notepad.x + ((notepad.width/2) - Math.floor(title.width/2)), Math.floor(notepad.y + 5));
 
     //Description
-    var desc = this.add.text(notepad.x + 10, notepad.y + ((notepad.height/10)*3) - 10,
-      this.description, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '18px', fill: '#000' });
-
-    desc.setLineSpacing(2.5);
+    var desc = this.add.text(Math.floor(notepad.x + 10), Math.floor(notepad.y + ((notepad.height/10)*3) - 10),
+      this.description, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '22px', fill: '#000' });
 
     //Button to start game
     var playPostItNote = this.add.sprite(0, 0, 'note').setOrigin(0, 0);
