@@ -1,6 +1,6 @@
 var mainGame = new Phaser.Class(function()
 {
-  var scene;
+  var rootScene;
 
   var background;
 
@@ -75,7 +75,7 @@ create: function()
   this.physics.add.overlap(laptops, stickers, hitLaptop, null, this);
 
   //Referenced for time and key press events
-  var scene = this;
+  var rootScene = this;
 
   //Always starts at 1
   var laptSpread = 1;
@@ -84,17 +84,17 @@ create: function()
     //Will animate if a certain laptop type is assigned
     if(laptop.texture.key == key) {
       laptop.setFrame(0);
-      var laptopFrames = scene.anims.generateFrameNames(key, { start: 0, end: 3 });
-      scene.anims.create({ key: 'open/close_' + laptop.data.values.laptopID, frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
+      var laptopFrames = rootScene.anims.generateFrameNames(key, { start: 0, end: 3 });
+      rootScene.anims.create({ key: 'open/close_' + laptop.data.values.laptopID, frames: laptopFrames, duration: duration, repeat: 0, yoyo: true });
 
       laptop.anims.play('open/close_' + laptop.data.values.laptopID);
       laptop.once('animationcomplete', ()=> {
-        scene.time.addEvent(
+        rootScene.time.addEvent(
         {
             delay: delay,
             callback: ()=> {
               laptop.anims.play('open/close_' + laptop.data.values.laptopID);
-              var animTimer = scene.time.addEvent(
+              var animTimer = rootScene.time.addEvent(
               {
                   delay: delay + duration,
                   loop: true,
@@ -112,7 +112,7 @@ create: function()
   }
 
   function isLaptopTypeAnimated (laptop) {
-    scene.time.addEvent(
+    rootScene.time.addEvent(
     {
         delay: Phaser.Math.Between(0, 750),
         callback: ()=> {
@@ -170,7 +170,7 @@ create: function()
   function throwLaptop (laptop, pos, delay) {
     //Random delay before chucking
     var timer;
-    scene.time.addEvent(
+    rootScene.time.addEvent(
     {
       delay: delay - 750,                // ms
       callback: ()=> {
@@ -184,18 +184,18 @@ create: function()
           x = (pos.x > (config.width/2)) ? config.width - 100 : 50;
         }
 
-        var readyText = scene.add.text(x, y, 'Ready?',
+        var readyText = rootScene.add.text(x, y, 'Ready?',
           { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
           fontStyle: 'bold', fill: '#2E2ED1' });
 
-        timer = scene.time.addEvent(
+        timer = rootScene.time.addEvent(
         {
           delay: 750,
           callback: ()=> {
             readyText.destroy();
             isLaptopTypeAnimated(laptop);
 
-            scene.sound.add('laptThrow', {
+            rootScene.sound.add('laptThrow', {
               volume: Phaser.Math.FloatBetween(0.2, 0.4),
               rate: 1.0 + Phaser.Math.FloatBetween(-0.1, 0.1)
             }).play();
@@ -204,7 +204,8 @@ create: function()
 
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-            laptop.setVelocity(Phaser.Math.Between(300, 600) * velX, Phaser.Math.Between(400, 600) * velY);
+            var velInf = (x > (config.width/2)) ? (x-((config.width-200)/2))/(config.width/2) : ((config.width/2)-(x-50))/(config.width/2);
+            laptop.setVelocity(Phaser.Math.Between(300, 600) * (velX*velInf), Phaser.Math.Between(400, 600) * velY);
             laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
           }
         });
@@ -291,7 +292,7 @@ create: function()
   //Will follow movement of laptop relative to the position where the sticker hit the laptop
   function stickToLaptop (lapt, stick, index)
   {
-    scene.sound.add('hit', {
+    rootScene.sound.add('hit', {
       volume: 0.6,
       rate: 1.0 + Phaser.Math.FloatBetween(-0.15, 0.15)
     }).play();
@@ -307,7 +308,7 @@ create: function()
   }
 
   function setUIText(x, y, text) {
-    return scene.add.text(x, y, text, { fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
+    return rootScene.add.text(x, y, text, { fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '32px', fill: '#000' });
   }
 
   //UI Text
@@ -353,7 +354,7 @@ create: function()
             stickToLaptop(lapt, stick, lapt.data.values.laptopID);
 
             if(lapt.frame.name != '__BASE')
-              scene.anims.remove('open/close_' + lapt.data.values.laptopID);
+              rootScene.anims.remove('open/close_' + lapt.data.values.laptopID);
 
             //Makes laptops stop and fall in bounce mode
             if(lapt.data.values.laptopMode == 0) {
@@ -399,7 +400,7 @@ create: function()
               if(modeSelect == 0)
                 stickerText.setText('Stickers Left: ' + stickersLeft);
 
-              scene.sound.add('throw', {
+              rootScene.sound.add('throw', {
                 volume: 0.8
               }).play();
               stickers.children.entries[i].enableBody(true, tar.x + ((stickers.children.entries[i].width * 0.1)/2), tar.y + ((stickers.children.entries[i].height * 0.1)/2), true, true);
@@ -419,15 +420,15 @@ create: function()
   {
     if(!gameOver)
     {
-      scene.scene.pause();
-      scene.scene.launch('pauseMenu');
+      rootScene.scene.pause();
+      rootScene.scene.launch('pauseMenu');
     }
   });
 },
 
 update: function()
 {
-  scene = this;
+  rootScene = this;
 
   function progressByFrames (value) {
     return Math.floor(howManyLaptopsHaveStickers/(totalLaptopsToGet/value))
@@ -539,10 +540,10 @@ update: function()
 
   function gameOverSequence(endText, resultsText)
   {
-    scene.sound.play('timesUp');
+    rootScene.sound.play('timesUp');
     timerText.setText(endText);
     gameOver = true;
-    gameDelay = scene.time.addEvent(
+    gameDelay = rootScene.time.addEvent(
       {
         delay: 2000,                // ms
         callback: ()=> {
@@ -550,27 +551,27 @@ update: function()
           timerText.setText('');
           stickerText.setText('');
           tar.disableBody(true, true);
-          var finish = scene.sound.add('results');
+          var finish = rootScene.sound.add('results');
           finish.play();
           // particle2.emitters.list[0].on = true;
 
-          var finishText = scene.add.text(0, 0, resultsText,
+          var finishText = rootScene.add.text(0, 0, resultsText,
           { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
           fontStyle: 'bold', fill: '#000' });
           finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
 
           // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
           // particle2.emitters.list[0].startFollow(finishText);
-          scene.time.addEvent(
+          rootScene.time.addEvent(
             {
             delay: 5000,
             callback: ()=> {
               gameOver = false;
-              var menuScene = scene.scene.get('mainMenu');
+              var menuScene = rootScene.scene.get('mainMenu');
               for(var i in laptops.children.entries)
               {
                 if(laptops.children.entries[i].frame.name != '__BASE')
-                  scene.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
+                  rootScene.anims.remove('open/close_' + laptops.children.entries[i].data.values.laptopID);
               }
               stickersLeft = 20;
               var numberOfSmilingEmotes = emotes.children.entries.filter((emot) => { return emot.frame.name == 1 }).length;
@@ -578,23 +579,23 @@ update: function()
                 if(!modeAlreadyUnlocked) {
                   finishText.setText('You\'ve unlocked bounce mode!');
                   finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
-                  scene.time.addEvent({
+                  rootScene.time.addEvent({
                     delay: 5000,
                     callback: () => {
                       finish.stop();
                       modeAlreadyUnlocked = true;
                       menuScene.scene.restart({ locked: false });
-                      scene.scene.stop();
+                      rootScene.scene.stop();
                     }});
                 } else {
                   finish.stop();
                   menuScene.scene.restart({ locked: false });
-                  scene.scene.stop();
+                  rootScene.scene.stop();
                 }
               } else {
                 finish.stop();
                 menuScene.scene.restart({ locked: true });
-                scene.scene.stop();
+                rootScene.scene.stop();
               }
             }
             });
