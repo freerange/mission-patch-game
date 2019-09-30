@@ -79,18 +79,18 @@ class MainMenu extends Phaser.Scene
       var title1 = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '60px', fontStyle: 'bold'});
       title1.setPosition((config.width/2) - Math.floor(title1.width/2), (config.height/2) - 180);
 
-      var master = this;
+      var scene = this;
 
       title1.setPosition(Math.floor((config.width/2) - (title1.width/2)), (config.height/2) - 180);
 
       var postItNotes = [];
 
       function launchButton(x, y, stickers, laptops, seconds, mode, title, description) {
-        var postItNote = master.add.sprite(x, y, 'note');
+        var postItNote = scene.add.sprite(x, y, 'note');
         postItNotes.push(postItNote);
         postItNote.setOrigin(0, 0);
 
-        const gameModeText = master.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
+        const gameModeText = scene.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
         .setInteractive()
         .on('pointerdown', (pointer)=> {
             if(pointer.leftButtonDown())
@@ -101,14 +101,14 @@ class MainMenu extends Phaser.Scene
                 postItNotes[i].destroy();
               }
               postItNotes = [];
-              master.sound.play('select');
-              master.scene.pause();
-              master.scene.launch('info', { titleName: title.replace("\n", " "), description: description,
+              scene.sound.play('select');
+              scene.scene.pause();
+              scene.scene.launch('info', { titleName: title.replace("\n", " "), description: description,
                 stickersAtOnce: stickers, totalLaptopsToGet: laptops, countdownSeconds: seconds, modeSelect: mode });
             }
         })
         .on('pointerover', () => {
-          master.sound.play('hover');
+          scene.sound.play('hover');
           gameModeText.setStyle({ fill: '#808'});
         })
         .on('pointerout', () => gameModeText.setStyle({ fill: '#000' }) );
