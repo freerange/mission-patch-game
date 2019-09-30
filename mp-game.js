@@ -62,9 +62,8 @@ create: function()
   particle1 = this.add.particles('shapes',  new Function('return ' + this.cache.text.get('blast'))());
   particle1.emitters.list[0].on = false;
 
-  // particle2 = this.add.particles('shapes',  new Function('return '
-  //   + this.cache.text.get('explosion'))());
-  // particle2.emitters.list[0].on = false;
+  particle2 = this.add.particles('shapes',  new Function('return '  + this.cache.text.get('celebration'))());
+  particle2.emitters.list[0].on = false;
 
   //Launch Groups
   laptops = this.physics.add.group();
@@ -304,7 +303,7 @@ create: function()
 
     if(!particle1.emitters.list[0].on) {
       particle1.emitters.list[0].on = true;
-      particle1.emitters.list[0].setPosition(0, 0);
+      // particle1.emitters.list[0].setPosition(0, 0);
     }
 
     particle1.emitters.list[0].startFollow(lapt);
@@ -456,6 +455,12 @@ update: function()
   for(var i in emotes.children.entries) {
     if(laptopsPerEmote >= (Number(i) + 1) && emotes.children.entries[i].frame.name == 0) {
       emotes.children.entries[i].setFrame(1);
+      // particle2.emitters.list[0].on = true;
+      // particle2.emitters.list[0].setPosition(config.width/2, (config.height/2));
+      particle2.emitters.list[0].startFollow();
+      particle2.emitters.list[0].explode(250, emotes.children.entries[i].x, emotes.children.entries[i].y);
+      // this.time.addEvent({ delay: 1500, callback: () => { particle2.destroy(); }});
+
     }
   }
 

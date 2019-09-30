@@ -51,6 +51,7 @@ class MainMenu extends Phaser.Scene
     this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
     this.load.text('blast', 'assets/particles/Blast.json');
     this.load.text('explosion', 'assets/particles/Explosion.json');
+    this.load.text('celebration', 'assets/particles/Celebration.json');
 
     //Sound assets taken and edited from freesound.com
     this.load.audio('gong', 'sounds/266566__gowlermusic__gong-hit(edited).wav');
