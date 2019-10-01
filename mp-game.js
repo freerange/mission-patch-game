@@ -204,9 +204,8 @@ create: function()
 
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-            var velInf = (x > (config.width/2)) ? (x-((config.width-((Math.floor(readyText.width)+sidePadding)*2))/2))/(config.width/2) : ((config.width/2)-(x-sidePadding))/(config.width/2);
-            console.log(velInf);
-            laptop.setVelocity(Phaser.Math.Between(300, 600) * (velX*velInf), Phaser.Math.Between(400, 600) * velY);
+            var velInfluence = (x > (config.width/2)) ? (x-((config.width-((Math.floor(readyText.width)+sidePadding)*2))/2))/(config.width/2) : ((config.width/2)-(x-sidePadding))/(config.width/2);
+            laptop.setVelocity(Phaser.Math.Between(300, 600) * (velX*velInfluence), Phaser.Math.Between(400, 600) * velY);
             laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
           }
         });
@@ -578,7 +577,7 @@ update: function()
               var numberOfSmilingEmotes = emotes.children.entries.filter((emot) => { return emot.frame.name == 1 }).length;
               if(numberOfSmilingEmotes >= 4 || modeAlreadyUnlocked) {
                 if(!modeAlreadyUnlocked) {
-                  finishText.setText('You\'ve unlocked bounce mode!');
+                  finishText.setText('You\'ve unlocked Bouncing Laptops!');
                   finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
                   rootScene.time.addEvent({
                     delay: 5000,

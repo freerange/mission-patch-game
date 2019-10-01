@@ -7,6 +7,9 @@ class MainMenu extends Phaser.Scene
 
   preload ()
   {
+    var loadingText = this.add.text(0, 0, 'Loading...', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '55px'});
+    loadingText.setPosition((config.width/2) - Math.floor(loadingText.width/2), (config.height/2) - Math.floor(loadingText.height/2));
+
     //Game waits for web fonts to load before starting
     let font1 = new FontFaceObserver('Indie Flower');
     let font2 = new FontFaceObserver('Saira Stencil One');
@@ -149,7 +152,7 @@ class MainMenu extends Phaser.Scene
 
           //Buttons to start modes
           var chuckButton = launchButton((config.width/2) - 170, (config.height/2)+75, 5, 100, 150, 1, 'Flying\nLaptops',
-            'You have 2 minutes and 30 seconds to sticker as many \nlaptops as you can. \nUnlock the next level by making 4 of your team members \nhappy.');
+            'You have 2 minutes and 30 seconds to sticker as many \nlaptops as you can. \nUnlock the next mode by making 4 of your team members \nhappy.');
           var bounceButton = launchButton((config.width/2) + 70, (config.height/2)+75, 3, 10, 30, 0, 'Bouncing\nLaptops',
             'You have 30 seconds and 20 stickers to stop the laptops \nbouncing around the screen.');
 
