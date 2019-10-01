@@ -65,6 +65,9 @@ create: function()
   particle2 = this.add.particles('shapes',  new Function('return '  + this.cache.text.get('celebration'))());
   particle2.emitters.list[0].on = false;
 
+  particle3 = this.add.particles('shapes',  new Function('return '  + this.cache.text.get('results'))());
+  particle3.emitters.list[0].on = false;
+
   //Launch Groups
   laptops = this.physics.add.group();
   stickers = this.physics.add.group();
@@ -260,9 +263,6 @@ create: function()
 
   //Sets timer depending on countdown seconds
   countdownTimer = this.time.addEvent({ delay: countdownSeconds * 1000 });
-
-  // var tab = this.physics.add.staticSprite(0, 0, 'table').setOrigin(0, 0);
-  // tab.disableBody(true, true);
 
   tar = this.physics.add.staticSprite(0, 0, 'target').setOrigin(0, 0);
 
@@ -560,8 +560,9 @@ update: function()
           fontStyle: 'bold', fill: '#000' });
           finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
 
-          // particle2.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-          // particle2.emitters.list[0].startFollow(finishText);
+          particle3.emitters.list[0].on = true;
+          particle3.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
+          particle3.emitters.list[0].startFollow(finishText);
           rootScene.time.addEvent(
             {
             delay: 5000,
