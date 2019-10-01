@@ -7,7 +7,7 @@ class MainMenu extends Phaser.Scene
 
   preload ()
   {
-    var loadingText = this.add.text(0, 0, 'Loading...', {fontFamily: "Saira Stencil One, Arial, Carrois Gothic SC", fontSize: '55px'});
+    var loadingText = this.add.text(0, 0, 'Loading...', {fontFamily: "Arial, Carrois Gothic SC", fontSize: '55px'});
     loadingText.setPosition((config.width/2) - Math.floor(loadingText.width/2), (config.height/2) - Math.floor(loadingText.height/2));
 
     //Game waits for web fonts to load before starting
