@@ -175,18 +175,17 @@ create: function()
       delay: delay - 750,                // ms
       callback: ()=> {
         var x, y;
+        var readyText = rootScene.add.text(0, 0, 'Here it comes!', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
 
         if(pos.y > config.height) {
           y = pos.y - 100;
           x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
         } else {
           y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
-          x = (pos.x > (config.width/2)) ? config.width - 100 : 50;
+          x = (pos.x > (config.width/2)) ? config.width - (Math.floor(readyText.width)+50) : 50;
         }
 
-        var readyText = rootScene.add.text(x, y, 'Ready?',
-          { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px',
-          fontStyle: 'bold', fill: '#2E2ED1' });
+        readyText.setPosition(x, y);
 
         timer = rootScene.time.addEvent(
         {
@@ -204,7 +203,8 @@ create: function()
 
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-            var velInf = (x > (config.width/2)) ? (x-((config.width-200)/2))/(config.width/2) : ((config.width/2)-(x-50))/(config.width/2);
+            var velInf = (x > (config.width/2)) ? (x-((config.width-((Math.floor(readyText.width)+50)*2))/2))/(config.width/2) : ((config.width/2)-(x-50))/(config.width/2);
+            console.log(velInf);
             laptop.setVelocity(Phaser.Math.Between(300, 600) * (velX*velInf), Phaser.Math.Between(400, 600) * velY);
             laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
           }
@@ -465,7 +465,7 @@ update: function()
     {
       if(stickers.children.entries[i].scale > 0.1)
       {
-          stickers.children.entries[i].scale -= 0.035;
+          stickers.children.entries[i].scale -= 0.070;
           stickers.children.entries[i].setScale(stickers.children.entries[i].scale, stickers.children.entries[i].scale);
       }
       //Will drop when shrunk to a certain size
