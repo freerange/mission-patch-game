@@ -227,7 +227,7 @@ create: function()
 
     var msPerLaptop = (countdownSeconds * 1000)/totalLaptopsToGet;
     var laptSetDelay = (msPerLaptop * laptSpread) + Phaser.Math.Between(-(msPerLaptop/2), (msPerLaptop/2));
-    laptSetDelay = Phaser.Math.Clamp(laptSetDelay, 500, (countdownSeconds * 1000) - 50);
+    laptSetDelay = Phaser.Math.Clamp(laptSetDelay, 500, (countdownSeconds * 1000) - 1);
 
     throwLaptop(laptop, pos, laptSetDelay);
   }
@@ -358,9 +358,7 @@ create: function()
 
             //Makes laptops stop and fall in bounce mode
             if(lapt.data.values.laptopMode == 0) {
-              lapt.disableBody(true, false);
-              lapt.enableBody(true, lapt.x, lapt.y, true, true);
-
+              lapt.setVelocity(0);
               lapt.setCollideWorldBounds(false);
             }
             scoreText.setText(howManyLaptopsHaveStickers + ' out of ' + totalLaptopsToGet + ' Patched');
@@ -472,8 +470,7 @@ update: function()
       else
       {
           this.sound.add('smack', { volume: 0.8 }).play();
-          stickers.children.entries[i].disableBody(true, false);
-          stickers.children.entries[i].enableBody(true, stickers.children.entries[i].x, stickers.children.entries[i].y, true, true);
+          stickers.children.entries[i].setVelocity(0);
           stickers.children.entries[i].data.values.patchSticking = false;
       }
     }
@@ -630,8 +627,9 @@ update: function()
     //Will initiate game over sequence when timer runs out
     else if(countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 || stickersLeft == 0)
     {
-      if(gameDelay == null && (stickers.countActive(true) == 0 || (stickers.countActive(true) > 0
-      && stickers.children.entries.findIndex((stick) => { return stick.scale > 0.1 }) == -1)))
+      if(gameDelay == null && (stickers.countActive(true) == 0 || (modeSelect == 1
+        && laptops.children.entries.findIndex((lapt) => { return lapt.data.values.delayActive }) == -1
+        && laptops.countActive(true) === 0)))
       {
         if(howManyLaptopsHaveStickers == 0) {
           gameOverSequence('Time\'s up', 'No laptops were patched');
