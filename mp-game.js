@@ -558,8 +558,7 @@ update: function()
           finishText.setPosition(Math.floor((config.width/2) - (finishText.width/2)), (config.height/2) - 50);
 
           particle3.emitters.list[0].on = true;
-          particle3.emitters.list[0].setPosition(finishText.width/2, (finishText.height/2) + 10);
-          particle3.emitters.list[0].startFollow(finishText);
+          particle3.emitters.list[0].setPosition(finishText.x + (finishText.width/2), (finishText.y + (finishText.height/2)) + 10);
           rootScene.time.addEvent(
             {
             delay: 5000,
