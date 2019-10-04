@@ -30,17 +30,9 @@ class MainMenu extends Phaser.Scene
     this.load.image('patch_5', 'assets/patch-5.png');
 
     //Vector Graphics Images
-    this.load.svg('note', 'assets/post_it.svg', {
-      width: 100,
-      height: 200
-    });
-    this.load.svg('pad', 'assets/note_pad.svg', {
-      scale: 1.8
-    });
-    this.load.svg('lock', 'assets/Lock-Icon.svg', {
-      width: 50,
-      height: 100
-    });
+    this.load.svg('note', 'assets/post_it.svg', { width: 100, height: 200 });
+    this.load.svg('pad', 'assets/note_pad.svg', { scale: 1.8 });
+    this.load.svg('lock', 'assets/Lock-Icon.svg', { width: 50, height: 100 });
 
     //Spritesheet assets
     this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');
@@ -53,7 +45,7 @@ class MainMenu extends Phaser.Scene
     //Particle Assets
     this.load.atlas('shapes', 'assets/particles/shapes.png', 'assets/particles/shapes.json');
     this.load.text('blast', 'assets/particles/Blast.json');
-    this.load.text('explosion', 'assets/particles/Explosion.json');
+    this.load.text('results', 'assets/particles/Results.json');
     this.load.text('celebration', 'assets/particles/Celebration.json');
 
     //Sound assets taken and edited from freesound.com
