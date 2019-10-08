@@ -48,7 +48,6 @@ init: function(data)
 create: function()
 {
 
-  //Resets variable on repeat (will delete once bug is figured out)
   gameDelay = null;
 
 
@@ -552,7 +551,6 @@ update: function()
           tar.disableBody(true, true);
           var finish = rootScene.sound.add('results');
           finish.play();
-          // particle2.emitters.list[0].on = true;
 
           var finishText = rootScene.add.text(0, 0, resultsText,
           { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
