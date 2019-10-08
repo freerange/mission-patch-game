@@ -237,7 +237,7 @@ create: function()
 
   function createLaptop(laptop, bounce, mode)
   {
-    // Mode 0 = Bounce mode
+    // Mode 0 = Bouncing laptops
     if(mode == 0)
     {
       createMode0Laptop(laptop, bounce, mode);
@@ -358,7 +358,7 @@ create: function()
             if(lapt.frame.name != '__BASE')
               rootScene.anims.remove('open/close_' + lapt.data.values.laptopID);
 
-            //Makes laptops stop and fall in bounce mode
+            //Makes laptops stop and fall in bouncing laptops
             if(lapt.data.values.laptopMode == 0) {
               lapt.setVelocity(0);
               lapt.setCollideWorldBounds(false);
@@ -530,7 +530,7 @@ update: function()
       }
     }
 
-    //In bounce mode, laptops will leave the screen when the time runs out
+    //In bouncing laptops, laptops will leave the screen when the time runs out
     if((countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 || stickersLeft == 0) && modeSelect == 0
     && (stickers.countActive(true) == 0 || (stickers.countActive(true) > 0
     && stickers.children.entries.findIndex((stick) => { return stick.scale > 0.1 && stick.active }) == -1)))
@@ -602,7 +602,7 @@ update: function()
       });
   }
 
-
+  //Only generates starting value for countdownCheck to keep variable from being static
   if(countdownCheck == null)
     countdownCheck = countdownSeconds;
 
