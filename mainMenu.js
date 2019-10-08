@@ -2,11 +2,13 @@ class MainMenu extends Phaser.Scene
 {
   init (data)
   {
+    //Determines whether bouncing laptops is locked
     this.locked = data.locked;
   }
 
   preload ()
   {
+    //Text for loading screen
     var loadingText = this.add.text(0, 0, 'Loading...', {fontFamily: "Arial, Carrois Gothic SC", fontSize: '55px'});
     loadingText.setPosition((config.width/2) - Math.floor(loadingText.width/2), (config.height/2) - Math.floor(loadingText.height/2));
 
@@ -67,33 +69,38 @@ class MainMenu extends Phaser.Scene
 
   create ()
   {
+      //Dimmed Background
       var background = this.add.sprite(0, 0, 'office', '0025.png').setOrigin(0, 0);
       background.setTint(0x999999);
 
+      //Notepad for title and description
       var notepad = this.add.sprite(0, 0, 'pad').setOrigin(0, 0);
       notepad.setScale(1.5, 1.1);
       notepad.setSize(notepad.width*notepad.scaleX, notepad.height*notepad.scaleY);
       notepad.setPosition((config.width/2) - (notepad.width/2), ((config.height/8)*3) - (notepad.height/2));
 
-
-
-      //Title
+      //Title (Feel free to change the title here)
       var mainTitle = this.add.text(0, 0, 'Mission Patch Game', {fontFamily: "Permanent Marker, Arial, Carrois Gothic SC", fontSize: '55px', fill: '#000'});
       mainTitle.setPosition((config.width/2) - Math.floor(mainTitle.width/2), (config.height/2) - 245);
 
+      //Description
       var desc = this.add.text(0, 0, 'Help your team members celebrate success by adorning \ntheir laptops with mission patches', {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '22px', fill: '#000'});
       desc.setPosition(Math.floor(notepad.x + 10), Math.floor(notepad.y + ((notepad.height/5)*2) - 10));
 
+      //Used so that events can point to scene
       var rootScene = this;
 
+      //Arrays for elements of buttons
       var postItNotes = [];
       var modes = [];
 
       function launchButton(x, y, stickers, laptops, seconds, mode, title, description) {
+        //Pushes note to array so that it is easy to destroy every button in the menu when interactive text is clicked
         var postItNote = rootScene.add.sprite(x, y, 'note');
         postItNotes.push(postItNote);
         postItNote.setOrigin(0, 0);
 
+        //Interactive Text
         const gameModeText = rootScene.add.text(0, 0, title, {fontFamily: "Indie Flower, Arial, Carrois Gothic SC", fontSize: '24px', fill: '#000' })
         .setInteractive()
         .on('pointerdown', (pointer)=> {
@@ -121,8 +128,10 @@ class MainMenu extends Phaser.Scene
         })
         .on('pointerout', () => gameModeText.setStyle({ fill: '#000' }) );
 
+        //Pushes text into an array for same reasons as note sprites
         modes.push(gameModeText);
 
+        //Aligns text to the middle of its associated post it note
         gameModeText.setAlign('center');
         gameModeText.setPosition(Math.floor(postItNote.x + ((postItNote.width/2)-(gameModeText.width/2))), Math.floor(postItNote.y + (postItNote.height/2) - (gameModeText.height/2)));
 

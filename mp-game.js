@@ -1,36 +1,38 @@
 var mainGame = new Phaser.Class(function()
 {
+  //Base Variables
   var rootScene;
+  var modeSelect;
 
+  //Sprite Variables
   var background;
-
   var laptops;
   var stickers;
   var emotes;
-
   var tar;
+  var particle1, particle2;
+
+  //Sticker/Laptop/Background Integers
   var stickersAtOnce;
   var totalLaptopsToGet;
-
   var howManyLaptopsHaveStickers;
   var stickersLeft;
-  var modeSelect;
+  var currentFrame;
 
+  //Timer Variables
   var countdownTimer;
   var countdownSeconds;
+  var countdownCheck;
   var timerText;
 
+  //Text Variables
   var scoreText;
   var stickerText;
 
-  var countdownCheck;
-  var currentFrame;
-
+  //Game Over Variables
   var gameDelay;
   var gameOver = false;
   var modeAlreadyUnlocked = false;
-
-  var particle1, particle2;
 
 return {
 Extends: Phaser.Scene,
