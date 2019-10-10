@@ -35,6 +35,7 @@ class MainMenu extends Phaser.Scene
     this.load.svg('note', 'assets/post_it.svg', { width: 100, height: 200 });
     this.load.svg('pad', 'assets/note_pad.svg', { scale: 1.8 });
     this.load.svg('lock', 'assets/Lock-Icon.svg', { width: 50, height: 100 });
+    this.load.svg('incoming', 'assets/warning.svg', { width: 75, height: 120 });
 
     //Spritesheet assets
     this.load.multiatlas('office', 'assets/spritesheets/office/Office.json', 'assets/spritesheets/office');

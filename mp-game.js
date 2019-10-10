@@ -179,24 +179,25 @@ create: function()
       delay: delay - 750,                // ms
       callback: ()=> {
         var x, y;
-        var readyText = rootScene.add.text(0, 0, 'Here it comes!', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+        // var readyText = rootScene.add.text(0, 0, 'Here it comes!', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+        var readyPrompt = rootScene.add.sprite(0, 0, 'incoming').setOrigin(0, 0);
         var sidePadding = 50;
 
         if(pos.y > config.height) {
-          y = pos.y - 100;
+          y = pos.y - (readyPrompt.height + 80);
           x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
         } else {
-          y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
-          x = (pos.x > (config.width/2)) ? config.width - (Math.floor(readyText.width)+sidePadding) : sidePadding;
+          y = Phaser.Math.Clamp(pos.y, 40, config.height - 150);
+          x = (pos.x > (config.width/2)) ? config.width - (Math.floor(readyPrompt.width)+sidePadding) : sidePadding;
         }
 
-        readyText.setPosition(x, y);
+        readyPrompt.setPosition(x, y);
 
         timer = rootScene.time.addEvent(
         {
           delay: 750,
           callback: ()=> {
-            readyText.destroy();
+            readyPrompt.destroy();
             isLaptopTypeAnimated(laptop);
 
             rootScene.sound.add('laptThrow', {
@@ -208,7 +209,7 @@ create: function()
 
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-            var velInfluence = (x > (config.width/2)) ? (x-((config.width-((Math.floor(readyText.width)+sidePadding)*2))/2))/(config.width/2) : ((config.width/2)-(x-sidePadding))/(config.width/2);
+            var velInfluence = (x > (config.width/2)) ? (x-((config.width-((Math.floor(readyPrompt.width)+sidePadding)*2))/2))/(config.width/2) : ((config.width/2)-(x-sidePadding))/(config.width/2);
             laptop.setVelocity(Phaser.Math.Between(300, 600) * (velX*velInfluence), Phaser.Math.Between(400, 600) * velY);
             laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
           }
@@ -322,7 +323,7 @@ create: function()
   for(var i = 0; i < 10; i++) {
     var emote = emotes.create(0, 0, 'emoji', 0);
     emote.setScale(0.35);
-    emote.setPosition(40 + ((emote.width * emote.scaleX) * i), config.height - ((emote.height * emote.scaleY) + 20));
+    emote.setPosition(40 + ((emote.width * emote.scaleX) * i), config.height - ((emote.height * emote.scaleY)));
     emote.disableBody(true, false);
   }
 
@@ -563,7 +564,6 @@ update: function()
             {
             delay: 5000,
             callback: ()=> {
-              gameOver = false;
               var menuScene = rootScene.scene.get('mainMenu');
               for(var i in laptops.children.entries)
               {
@@ -580,17 +580,20 @@ update: function()
                     delay: 5000,
                     callback: () => {
                       finish.stop();
+                      gameOver = false;
                       modeAlreadyUnlocked = true;
                       menuScene.scene.restart({ locked: false });
                       rootScene.scene.stop();
                     }});
                 } else {
                   finish.stop();
+                  gameOver = false;
                   menuScene.scene.restart({ locked: false });
                   rootScene.scene.stop();
                 }
               } else {
                 finish.stop();
+                gameOver = false;
                 menuScene.scene.restart({ locked: true });
                 rootScene.scene.stop();
               }
