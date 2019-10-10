@@ -12,6 +12,7 @@ class Instructions extends Phaser.Scene
 
   create ()
   {
+    //Notepad for title and description
     var notepad = this.add.sprite(0, 0, 'pad').setOrigin(0, 0);
     notepad.setScale(1.5, 1.1);
     notepad.setSize(notepad.width*notepad.scaleX, notepad.height*notepad.scaleY);

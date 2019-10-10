@@ -1,36 +1,38 @@
 var mainGame = new Phaser.Class(function()
 {
+  //Base Variables
   var rootScene;
+  var modeSelect;
 
+  //Sprite Variables
   var background;
-
   var laptops;
   var stickers;
   var emotes;
-
   var tar;
+  var particle1, particle2;
+
+  //Sticker/Laptop/Background Integers
   var stickersAtOnce;
   var totalLaptopsToGet;
-
   var howManyLaptopsHaveStickers;
   var stickersLeft;
-  var modeSelect;
+  var currentFrame;
 
+  //Timer Variables
   var countdownTimer;
   var countdownSeconds;
+  var countdownCheck;
   var timerText;
 
+  //Text Variables
   var scoreText;
   var stickerText;
 
-  var countdownCheck;
-  var currentFrame;
-
+  //Game Over Variables
   var gameDelay;
   var gameOver = false;
   var modeAlreadyUnlocked = false;
-
-  var particle1, particle2;
 
 return {
 Extends: Phaser.Scene,
@@ -46,7 +48,6 @@ init: function(data)
 create: function()
 {
 
-  //Resets variable on repeat (will delete once bug is figured out)
   gameDelay = null;
 
 
@@ -178,24 +179,33 @@ create: function()
       delay: delay - 750,                // ms
       callback: ()=> {
         var x, y;
-        var readyText = rootScene.add.text(0, 0, 'Here it comes!', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+        // var readyText = rootScene.add.text(0, 0, 'Here it comes!', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
+        var readyPrompt = rootScene.add.sprite(0, 0, 'incoming').setOrigin(0, 0);
         var sidePadding = 50;
 
         if(pos.y > config.height) {
-          y = pos.y - 100;
+          y = pos.y - ((readyPrompt.height/2) + 50);
           x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
         } else {
           y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
-          x = (pos.x > (config.width/2)) ? config.width - (Math.floor(readyText.width)+sidePadding) : sidePadding;
+          x = (pos.x > (config.width/2)) ? config.width - Math.floor(readyPrompt.width/2) : Math.floor(readyPrompt.width/2) - 50;
         }
 
-        readyText.setPosition(x, y);
+        readyPrompt.setPosition(x, y);
+
+        //Taken from example here https://codepen.io/yochans/pen/ZPaZGO
+        rootScene.tweens.add({
+          targets: readyPrompt,
+          alpha: 0,
+          duration: 750,
+          ease: 'Circ'
+        }, this);
 
         timer = rootScene.time.addEvent(
         {
           delay: 750,
           callback: ()=> {
-            readyText.destroy();
+            readyPrompt.destroy();
             isLaptopTypeAnimated(laptop);
 
             rootScene.sound.add('laptThrow', {
@@ -207,7 +217,7 @@ create: function()
 
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-            var velInfluence = (x > (config.width/2)) ? (x-((config.width-((Math.floor(readyText.width)+sidePadding)*2))/2))/(config.width/2) : ((config.width/2)-(x-sidePadding))/(config.width/2);
+            var velInfluence = (x > (config.width/2)) ? (x-((config.width-((Math.floor(readyPrompt.width)+sidePadding)*2))/2))/(config.width/2) : ((config.width/2)-(x-sidePadding))/(config.width/2);
             laptop.setVelocity(Phaser.Math.Between(300, 600) * (velX*velInfluence), Phaser.Math.Between(400, 600) * velY);
             laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
           }
@@ -235,7 +245,7 @@ create: function()
 
   function createLaptop(laptop, bounce, mode)
   {
-    // Mode 0 = Bounce mode
+    // Mode 0 = Bouncing laptops
     if(mode == 0)
     {
       createMode0Laptop(laptop, bounce, mode);
@@ -356,7 +366,7 @@ create: function()
             if(lapt.frame.name != '__BASE')
               rootScene.anims.remove('open/close_' + lapt.data.values.laptopID);
 
-            //Makes laptops stop and fall in bounce mode
+            //Makes laptops stop and fall in bouncing laptops
             if(lapt.data.values.laptopMode == 0) {
               lapt.setVelocity(0);
               lapt.setCollideWorldBounds(false);
@@ -528,7 +538,7 @@ update: function()
       }
     }
 
-    //In bounce mode, laptops will leave the screen when the time runs out
+    //In bouncing laptops, laptops will leave the screen when the time runs out
     if((countdownSeconds - countdownTimer.getElapsedSeconds() <= 0 || stickersLeft == 0) && modeSelect == 0
     && (stickers.countActive(true) == 0 || (stickers.countActive(true) > 0
     && stickers.children.entries.findIndex((stick) => { return stick.scale > 0.1 && stick.active }) == -1)))
@@ -550,7 +560,6 @@ update: function()
           tar.disableBody(true, true);
           var finish = rootScene.sound.add('results');
           finish.play();
-          // particle2.emitters.list[0].on = true;
 
           var finishText = rootScene.add.text(0, 0, resultsText,
           { fontFamily: "Arial, Carrois Gothic SC", fontSize: '45px',
@@ -563,7 +572,6 @@ update: function()
             {
             delay: 5000,
             callback: ()=> {
-              gameOver = false;
               var menuScene = rootScene.scene.get('mainMenu');
               for(var i in laptops.children.entries)
               {
@@ -580,17 +588,20 @@ update: function()
                     delay: 5000,
                     callback: () => {
                       finish.stop();
+                      gameOver = false;
                       modeAlreadyUnlocked = true;
                       menuScene.scene.restart({ locked: false });
                       rootScene.scene.stop();
                     }});
                 } else {
                   finish.stop();
+                  gameOver = false;
                   menuScene.scene.restart({ locked: false });
                   rootScene.scene.stop();
                 }
               } else {
                 finish.stop();
+                gameOver = false;
                 menuScene.scene.restart({ locked: true });
                 rootScene.scene.stop();
               }
@@ -600,7 +611,7 @@ update: function()
       });
   }
 
-
+  //Only generates starting value for countdownCheck to keep variable from being static
   if(countdownCheck == null)
     countdownCheck = countdownSeconds;
 
