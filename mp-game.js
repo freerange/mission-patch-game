@@ -193,6 +193,14 @@ create: function()
 
         readyPrompt.setPosition(x, y);
 
+        //Taken from example here https://codepen.io/yochans/pen/ZPaZGO
+        rootScene.tweens.add({
+          targets: readyPrompt,
+          alpha: 0,
+          duration: 750,
+          ease: 'Quad'
+        }, this);
+
         timer = rootScene.time.addEvent(
         {
           delay: 750,
