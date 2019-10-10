@@ -184,11 +184,11 @@ create: function()
         var sidePadding = 50;
 
         if(pos.y > config.height) {
-          y = pos.y - (readyPrompt.height + 80);
+          y = pos.y - ((readyPrompt.height/2) + 50);
           x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
         } else {
-          y = Phaser.Math.Clamp(pos.y, 40, config.height - 150);
-          x = (pos.x > (config.width/2)) ? config.width - (Math.floor(readyPrompt.width)+sidePadding) : sidePadding;
+          y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
+          x = (pos.x > (config.width/2)) ? config.width - Math.floor(readyPrompt.width/2) : Math.floor(readyPrompt.width/2) - 50;
         }
 
         readyPrompt.setPosition(x, y);
@@ -323,7 +323,7 @@ create: function()
   for(var i = 0; i < 10; i++) {
     var emote = emotes.create(0, 0, 'emoji', 0);
     emote.setScale(0.35);
-    emote.setPosition(40 + ((emote.width * emote.scaleX) * i), config.height - ((emote.height * emote.scaleY)));
+    emote.setPosition(40 + ((emote.width * emote.scaleX) * i), config.height - ((emote.height * emote.scaleY) + 20));
     emote.disableBody(true, false);
   }
 
