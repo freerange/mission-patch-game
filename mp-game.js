@@ -198,7 +198,7 @@ create: function()
           targets: readyPrompt,
           alpha: 0,
           duration: 750,
-          ease: 'Quad'
+          ease: 'Circ'
         }, this);
 
         timer = rootScene.time.addEvent(
