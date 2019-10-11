@@ -179,15 +179,13 @@ create: function()
       delay: delay - 750,                // ms
       callback: ()=> {
         var x, y;
-        // var readyText = rootScene.add.text(0, 0, 'Here it comes!', { fontFamily: "Arial, Carrois Gothic SC", fontSize: '20px', fontStyle: 'bold', fill: '#2E2ED1' });
         var readyPrompt = rootScene.add.sprite(0, 0, 'incoming').setOrigin(0, 0);
-        var sidePadding = 50;
 
         if(pos.y > config.height) {
           y = pos.y - ((readyPrompt.height/2) + 50);
-          x = Phaser.Math.Clamp(pos.x, 125, config.width - 200)
+          x = Phaser.Math.Clamp(pos.x, readyPrompt.width/2, config.width - (readyPrompt.width/2))
         } else {
-          y = Phaser.Math.Clamp(pos.y, 40, config.height - 40);
+          y = Phaser.Math.Clamp(pos.y, readyPrompt.height/2, config.height - (readyPrompt.height/2));
           x = (pos.x > (config.width/2)) ? config.width - Math.floor(readyPrompt.width/2) : Math.floor(readyPrompt.width/2) - 50;
         }
 
@@ -217,7 +215,7 @@ create: function()
 
             var velX = (laptop.x > (config.width/2)) ? -1 : 1;
             var velY = (laptop.y > (config.height/2)) ? -1.35 : -0.5;
-            var velInfluence = (x > (config.width/2)) ? (x-((config.width-((Math.floor(readyPrompt.width)+sidePadding)*2))/2))/(config.width/2) : ((config.width/2)-(x-sidePadding))/(config.width/2);
+            var velInfluence = Math.abs((x-((config.width-Math.floor(readyPrompt.width))/2))/(config.width/2));
             laptop.setVelocity(Phaser.Math.Between(300, 600) * (velX*velInfluence), Phaser.Math.Between(400, 600) * velY);
             laptop.setScale(1 + Phaser.Math.FloatBetween(0.0, 0.25));
           }
