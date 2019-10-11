@@ -196,7 +196,10 @@ create: function()
           targets: readyPrompt,
           alpha: 0,
           duration: 750,
-          ease: 'Circ'
+          ease: 'Circ',
+          onComplete: function () {
+            readyPrompt.destroy();
+          }
         }, this);
 
         timer = rootScene.time.addEvent(
